@@ -1,4 +1,4 @@
-import { auth } from '@/utils/firebase';
+import { auth } from '../utils/firebase';
 import { notifyToLogIn, logoutFirebaseWithRedirect } from './user';
 
 export function verifyCurrentUser(): boolean {

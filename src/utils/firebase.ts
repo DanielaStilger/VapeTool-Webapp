@@ -1,110 +1,138 @@
-import firebase from 'firebase/app';
-import 'firebase/auth';
-import 'firebase/database';
-import 'firebase/storage';
-import 'firebase/functions';
-import { ItemName } from '@/types';
+import { initializeApp } from 'firebase/app';
+import { getDatabase, Database, ref } from 'firebase/database';
+import { getStorage, FirebaseStorage, ref as storageRef } from 'firebase/storage';
+import { getAuth, Auth, onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import { getRemoteConfig, RemoteConfig } from 'firebase/remote-config';
+
+const firebaseConfigProduction = {
+  apiKey: "AIzaSyC1XSnUoeupHRqN8kuTqypGNkVYUWP0-uA",
+  authDomain: "vape-tool-pro.firebaseapp.com",
+  databaseURL: "https://vape-tool-pro.firebaseio.com",
+  projectId: "vape-tool-pro",
+  storageBucket: "vape-tool-pro.appspot.com",
+  messagingSenderId: "526012004991",
+  appId: "1:526012004991:web:fdaee9605b24874b"
+};
+
+const firebaseConfigDevelopment = {
+  apiKey: "AIzaSyAmf_Tmb5VnPwH3niIX9Q2QPJOrCNgTEto",
+  authDomain: "dev-vapetool.firebaseapp.com",
+  databaseURL: "https://dev-vapetool.firebaseio.com",
+  projectId: "dev-vapetool",
+  storageBucket: "dev-vapetool.appspot.com",
+  messagingSenderId: "1053309639962",
+  appId: "1:1053309639962:web:a7469df6baf07ff86ee0a3"
+};
+
+import { ItemName } from '../types';
 import { Mixable, Coil, MixResult, Liquid, Result, Properties } from '@vapetool/types';
 import { IS_PRODUCTION } from './utils';
 
-const firebaseProdConfig = require('@/firebase-config.json');
+const devApp = initializeApp(firebaseConfigDevelopment);
+const devDb = getDatabase(devApp);
+const devStorage = getStorage(devApp);
+const devAuth: Auth = getAuth(devApp);
+const devFunctions = getFunctions(devApp);
 
-const firebaseDevConfig = require('@/firebase-config-dev.json');
-// firebaseConfig.databaseURL = 'ws://localhost:5555';
-
-const devApp = firebase.initializeApp(firebaseDevConfig);
-const devDb = devApp.database();
-const devStorage = devApp.storage();
-export const auth: firebase.auth.Auth = devApp.auth();
-
-const prodApp = firebase.initializeApp(firebaseProdConfig, 'prod');
-const prodDb = prodApp.database();
-const prodStorage = prodApp.storage();
+const prodApp = initializeApp(firebaseConfigProduction, 'prod');
+const prodDb = getDatabase(prodApp);
+const prodStorage = getStorage(prodApp);
+const prodAuth: Auth = getAuth(prodApp);
+const prodFunctions = getFunctions(prodApp);
 
 export function functions() {
-  return IS_PRODUCTION ? prodApp.functions() : devApp.functions();
+  return IS_PRODUCTION ? prodFunctions : devFunctions;
 }
 
-export function remoteConfig(): firebase.remoteConfig.RemoteConfig {
-  return IS_PRODUCTION ? prodApp.remoteConfig() : devApp.remoteConfig();
+export function remoteConfig(): RemoteConfig {
+  return IS_PRODUCTION ? getRemoteConfig(prodApp) : getRemoteConfig(devApp);
 }
 
-export function database(): firebase.database.Database {
+export function database(): Database {
   return IS_PRODUCTION ? prodDb : devDb;
 }
 
-export function storage(): firebase.storage.Storage {
+export function storage(): FirebaseStorage {
   return IS_PRODUCTION ? prodStorage : devStorage;
 }
 
-export const batteriesRef = prodDb.ref('batteries');
-export const postsRef = database().ref('posts');
-export const linksRef = database().ref('links');
-export const photosRef = database().ref('gears');
-export const usersRef = database().ref('users');
-export const coilsRef = database().ref('coils');
-export const liquidsRef = database().ref('liquids');
-export const photoLikesRef = database().ref('gear-likes');
-export const postLikesRef = database().ref('post-likes');
-export const linkLikesRef = database().ref('link-likes');
-export const coilLikesRef = database().ref('coil-likes');
-export const liquidLikesRef = database().ref('liquid-likes');
+export function auth(): Auth {
+  return IS_PRODUCTION ? prodAuth : devAuth;
+}
 
-export const likesRef = (item: ItemName) => {
+const dbRef = (path: string) => ref(database(), path);
+
+export const batteriesRef = ref(prodDb, 'batteries');
+export const postsRef = dbRef('posts');
+export const linksRef = dbRef('links');
+export const photosRef = dbRef('gears');
+export const usersRef = dbRef('users');
+export const userRef = (uid: string) => dbRef('users/' + uid);
+export const coilsRef = dbRef('coils');
+export const liquidsRef = dbRef('liquids');
+
+export const photoLikesRef = (uid: string) => dbRef('gear-likes/' + uid);
+export const postLikesRef = (uid: string) => dbRef('post-likes/' + uid);
+export const linkLikesRef = (uid: string) => dbRef('link-likes/' + uid);
+export const coilLikesRef = (uid: string) => dbRef('coil-likes/' + uid);
+export const liquidLikesRef = (uid: string) => dbRef('liquid-likes/' + uid);
+
+export const likesRef = (item: ItemName, uid: string) => {
   switch (item) {
     case ItemName.PHOTO:
-      return photoLikesRef;
+      return photoLikesRef(uid);
     case ItemName.POST:
-      return postLikesRef;
+      return postLikesRef(uid);
     case ItemName.COIL:
-      return coilLikesRef;
+      return coilLikesRef(uid);
     case ItemName.LINK:
-      return linkLikesRef;
+      return linkLikesRef(uid);
     case ItemName.LIQUID:
-      return liquidLikesRef;
+      return liquidLikesRef(uid);
     default:
       throw Error('illegal type');
   }
 };
 
-export const photoCommentsRef = database().ref('gear-comments');
-export const postCommentsRef = database().ref('post-comments');
-export const linkCommentsRef = database().ref('link-comments');
-export const coilCommentsRef = database().ref('coil-comments');
-export const liquidCommentsRef = database().ref('liquid-comments');
+export const photoCommentsRef = (uid: string) => dbRef('gear-comments/' + uid);
+export const postCommentsRef = (uid: string) => dbRef('post-comments/' + uid);
+export const linkCommentsRef = (uid: string) => dbRef('link-comments/' + uid);
+export const coilCommentsRef = (uid: string) => dbRef('coil-comments/' + uid);
+export const liquidCommentsRef = (uid: string) => dbRef('liquid-comments/' + uid);
 
-export const commentsRef = (item: ItemName) => {
+export const commentsRef = (item: ItemName, uid: string) => {
   switch (item) {
     case ItemName.PHOTO:
-      return photoCommentsRef;
+      return photoCommentsRef(uid);
     case ItemName.POST:
-      return postCommentsRef;
+      return postCommentsRef(uid);
     case ItemName.COIL:
-      return coilCommentsRef;
+      return coilCommentsRef(uid);
     case ItemName.LINK:
-      return linkCommentsRef;
+      return linkCommentsRef(uid);
     case ItemName.LIQUID:
-      return liquidCommentsRef;
+      return liquidCommentsRef(uid);
     default:
       throw Error('illegal type');
   }
 };
 
-export const batteriesStorageRef = prodStorage.ref('batteries').child('images');
-export const usersStorageRef = storage().ref('users').child('images');
-export const coilsStorageRef = storage().ref('coils').child('images');
-export const photosStorageRef = storage().ref('gears').child('images');
+const imagesRef = (path: string) => storageRef(storage(), path)
+export const batteriesStorageRef = (uid: string) => storageRef(prodStorage, 'batteries/images/' + uid + '.jpg');
+export const usersStorageRef = (uid: string) => imagesRef('users/images/' + uid + '.jpg');
+export const coilsStorageRef = (uid: string) => imagesRef('coils/images' + uid + '.jpg');
+export const photosStorageRef = (uid: string) => imagesRef('gears/images/' + uid + '.jpg');
 
-export const { ServerValue } = firebase.database;
 
 let userLoaded: boolean = false;
 
-export function getCurrentUser(): Promise<firebase.User | undefined> {
-  return new Promise<firebase.User | undefined>((resolve, reject) => {
+export function getCurrentUser(): Promise<FirebaseUser | undefined> {
+  return new Promise<FirebaseUser | undefined>((resolve, reject) => {
     if (userLoaded) {
-      resolve(auth.currentUser ?? undefined);
+      resolve(getAuth().currentUser ?? undefined);
     }
-    const unsubscribe = auth.onAuthStateChanged((user) => {
+    const unsubscribe = onAuthStateChanged(getAuth(), (user) => {
       userLoaded = true;
       unsubscribe();
       resolve(user ?? undefined);
@@ -126,12 +154,12 @@ export async function callFirebaseFunction<T extends MixResult | Result[] | Coil
     | { coil: Coil; power: number; heatFlux: number }
     | { liquid: Liquid },
 ): Promise<T> {
-  const res = await functions().httpsCallable(name)(data);
+  const res = await httpsCallable(getFunctions(), name)(data);
   return res.data as Promise<T>;
 }
 
 export async function createStripeManageLink(returnUrl: string): Promise<string> {
-  const res = await functions().httpsCallable('createStripeManageLink')({ returnUrl });
+  const res = await httpsCallable(getFunctions(), 'createStripeManageLink')({ returnUrl });
   return res.data as string;
 }
 
@@ -140,7 +168,7 @@ export async function createStripePayment(
   successUrl: string,
   cancelUrl: string,
 ): Promise<string> {
-  const res = await functions().httpsCallable('createCheckoutSession')({
+  const res = await httpsCallable(getFunctions(), 'createCheckoutSession')({
     item,
     successUrl,
     cancelUrl,

@@ -1,4 +1,3 @@
-import { message, notification } from 'antd';
 import {
   deleteLink,
   deletePhoto,
@@ -15,9 +14,11 @@ import {
   deletePhotoComment,
   deletePostComment,
   deleteLinkComment,
-} from '@/services/items';
-import { ItemName } from '@/types';
-import { CurrentUser } from '@/app';
+} from './items';
+import { ItemName } from '../types';
+import { User } from '@vapetool/types';
+import { useSnackbar } from 'notistack';
+import snackbar from '../utils/snackbar';
 
 export async function like(what: ItemName, itemId: string, userId: string) {
   try {
@@ -35,7 +36,8 @@ export async function like(what: ItemName, itemId: string, userId: string) {
         throw Error('unsupported operation');
     }
   } catch (e) {
-    notification.error({ message: e.message });
+    console.error(e);
+    snackbar.error(`Error liking ${what}`);
   }
 }
 
@@ -54,9 +56,10 @@ export async function deleteItem(what: ItemName, itemId: string) {
       default:
         throw Error('unsupported operation');
     }
-    message.success(`Successfully deleted ${what}`);
+    snackbar.success(`Successfully deleted ${what}`);
   } catch (e) {
-    notification.error({ message: e.message });
+    console.error(e);
+    snackbar.error(`Error deleting ${what}`);
   }
 }
 
@@ -75,12 +78,13 @@ export async function report(what: ItemName, itemId: string, userId: string) {
       default:
         throw Error('unsupported operation');
     }
-    message.success(`Successfully reported ${what}`);
+    snackbar.success(`Successfully reported ${what}`);
   } catch (e) {
-    notification.error({ message: e.message });
+    console.error(e);
+    snackbar.error(`Error reporting ${what}`);
   }
 }
-export async function commentItem(what: ItemName, body: string, itemId: string, user: CurrentUser) {
+export async function commentItem(what: ItemName, body: string, itemId: string, user: User) {
   try {
     if (!body) throw new Error('Comment can not be empty');
     switch (what) {
@@ -97,8 +101,8 @@ export async function commentItem(what: ItemName, body: string, itemId: string, 
         throw Error('unsupported operation');
     }
   } catch (e) {
-    console.log('Errors occurs here', e);
-    notification.error({ message: e.message });
+    console.error(e);
+    snackbar.error(`Error commenting ${what}`);
   }
 }
 
@@ -117,8 +121,10 @@ export async function deleteComment(what: ItemName, itemId: string, commentId: s
       default:
         throw Error('unsupported operation');
     }
-    message.success('Successfully deleted comment');
+    
+    snackbar.success(`Successfully deleted comment`);
   } catch (e) {
-    notification.error({ message: e.message });
+    console.error(e);
+    snackbar.error(`Error deleting comment`);
   }
 }

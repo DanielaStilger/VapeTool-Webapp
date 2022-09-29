@@ -1,12 +1,13 @@
-import { batteriesRef } from '@/utils/firebase';
-import { Affiliate, Battery } from '@/types';
-import { getBatteryUrl } from '@/services/storage';
+import { batteriesRef } from '../utils/firebase';
+import { Affiliate, Battery } from '../types';
+import { getBatteryUrl } from './storage';
 import { id } from '@vapetool/types';
+import { DataSnapshot } from 'firebase/database';
 
 export function subscribeBatteries(onValueChange: (items: Battery[]) => void) {
   const ref = batteriesRef;
 
-  ref.on('value', (snapshot: firebase.database.DataSnapshot) => {
+  ref.on('value', (snapshot: DataSnapshot) => {
     const batteriesPromise: Promise<Battery>[] = new Array<Promise<Battery>>();
     snapshot.forEach((snap) => {
       const promise = getBatteryUrl(snap.key || id(snap.val())).then((url: string | undefined) => ({

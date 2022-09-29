@@ -1,37 +1,35 @@
-import { Card, Typography } from 'antd';
+import { Typography } from '@mui/material';
 import React from 'react';
-import { Link, useModel } from 'umi';
-import { Post, ItemName } from '@/types';
-import { ImageType } from '@/services/storage';
-import { getUserProfileUrl } from '@/places/user.places';
+import { ItemName, Post } from '../../types';
 import { Actions } from './ItemView';
-import styles from './styles.less';
-import FirebaseImage from '../StorageAvatar';
+import UserCard from './UserCard';
 
-export default function PostView({ item }: { item: Post }) {
-  const { setSelectedItem, unselectItem } = useModel('preview');
-  const onSelectItem = () => setSelectedItem(item);
+export default function PostView({
+  item,
+}: {
+  item: Post;
+}) {
 
   return (
-    <Card className={styles.card} hoverable>
-      <Card.Meta
-        avatar={
-          <Link to={getUserProfileUrl(item.author.uid)}>
-            <FirebaseImage type={ImageType.USER} id={item.author.uid} />
-          </Link>
-        }
-        title={
-          <span onClick={onSelectItem}>
-            <Typography.Text>{item.title}</Typography.Text>
-          </span>
-        }
-        description={
-          <span onClick={onSelectItem}>
-            <Typography.Text>{item.text}</Typography.Text>
-          </span>
-        }
-      />
-      <Actions what={ItemName.POST} item={item} unselectItem={unselectItem} />
-    </Card>
+
+    <article
+      style={{ marginBottom: 30 }}
+    >
+      {/* Feed Post Header */}
+      <div >
+        <UserCard author={item.author} />
+      </div>
+      {/* Feed Post Image */}
+      <div>
+        <Typography variant="h1">
+          {item.title}
+        </Typography>
+        <Typography variant="body1">
+          {item.text}
+        </Typography>
+      </div>
+      {/* Feed Post Buttons */}
+      <Actions<Post> what={ItemName.POST} item={item} />
+    </article>
   );
 }

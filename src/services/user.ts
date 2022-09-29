@@ -1,64 +1,44 @@
 import { User, UserPermission } from '@vapetool/types';
-import firebase from 'firebase';
-import { request, history } from 'umi';
-import { auth, usersRef } from '@/utils/firebase';
-import { uploadAvatar } from '@/services/storage';
-import { notification } from 'antd';
+import { DataSnapshot, onValue, Unsubscribe, update, get } from 'firebase/database'
+import { User as FirebaseUser } from 'firebase/auth'
+import { userRef } from '../utils/firebase';
 
-const googleProvider = new firebase.auth.GoogleAuthProvider();
-const facebookProvider = new firebase.auth.FacebookAuthProvider();
+import { uploadAvatar } from '../services/storage';
 
-export function getUser(uid: string): Promise<User | undefined> {
-  return new Promise((resolve) => {
-    usersRef
-      .child(uid)
-      .once('value')
-      .then((snapshot) => {
-        const user = snapshot.val();
-        if (user) {
-          resolve(user);
-        } else {
-          resolve(undefined);
-        }
-      })
-      .catch((e) => {
-        console.error(e);
-        resolve(undefined);
-      });
+export function listenForUserInDb(uid: string, listener: (user: User | null) => void) {
+  console.log("About to observe user in database", uid, userRef(uid).toString());
+  return onValue(userRef(uid), (snapshot: DataSnapshot) =>{
+    console.log("observe user snapshot.exist()", snapshot.exists())
+    return snapshot.exists() ? listener(snapshot.val()) : listener(null)
+  }, (error) => {
+    console.error(error);
   });
 }
 
-export function initializeUser(firebaseUser: firebase.User): Promise<User | undefined> {
+export function initializeUser(firebaseUser: FirebaseUser): Promise<void> {
   const { uid, email, photoURL, displayName } = firebaseUser;
   if (photoURL) {
     initializeAvatar(photoURL, uid);
   }
-  return usersRef
-    .child(uid)
-    .update({
+  return update(userRef(uid), {
       uid,
       display_name: displayName || 'Anonymous',
       email,
-      permission: UserPermission.ONLINE_USER,
+      setup: true,
+      permission: UserPermission.ONLINE_USER, // Security issue, it should be set server-side, in firebase function
     })
-    .then(() => getUser(uid));
 }
 
-export function updateDisplayName(uid: string, displayName: string): Promise<User | null> {
-  return new Promise<User | null>((resolve, reject) => {
+export function updateSetupComplete(uid: string): Promise<void> {
+    return update(userRef(uid), {setup: true})
+}
+
+export function updateDisplayName(uid: string, displayName: string): Promise<void> {
     if (!displayName) {
       console.error('Displayname can not be empty');
-      reject(new Error('Displayname can not be empty'));
+      throw new Error('Displayname can not be empty');
     }
-    return usersRef
-      .child(uid)
-      .update({
-        display_name: displayName,
-      })
-      .then(() => getUser(uid))
-      .then(resolve)
-      .catch(reject);
-  });
+    return update(userRef(uid), {display_name: displayName})
 }
 
 function initializeAvatar(avatarUrl: string, userId: string) {
@@ -82,80 +62,4 @@ function initializeAvatar(avatarUrl: string, userId: string) {
     }
   };
   xhr.send();
-}
-
-export async function query(): Promise<any> {
-  return request('/api/users');
-}
-
-export async function queryCurrent(): Promise<any> {
-  return request('/api/currentUser');
-}
-
-export async function queryNotices(): Promise<any> {
-  return request('/api/notices');
-}
-
-export async function logoutFirebase(): Promise<void> {
-  return auth
-    .signOut()
-    .then(() => console.log('signed out complete'))
-    .catch((err) => console.error(err));
-}
-
-export async function logoutFirebaseWithRedirect() {
-  await logoutFirebase();
-  history.replace('/login');
-}
-
-export const signInWithCredentials = async ({
-  email,
-  password,
-}: {
-  email: string;
-  password: string;
-}): Promise<firebase.auth.UserCredential> => {
-  await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-  return auth.signInWithEmailAndPassword(email, password);
-};
-
-export const registerWithCredentials = async ({
-  email,
-  password,
-}: {
-  email: string;
-  password: string;
-}): Promise<firebase.auth.UserCredential> => {
-  await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-  return auth.createUserWithEmailAndPassword(email, password);
-};
-
-export const signInViaGoogle = async (): Promise<firebase.auth.UserCredential> => {
-  await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-  return auth.signInWithPopup(googleProvider);
-};
-
-export const signInViaFacebook = async (): Promise<firebase.auth.UserCredential> => {
-  await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-  return auth.signInWithPopup(facebookProvider);
-};
-
-export const sendPasswordResetEmail = (email: string) => {
-  return auth.sendPasswordResetEmail(email);
-};
-
-export const signInAnonymously = async () => {
-  await auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
-  return auth.signInAnonymously();
-};
-
-export function notifyToLogIn() {
-  notification.open({
-    message: 'You need to be logged in!',
-    description: 'Click to log in',
-    style: {
-      cursor: 'pointer',
-    },
-    onClick: logoutFirebaseWithRedirect,
-  });
 }

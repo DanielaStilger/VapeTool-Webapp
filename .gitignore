@@ -10,6 +10,7 @@ node_modules
 /src/utils/request-temp.js
 _roadhog-api-doc
 
+.next/
 # production
 /dist
 /.vscode

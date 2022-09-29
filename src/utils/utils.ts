@@ -1,8 +1,8 @@
 import { parse } from 'querystring';
 import moment from 'moment';
-import { history } from 'umi';
-import { UserPermission } from '@vapetool/types';
-import { UserAuthorities } from '@/types/UserAuthorities';
+import { User, UserPermission } from '@vapetool/types';
+import { UserAuthorities } from '../types/UserAuthorities';
+import { useRouter } from 'next/router';
 
 /* eslint no-useless-escape:0 import/prefer-default-export:0 */
 const reg = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(?::\d+)?|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/;
@@ -13,17 +13,9 @@ export const isAntDesignPro = (): boolean => {
   return window.location.hostname === 'web.vapetool.app';
 };
 
-export const IS_NOT_PRODUCTION = REACT_APP_ENV !== 'prod';
-export const IS_PRODUCTION = REACT_APP_ENV === 'prod';
+export const IS_NOT_PRODUCTION = process.env.NODE_ENV !== 'production';
+export const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
-// 给官方演示站点用，用于关闭真实开发环境不需要使用的特性
-export const isAntDesignProOrDev = (): boolean => {
-  const { NODE_ENV } = process.env;
-  if (NODE_ENV === 'development') {
-    return true;
-  }
-  return isAntDesignPro();
-};
 
 export const getPageQuery = () => parse(window.location.href.split('?')[1]);
 export const getPageFragment = () => parse(window.location.href.split('#')[1]);
@@ -112,6 +104,7 @@ export const isProUser = (userSubscription?: Date | null | undefined): boolean =
   userSubscription !== undefined && moment(userSubscription).isAfter();
 
 export const redirectBack = () => {
+  const router = useRouter()
   const urlParams = new URL(window.location.href);
   const params = getPageQuery();
   let { redirect } = params as { redirect: string };
@@ -129,7 +122,7 @@ export const redirectBack = () => {
   }
 
   console.log(`isAbout to redirect to ${redirect || '/'}`);
-  history.replace(redirect || '/');
+  router.replace(redirect || '/');
 };
 
 export const userPermissionToAuthority = (
@@ -159,5 +152,8 @@ export const userPermissionToAuthority = (
 
 export function storeAuthority(authority: string | string[]) {
   const proAuthority = typeof authority === 'string' ? [authority] : authority;
-  return localStorage.setItem('antd-pro-authority', JSON.stringify(proAuthority));
+  return localStorage.setItem('vapetool-authority', JSON.stringify(proAuthority));
 }
+export const canRemove = (authorId: string, currentUser?: User) =>
+  currentUser &&
+  (authorId === currentUser.uid || currentUser.permission >= UserPermission.ONLINE_MODERATOR);

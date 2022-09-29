@@ -1,6 +1,6 @@
 import { Properties, Coil } from '@vapetool/types';
 import { request } from 'umi';
-import { auth, callFirebaseFunction } from '@/utils/firebase';
+import { auth, callFirebaseFunction } from '../utils/firebase';
 
 export async function calculateForWraps(coil: Coil): Promise<Coil> {
   return callFirebaseFunction<Coil>('calculateForWraps', { coil });

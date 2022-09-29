@@ -2,13 +2,14 @@ import {
   Author,
   Comment,
   OnlineStatus,
+  User,
   Photo as FirebasePhoto,
   Post as FirebasePost,
   Link as FirebaseLink,
   Liquid as FirebaseLiquid,
   Coil as FirebaseCoil,
 } from '@vapetool/types';
-import { Item, ItemName, Photo, Liquid, Coil, Post, Link } from '@/types';
+import { Item, ItemName, Photo, Liquid, Coil, Post, Link } from '../types';
 import {
   coilsRef,
   database,
@@ -16,10 +17,9 @@ import {
   liquidsRef,
   photosRef,
   postsRef,
-  ServerValue,
-} from '@/utils/firebase';
-import { CurrentUser } from '@/app';
-import { getPhotoUrl, uploadPhoto } from '@/services/storage';
+} from '../utils/firebase';
+import { getPhotoUrl, uploadPhoto } from '../services/storage';
+import { serverTimestamp, DataSnapshot, DatabaseReference, Query, query, ref, orderByChild, equalTo, limitToLast, onValue, get, startAt, endAt, push, set, remove, runTransaction } from 'firebase/database'
 
 type FirebaseContent = 'gear' | 'post' | 'link';
 
@@ -30,7 +30,7 @@ export function subscribePhotos(
   return subscribeItems<Photo>(
     ItemName.PHOTO,
     photosRef,
-    (snap: firebase.database.DataSnapshot, photo: Photo) =>
+    (snap: DataSnapshot, photo: Photo) =>
       getPhotoUrl(snap.key || photo.uid).then((url) => {
         if (!url) throw new Error('Url is not defined');
         return {
@@ -77,19 +77,19 @@ export function subscribeLiquids(
 
 export function subscribeItems<T extends Item>(
   itemsName: ItemName,
-  ref: firebase.database.Reference,
-  transformation: ((snap: firebase.database.DataSnapshot, item: any) => Promise<T>) | null,
+  ref: DatabaseReference,
+  transformation: ((snap: DataSnapshot, item: any) => Promise<T>) | null,
   onValueChange: (items: T[]) => void,
   userId?: string,
 ): () => void {
-  let query: firebase.database.Query;
+  let q: Query;
   if (userId) {
-    query = ref.orderByChild('author/uid').equalTo(userId);
+    q = query(ref, orderByChild(ref.parent + '/author/uid'), equalTo(userId));
   } else {
-    query = ref.orderByChild('status').equalTo(OnlineStatus.ONLINE_PUBLIC).limitToLast(100);
+    q = query(ref, orderByChild('status'), equalTo(OnlineStatus.ONLINE_PUBLIC), limitToLast(100));
   }
 
-  const listener = query.on('value', async (snapshot: firebase.database.DataSnapshot) => {
+  const unsubscribe = onValue(q, async (snapshot: DataSnapshot) => {
     const promises: Promise<T>[] = new Array<Promise<T>>();
     snapshot.forEach((snap) => {
       const dbObject = snap.val();
@@ -112,21 +112,18 @@ export function subscribeItems<T extends Item>(
 
     const items = await Promise.all(promises);
     onValueChange(items);
-  });
+  })
 
-  return () => query.off('value', listener);
+  return unsubscribe;
 }
 
 // TODO determine if will be used
 export function getPhotos(from: number, to: number): Promise<FirebasePhoto[]> {
   return new Promise<FirebasePhoto[]>((resolve, reject) => {
-    photosRef
-      .startAt(from)
-      .endAt(to)
-      .once('value')
+    get(query(photosRef, startAt(from), endAt(to)))
       .then((snapshots) => {
         const firebasePhotos = new Array<FirebasePhoto>();
-        snapshots.forEach((snapshot: firebase.database.DataSnapshot) => {
+        snapshots.forEach((snapshot: DataSnapshot) => {
           const firebasePhoto = snapshot.val();
           if (firebasePhoto && Object.entries(firebasePhoto).length !== 0) {
             firebasePhotos.push(firebasePhoto);
@@ -148,23 +145,24 @@ export async function createPost(title: string, text: string, author: Author): P
     throw new Error('Title can not be empty');
   }
 
-  const newObjectUid = await postsRef.push();
-  const uid = newObjectUid.key;
-
-  if (uid == null) {
-    throw new Error('Could not push new post to db');
+  const newObjectUid = await push(postsRef);
+  if (newObjectUid?.key == null) {
+    throw new Error('Could not push new post to database');
   }
+  const uid = newObjectUid.key
+
+
   const newObject: FirebasePost = {
     uid,
     author,
     title,
     text,
     status: OnlineStatus.ONLINE_PUBLIC,
-    creationTime: ServerValue.TIMESTAMP,
-    lastTimeModified: ServerValue.TIMESTAMP,
+    creationTime: serverTimestamp,
+    lastTimeModified: serverTimestamp
   };
+  await set(newObjectUid, newObject)
 
-  await postsRef.child(uid).set(newObject);
   return uid;
 }
 
@@ -183,23 +181,24 @@ export async function createLink(title: string, url: string, author: Author): Pr
     throw new Error('Invalid url');
   }
 
-  const newObjectUid = await linksRef.push();
+  const newObjectUid = await push(linksRef);
   const uid = newObjectUid.key;
 
   if (!uid) {
     throw new Error('Could not push new link to db');
   }
-  const link: FirebaseLink = {
+  const newObject: FirebaseLink = {
     uid,
     title,
     url,
     author,
-    creationTime: ServerValue.TIMESTAMP,
-    lastTimeModified: ServerValue.TIMESTAMP,
+    creationTime: serverTimestamp,
+    lastTimeModified: serverTimestamp,
     status: OnlineStatus.ONLINE_PUBLIC,
   };
 
-  await linksRef.child(uid).set(link);
+  await set(newObjectUid, newObject)
+
   return uid;
 }
 
@@ -223,7 +222,7 @@ export async function createPhoto(
   if (!width || !height) {
     throw new Error('Width and height can not be null');
   }
-  const newObjectUid = await photosRef.push();
+  const newObjectUid = await push(photosRef);
   const uid = newObjectUid.key;
 
   if (uid == null) {
@@ -235,9 +234,9 @@ export async function createPhoto(
       author,
       description,
       status: OnlineStatus.ONLINE_PUBLIC,
-      creationTime: ServerValue.TIMESTAMP,
-      lastTimeModified: ServerValue.TIMESTAMP,
-      timestamp: ServerValue.TIMESTAMP,
+      creationTime: serverTimestamp,
+      lastTimeModified: serverTimestamp,
+      timestamp: serverTimestamp,
       width,
       height,
       reports: 0,
@@ -246,10 +245,10 @@ export async function createPhoto(
     // It must be published to storage prior to database because db will trigger
     // update listener before storage is completed
     await uploadPhoto(imageBlob, uid);
-    await photosRef.child(uid).set(newObject);
+    await set(newObjectUid, newObject);
     return uid;
   } catch (e) {
-    photosRef.child(uid).remove();
+    remove(newObjectUid);
     throw e;
   }
 }
@@ -260,13 +259,13 @@ export async function saveLiquid(
   name: string,
   description: string,
 ) {
-  const newObjectUid = await liquidsRef.push();
+  if (!author) {
+    throw new Error('Author can not be null');
+  }
+  const newObjectUid = await push(liquidsRef);
   const uid = newObjectUid.key;
   if (uid == null) {
     throw new Error('Could not push new liquid to db');
-  }
-  if (!author) {
-    throw new Error('Author can not be null');
   }
   try {
     const newObject: FirebaseLiquid = {
@@ -274,8 +273,8 @@ export async function saveLiquid(
       author,
       name,
       description,
-      creationTime: ServerValue.TIMESTAMP,
-      lastTimeModified: ServerValue.TIMESTAMP,
+      creationTime: serverTimestamp,
+      lastTimeModified: serverTimestamp,
       status: OnlineStatus.ONLINE_PUBLIC,
       baseStrength: liquid.baseStrength,
       baseRatio: liquid.baseRatio,
@@ -286,11 +285,9 @@ export async function saveLiquid(
       rating: liquid.rating,
       flavors: liquid.flavors,
     };
-    console.log('saving liquid', newObject);
-    await liquidsRef.child(uid).set(newObject);
+    await set(newObjectUid, newObject);
     return uid;
   } catch (e) {
-    liquidsRef.child(uid).remove();
     throw e;
   }
 }
@@ -300,7 +297,7 @@ export async function saveCoil(
   name: string,
   description: string,
 ) {
-  const newObjectUid = await coilsRef.push();
+  const newObjectUid = await push(coilsRef);
   const uid = newObjectUid.key;
   if (uid == null) {
     throw new Error('Could not push new coil to db');
@@ -314,8 +311,8 @@ export async function saveCoil(
       author,
       name,
       description,
-      creationTime: ServerValue.TIMESTAMP,
-      lastTimeModified: ServerValue.TIMESTAMP,
+      creationTime: serverTimestamp,
+      lastTimeModified: serverTimestamp,
       status: OnlineStatus.ONLINE_PUBLIC,
       type: coil.type,
       setup: coil.setup,
@@ -330,15 +327,10 @@ export async function saveCoil(
       cores: coil.cores,
       outers: coil.outers,
     };
-    console.log('saving coil', newObject);
-
-    // It must be published to storage prior to database because db will trigger
-    // update listener before storage is completed
-    // await uploadPhoto(imageBlob, uid);
-    await coilsRef.child(uid).set(newObject);
+    // TODO what about coil image?
+    await set(newObjectUid, newObject);
     return uid;
   } catch (e) {
-    coilsRef.child(uid).remove();
     throw e;
   }
 }
@@ -356,16 +348,12 @@ export function likeLink(itemId: string, userId: string) {
 }
 
 function like(what: FirebaseContent, id: string, userId: string) {
-  return database()
-    .ref(`${what}-likes`)
-    .child(id)
-    .child(userId)
-    .transaction((isLiked) => {
-      if (isLiked) {
-        return null;
-      }
-      return ServerValue.TIMESTAMP;
-    });
+  return runTransaction(ref(database(), `${what}-likes/${id}/${userId}`), (isLiked) => {
+    if (isLiked) {
+      return null;
+    }
+    return serverTimestamp;
+  })
 }
 
 export function reportPhoto(postId: string, userId: string): Promise<any> {
@@ -381,7 +369,7 @@ export function reportLink(linkId: string, userId: string): Promise<any> {
 }
 
 function report(what: FirebaseContent, id: string, userId: string): Promise<any> {
-  return database().ref(`${what}-reports`).child(id).child(userId).set(ServerValue.TIMESTAMP);
+  return set(ref(database(), `${what}-reports/${id}/${userId}`), serverTimestamp);
 }
 
 export function deletePhoto(postId: string): Promise<any> {
@@ -397,29 +385,29 @@ export function deleteLink(linkId: string): Promise<any> {
 }
 
 function deleteItem(what: FirebaseContent, id: string): Promise<any> {
-  return database().ref(`${what}s`).child(id).remove();
+  return remove(ref(database(), `${what}s/${id}`));
 }
 
-export function commentPhoto(id: string, content: string, { uid, name }: CurrentUser) {
-  return commentItem('gear', id, content, { uid, name } as CurrentUser);
+export function commentPhoto(id: string, content: string, user: User) {
+  return commentItem('gear', id, content, user);
 }
 
-export function commentPost(id: string, content: string, { uid, name }: CurrentUser) {
-  return commentItem('post', id, content, { uid, name } as CurrentUser);
+export function commentPost(id: string, content: string, user: User) {
+  return commentItem('post', id, content, user);
 }
 
-export function commentLink(id: string, content: string, { uid, name }: CurrentUser) {
-  return commentItem('link', id, content, { uid, name } as CurrentUser);
+export function commentLink(id: string, content: string, user: User) {
+  return commentItem('link', id, content, user);
 }
 
 function commentItem(
   what: FirebaseContent,
   id: string,
   content: string,
-  { uid, name }: CurrentUser,
+  user: User,
 ) {
-  const comment = new Comment(new Author(uid, name), content, ServerValue.TIMESTAMP);
-  return database().ref(`${what}-comments`).child(id).push().set(comment);
+  const comment = new Comment(new Author(user.uid, user.display_name), content, serverTimestamp);
+  return push(ref(database(), `${what}-comments/${id}`), comment);
 }
 
 export function deletePhotoComment(postId: string, commentId: string) {
@@ -435,5 +423,5 @@ export function deleteLinkComment(linkId: string, commentId: string) {
 }
 
 function deleteItemComment(what: FirebaseContent, id: string, commentId: string) {
-  return database().ref(`${what}-comments`).child(id).child(commentId).set(null);
+  return set(ref(database(), `${what}-comments/${id}/${commentId}`), null);
 }

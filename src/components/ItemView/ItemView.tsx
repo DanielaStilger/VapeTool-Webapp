@@ -1,25 +1,25 @@
 import React, { useEffect, useState, useRef } from 'react';
 import moment from 'moment';
-import { Input, List, Menu, Modal, message, Typography, Col, Row } from 'antd';
-import { likesRef, commentsRef } from '@/utils/firebase';
-import { CurrentUser } from '@/app';
-import { FormattedMessage, useIntl, useModel } from 'umi';
-import firebase from 'firebase';
-import { like, report, deleteItem, deleteComment, commentItem } from '@/services/operations';
-import { LikeIconText } from '@/components/LikeIconText';
-import { CommentIconText } from '@/components/CommentIconText';
-import Dropdown from 'antd/es/dropdown';
-import { UserPermission } from '@vapetool/types';
-import { Liquid, Coil, Post, Link, Photo, Comment, ItemName } from '@/types';
-import { DeleteOutlined, FlagOutlined, MoreOutlined } from '@ant-design/icons';
+import { DataSnapshot, onValue } from 'firebase/database'
+import { likesRef, commentsRef, postCommentsRef } from '../../utils/firebase';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Hidden, IconButton, Input, Menu, MenuItem, TextField, Typography } from '@mui/material'
+
+import LinesEllipsis from 'react-lines-ellipsis'
+import { Link, User as DatabaseUser } from '@vapetool/types';
+import { like, report, deleteItem, deleteComment, commentItem } from '../../services/operations';
+import { LikeIconText } from '..//LikeIconText';
+import { Liquid, Coil, Post, Link as LinkType, Photo, Comment, ItemName } from '../../types';
 import { CommentView } from './CommentView';
+import { useAuth } from '../../../context/FirebaseAuthContext';
+import snackbar from '../../utils/snackbar';
+import { MoreVertOutlined, DeleteOutlined, FlagOutlined, CommentOutlined } from '@mui/icons-material';
+import NextLink from 'next/link';
+import { canRemove } from '../../utils/utils';
 
 export interface ItemViewProps<T> {
   item: T;
   what: ItemName;
-  unselectItem: () => void;
 }
-
 export interface ItemViewState {
   likesCount?: number;
   likedByMe?: boolean;
@@ -28,24 +28,22 @@ export interface ItemViewState {
   displayComments?: Comment[];
 }
 
-export function Actions<T extends Photo | Post | Link | Coil | Liquid>({
+export function Actions<T extends Photo | Post | LinkType | Coil | Liquid>({
   what,
   item,
-  unselectItem,
 }: ItemViewProps<T>) {
-  const { initialState } = useModel('@@initialState');
-  const currentUser = initialState?.currentUser as CurrentUser;
-  const firebaseUser = initialState?.firebaseUser as firebase.User;
 
+  const { firebaseUser, dbUser } = useAuth()
+  const [isDeleteDialogOpen, setDeleteDialog] = useState(false);
+  const [showCaption, setCaption] = useState(false);
   const [draftComment, setDraftComment] = useState<string>('');
-  const { displayComments, commentsCount } = useComments(what, item, currentUser);
-  const [visibleCommentsLength, setVisibleCommentsLength] = useState(3);
+  const { displayComments, commentsCount } = useComments(
+    what,
+    item,
+    dbUser,
+  );
   const inputRef = useRef<Input>(null);
-  const { likedByMe, likesCount } = useLikes(what, item, currentUser);
-  const intl = useIntl();
-  useEffect(() => {
-    moment.locale(intl.locale);
-  }, []);
+  const { likedByMe, likesCount } = useLikes(what, item, dbUser);
 
   const onChangeCommentText = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDraftComment(e.target.value);
@@ -53,15 +51,15 @@ export function Actions<T extends Photo | Post | Link | Coil | Liquid>({
 
   function usersOnly<RightFunc>(fn: RightFunc): RightFunc | (() => void) {
     if (firebaseUser.isAnonymous) {
-      return () => message.error('You need to be logged in');
+      return () => snackbar.error('You need to be logged in');
     }
     return fn;
   }
 
-  const onLikeClick = usersOnly(() => like(what, item.uid, currentUser.uid));
-  const onReportClick = usersOnly(() => report(what, item.uid, currentUser.uid));
+  const onLikeClick = usersOnly(() => like(what, item.uid, dbUser.uid));
+  const onReportClick = usersOnly(() => report(what, item.uid, dbUser.uid));
   const submitComment = usersOnly(() => {
-    commentItem(what, draftComment, item.uid, currentUser).then(() => setDraftComment(''));
+    commentItem(what, draftComment, item.uid, dbUser).then(() => setDraftComment(''));
   });
 
   const onReplyComment = (replyingComment: Comment) => {
@@ -78,167 +76,265 @@ export function Actions<T extends Photo | Post | Link | Coil | Liquid>({
   const onCommentClick = () => inputRef.current?.focus();
 
   const postComment = () => {
-    commentItem(what, draftComment, item.uid, currentUser);
+    commentItem(what, draftComment, item.uid, dbUser);
     setDraftComment('');
   };
 
   const onDeleteClick = () => {
-    Modal.confirm({
-      title: intl.formatMessage({
-        id: 'user.modalTitles.deletePost',
-        defaultMessage: 'Are you sure to delete this post?',
-      }),
-      okText: intl.formatMessage({ id: 'misc.actions.delete', defaultMessage: 'Delete' }),
-      okType: 'danger',
-      cancelText: intl.formatMessage({ id: 'misc.actions.cancel', defaultMessage: 'Cancel' }),
-      onOk() {
-        deleteItem(what, item.uid);
-        unselectItem();
-      },
-    });
+    setDeleteDialog(true)
   };
 
   const onDeleteCommentClick = (comment: Comment) => {
-    Modal.confirm({
-      title: intl.formatMessage({
-        id: 'user.modalTitles.deleteComment',
-        defaultMessage: 'Are you sure to delete this comment?',
-      }),
-      okText: intl.formatMessage({ id: 'misc.actions.delete', defaultMessage: 'Delete' }),
-      okType: 'danger',
-      cancelText: intl.formatMessage({ id: 'misc.actions.cancel', defaultMessage: 'Cancel' }),
-      onOk() {
-        deleteComment(what, comment.uid, item.uid);
-        unselectItem();
-      },
-    });
+    // TODO show confirmation modal
   };
 
-  const optionsMenu = (
-    <Menu>
-      <Menu.Item
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const showMenuDialog = Boolean(anchorEl);
+  const setOptionsDialog = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+
+  return (
+    <>
+      <ConfirmDialog title={"Are you sure to delete this post?"} okText={"Delete"} onOkClick={() => deleteItem(what, item.uid)} open={isDeleteDialogOpen} onCancel={() => setDeleteDialog(false)} />
+      <OptionsMenu
+        anchor={anchorEl}
+        handleClose={() => setAnchorEl(null)}
+        onReportClick={onReportClick}
+        onDeleteClick={onDeleteClick}
+        item={item}
+        currentUser={dbUser} />
+
+      <div>
+        <div>
+
+          <LikeIconText
+            onClick={onLikeClick}
+            text={`${likesCount || 0}`}
+            likedByMe={likedByMe}
+          />
+          <IconButton onClick={onCommentClick}>
+
+            <CommentOutlined />
+          </IconButton>
+          <span>{moment(item.creationTime).fromNow()}</span>,
+
+
+          <IconButton
+            onClick={setOptionsDialog}
+            aria-label="more"
+            id="long-button"
+            aria-controls={showMenuDialog ? 'long-menu' : undefined}
+            aria-expanded={showMenuDialog ? 'true' : undefined}
+            aria-haspopup="true">
+            <MoreVertOutlined />
+          </IconButton>
+        </div>
+        <Typography variant="subtitle2">
+          <span>{likesCount === 1 ? "1 like" : `${likesCount} likes`}</span>
+        </Typography>
+
+        {item.$type === ItemName.PHOTO && (
+          <div>
+            <NextLink href={`/user/${item.author.uid}`}>
+              <Typography
+                variant="subtitle2"
+                component="span"
+              >
+                {item.author.displayName}
+              </Typography>
+            </NextLink>
+            {showCaption ? (
+              <Typography
+                variant="body2"
+                component="span"
+                dangerouslySetInnerHTML={{ __html: (item as Photo).description }}
+              />
+            ) : (
+              <div >
+                <LinesEllipsis
+                  text={(item as Photo).description}
+                  maxLine="1"
+                  ellipsis="..."
+                  basedOn="letters"
+                  trimRight
+                />
+                <Button
+                  onClick={() => setCaption(true)}
+                >
+                  more
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+        {/* End of photo caption */}
+        <NextLink href={`/post/${item.uid}`}>
+          <Typography
+            variant="body2"
+            component="div"
+          >
+            View all {displayComments.length} comments
+          </Typography>
+        </NextLink>
+        {displayComments.map(comment => (
+          <CommentView
+            key={comment.uid}
+            user={dbUser}
+            comment={comment}
+            onReply={onReplyComment}
+            onDelete={onDeleteCommentClick}
+          />
+        ))}
+        <Typography color="textSecondary" 
+        >
+          5 DAYS AGO
+        </Typography>
+      </div>
+      <Hidden xsDown>
+        <Divider />
+        <div>
+          <TextField
+            fullWidth
+            value={draftComment}
+            placeholder="Add a comment..."
+            multiline
+            maxRows={2}
+            rows={1}
+            onChange={event => setDraftComment(event.target.value)}
+          />
+          <Button
+            color="primary"
+            disabled={!draftComment.trim()}
+            onClick={postComment}
+          >
+            Post
+          </Button>
+        </div>
+      </Hidden>
+    </>
+  );
+}
+const ConfirmDialog = ({ open, okText, title, description, onOk, onCancel }: any) => {
+  return (
+    <Dialog
+      open={open}
+      onClose={onCancel}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title">
+        {title}
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          {description}
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onCancel}>Cancel</Button>
+        <Button onClick={onOk} autoFocus>
+          {okText}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
+const OptionsMenu = ({ anchor, handleClose, onReportClick, onDeleteClick, currentUser, item }: { anchor: any, handleClose: any, onReportClick: any, onDeleteClick: any, currentUser: User, item: Item }) => {
+  return (
+    <Menu
+      id="simple-menu"
+      anchorEl={anchor}
+      keepMounted
+      open={Boolean(anchor)}
+      onClose={handleClose}
+    >
+      <MenuItem
         key="report"
         onClick={onReportClick}
         disabled={!currentUser || currentUser.uid === item.author.uid}
       >
         <FlagOutlined />
-        <FormattedMessage id="user.actions.report" defaultMessage="Report" />
-      </Menu.Item>
-
-      <Menu.Item
+        Report
+      </MenuItem>
+      <MenuItem
         key="delete"
         onClick={onDeleteClick}
-        disabled={
-          !currentUser ||
-          (currentUser.uid !== item.author.uid &&
-            currentUser.permission < UserPermission.ONLINE_MODERATOR)
-        }
+        disabled={!canRemove(item.author.uid, currentUser)}
       >
         <DeleteOutlined />
-        <FormattedMessage id="misc.actions.delete" defaultMessage="Delete" />
-      </Menu.Item>
+        Delete
+      </MenuItem>
     </Menu>
-  );
-  return (
-    <>
-      <List.Item
-        style={{ maxWidth: 614 }}
-        actions={[
-          <LikeIconText
-            onClick={onLikeClick}
-            text={`${likesCount || 0}`}
-            key="list-vertical-like-o"
-            likedByMe={likedByMe}
-          />,
-          <CommentIconText
-            onClick={onCommentClick}
-            text={`${commentsCount || 0}`}
-            key="list-vertical-message"
-          />,
-          <span>{moment(item.creationTime).fromNow()}</span>,
-          <Dropdown overlay={optionsMenu}>
-            <MoreOutlined />
-          </Dropdown>,
-        ]}
-      />
-      {commentsCount !== undefined && commentsCount - visibleCommentsLength > 0 && (
-        <Col style={{ textAlign: 'center' }}>
-          <Typography.Link onClick={() => setVisibleCommentsLength(visibleCommentsLength + 3)}>
-            Show more
-          </Typography.Link>
-        </Col>
-      )}
-      {displayComments && displayComments.length > 0 && (
-        <List<Comment>
-          size="small"
-          rowKey={(comment) => comment.uid}
-          dataSource={displayComments.slice(
-            Math.max(displayComments.length - visibleCommentsLength, 0),
-          )}
-          renderItem={(comment) => (
-            <CommentView
-              user={currentUser}
-              comment={comment}
-              onReply={onReplyComment}
-              onDelete={onDeleteCommentClick}
-            />
-          )}
-        />
-      )}
-      <Input
-        ref={inputRef}
-        onPressEnter={postComment}
-        value={draftComment}
-        onChange={onChangeCommentText}
-        placeholder={intl.formatMessage({
-          id: 'user.addComment',
-          defaultMessage: 'Add new comment...',
-        })}
-        suffix={
-          <a onClick={submitComment}>
-            <FormattedMessage id="user.actions.post" defaultMessage="Post" />
-          </a>
-        }
-      />
-    </>
   );
 }
 
-function useLikes(what: ItemName, item: Photo | Post | Link | Coil | Liquid, user: CurrentUser) {
+function Comment({ postComment }: any) {
+  const [content, setContent] = React.useState("");
+
+  return (
+    <div>
+      <TextField
+        fullWidth
+        value={content}
+        placeholder="Add a comment..."
+        multiline
+        maxRows={2}
+        rows={1}
+        onChange={event => setContent(event.target.value)}
+      />
+      <Button
+        color="primary"
+        disabled={!content.trim()}
+        onClick={() => postComment(content)}
+      >
+        Post
+      </Button>
+    </div>
+  );
+}
+
+
+function useLikes(what: ItemName, item: Photo | Post | Link | Coil | Liquid, user: DatabaseUser) {
   const [likesCount, setLikesCount] = useState<number | undefined>();
   const [likedByMe, setLikedByMe] = useState<boolean | undefined>(false);
 
   useEffect(() => {
-    const ref = likesRef(what).child(item.uid);
-    const listener = ref.on('value', (snapshot: firebase.database.DataSnapshot) => {
-      setLikesCount(snapshot.numChildren());
-      snapshot.forEach((snap) => {
+    const ref = likesRef(what, item.uid);
+    return onValue(ref, (snapshot: DataSnapshot) => {
+      setLikesCount(snapshot.size);
+      snapshot.forEach((snap: DataSnapshot) => {
         if (user !== undefined && snap.key === user.uid) {
           setLikedByMe(true);
         }
       });
-    });
-    return () => ref.off('value', listener);
+    })
   }, [item.uid]);
 
   return { likedByMe, likesCount };
 }
 
-function useComments(what: ItemName, item: Photo | Post | Link | Coil | Liquid, user: CurrentUser) {
+function useComments(
+  what: ItemName,
+  item: Photo | Post | Link | Coil | Liquid,
+  user: DatabaseUser,
+) {
   const [commentsCount, setCommentsCount] = useState<number | undefined>();
   const [displayComments, setDisplayComments] = useState<Comment[]>([]);
 
   useEffect(() => {
-    const ref = commentsRef(what).child(item.uid);
-    const listener = ref.on('value', (snapshot: firebase.database.DataSnapshot) => {
-      setCommentsCount(snapshot.numChildren());
+    const ref = commentsRef(what, item.uid);
+    return onValue(ref, (snapshot: DataSnapshot) => {
+      setCommentsCount(snapshot.size);
       const comments: Comment[] = [];
-      snapshot.forEach((snap) => {
+      snapshot.forEach((snap: DataSnapshot) => {
         comments.push({ ...snap.val(), uid: snap.key });
       });
-      setDisplayComments(comments);
-    });
-    return () => ref.off('value', listener);
+      setDisplayComments(comments.slice(Math.max(comments.length, 0)));
+    })
   }, [item.uid]);
 
   return { commentsCount, displayComments };

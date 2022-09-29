@@ -1,8 +1,8 @@
-import Photo from '@/types/Photo';
-import Post from '@/types/Post';
-import Link from '@/types/Link';
-import Coil from '@/types/Coil';
-import Liquid from '@/types/Liquid';
+import Photo from './Photo';
+import Post from './Post';
+import Link from './Link';
+import Coil from './Coil';
+import Liquid from './Liquid';
 
 export type Item = Photo | Post | Link | Coil | Liquid;
 
