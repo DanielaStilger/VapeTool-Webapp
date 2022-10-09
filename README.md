@@ -1,57 +1,40 @@
-# Vape Tool Webapp
+# Vape Tool Web
 
-![Demo](docs/cloud.jpg) This project is initialized with [Ant Design Pro](https://pro.ant.design). Follow is the quick guide for how to use.
+![docs/cloud.jpg]
 
-## Environment Prepare
+https://vapetool.app
 
-Install `node_modules`:
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-```bash
-npm install
-```
+## Getting Started
 
-or
+First, run the development server:
 
 ```bash
-yarn
+npm run dev
+# or
+yarn dev
 ```
 
-## Provided Scripts
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-Ant Design Pro provides some useful script to help you quick start and build with web project, code style check and test.
+You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
 
-Scripts provided in `package.json`. It's safe to modify or add additional script:
+[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
 
-### Start project
+The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
-```bash
-npm start
-```
+## Learn More
 
-### Build project
+To learn more about Next.js, take a look at the following resources:
 
-```bash
-npm run build
-```
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-### Check code style
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-```bash
-npm run lint
-```
+## Deploy on Vercel
 
-You can also use script to auto fix some lint error:
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-```bash
-npm run lint:fix
-```
-
-### Test code
-
-```bash
-npm test
-```
-
-## More
-
-You can view full document on our [official website](https://pro.ant.design). And welcome any feedback in our [github](https://github.com/ant-design/ant-design-pro).
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
