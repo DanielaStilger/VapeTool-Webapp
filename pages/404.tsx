@@ -1,18 +1,11 @@
-import { Button, Result } from 'antd';
+import { Typography, Stack } from '@mui/material';
 import React from 'react';
-import { history } from 'umi';
 
 const NoFoundPage: React.FC<{}> = () => (
-  <Result
-    status="404"
-    title="404"
-    subTitle="Sorry, the page you visited does not exist."
-    extra={
-      <Button type="primary" onClick={() => history.push('/')}>
-        Back Home
-      </Button>
-    }
-  />
+  <Stack>
+  <Typography variant="h1" component="h1">404</Typography>
+  <Typography variant="body1">Sorry, the page you visited does not exist.</Typography>
+  </Stack>
 );
 
 export default NoFoundPage;

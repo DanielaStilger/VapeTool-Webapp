@@ -2,15 +2,14 @@ import * as React from 'react';
 import Head from 'next/head';
 import { SnackbarProvider } from 'notistack';
 import { AppProps } from 'next/app';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider, CssBaseline } from '@mui/material';
+import NavigationDrawer from '../src/components/NavigationDrawer';
 import { CacheProvider, EmotionCache } from '@emotion/react';
 import theme from '../src/theme';
 import createEmotionCache from '../src/createEmotionCache';
 import { AuthUserProvider, useAuth } from '../context/FirebaseAuthContext';
 import FirebaseAuth from './login';
 import UserWizard from './wizard';
-import { CircularProgress } from '@mui/material';
 import WaitingForServer from '../src/components/WaitingForServer';
 
 // Client-side cache, shared for the whole session of the user in the browser.
@@ -47,7 +46,9 @@ export default function MyApp(props: MyAppProps) {
           <SnackbarProvider>
             <RequireLoggedInUser>
               <RequireCreatedUserInDatabase>
-                <Component {...pageProps} />
+                <NavigationDrawer>
+                  <Component {...pageProps} />
+                </NavigationDrawer>
               </RequireCreatedUserInDatabase>
             </RequireLoggedInUser>
           </SnackbarProvider>
