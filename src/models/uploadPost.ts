@@ -3,7 +3,7 @@ import { message } from 'antd';
 import { Author } from '@vapetool/types';
 import { createPost } from '@/services/items';
 import { useState } from 'react';
-import { CurrentUser } from '@/app';
+import { CurrentUser } from '@/app-umi';
 
 export default function UploadPost() {
   const [title, setTitle] = useState<string>('');

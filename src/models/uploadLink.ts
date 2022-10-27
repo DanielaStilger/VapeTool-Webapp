@@ -1,5 +1,5 @@
 import { history } from 'umi';
-import { CurrentUser } from '@/app';
+import { CurrentUser } from '@/app-umi';
 import { useState } from 'react';
 import { message } from 'antd';
 import { createLink } from '@/services/items';

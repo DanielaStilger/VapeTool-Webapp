@@ -1,6 +1,4 @@
-import { IRoute } from 'umi';
-
-const routes: IRoute[] = [
+const routes = [
   {
     path: '/',
     redirect: '/welcome',

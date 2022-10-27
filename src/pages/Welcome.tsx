@@ -2,7 +2,7 @@ import React from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import { Card, Typography } from 'antd';
 
-export default (): React.ReactNode => (
+export default () => (
   <PageContainer>
     <Card>
       <Typography.Title level={4}>

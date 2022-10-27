@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import moment from 'moment';
 import { Input, List, Menu, Modal, message, Typography, Col, Row } from 'antd';
 import { likesRef, commentsRef } from '@/utils/firebase';
-import { CurrentUser } from '@/app';
+import { CurrentUser } from '@/app-umi';
 import { FormattedMessage, useIntl, useModel } from 'umi';
 import firebase from 'firebase';
 import { like, report, deleteItem, deleteComment, commentItem } from '@/services/operations';

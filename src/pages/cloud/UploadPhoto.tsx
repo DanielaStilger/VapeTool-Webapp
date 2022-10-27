@@ -3,7 +3,7 @@ import { Button, Card, Input } from 'antd';
 import { useIntl, FormattedMessage, useModel } from 'umi';
 import UploadAndCropImage from '@/components/UploadAndCropImage';
 import { CaretLeftOutlined, ShareAltOutlined } from '@ant-design/icons';
-import { CurrentUser } from '@/app';
+import { CurrentUser } from '@/app-umi';
 
 const UploadPhoto: React.FC = () => {
   const { description, setDescription, submitPhoto, croppedImage, setCroppedImage } = useModel(

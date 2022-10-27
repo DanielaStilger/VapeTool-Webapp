@@ -18,7 +18,7 @@ import {
   postsRef,
   ServerValue,
 } from '@/utils/firebase';
-import { CurrentUser } from '@/app';
+import { CurrentUser } from '@/app-umi';
 import { getPhotoUrl, uploadPhoto } from '@/services/storage';
 
 type FirebaseContent = 'gear' | 'post' | 'link';

@@ -2,7 +2,7 @@ import { Button, Dropdown, Menu, Typography } from 'antd';
 import * as React from 'react';
 import FirebaseImage from '@/components/StorageAvatar';
 import { Comment } from '@/types';
-import { CurrentUser } from '@/app';
+import { CurrentUser } from '@/app-umi';
 import { ImageType } from '@/services/storage';
 import { getUserProfileUrl } from '@/places/user.places';
 import { Link, FormattedMessage, useModel } from 'umi';

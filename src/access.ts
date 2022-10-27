@@ -1,6 +1,6 @@
 import { UserPermission } from '@vapetool/types';
 import firebase from 'firebase';
-import { CurrentUser } from './app';
+import { CurrentUser } from './app-umi';
 
 export const canRemove = (authorId: string, currentUser?: CurrentUser) =>
   currentUser &&

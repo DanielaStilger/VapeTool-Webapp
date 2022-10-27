@@ -9,7 +9,7 @@ import { Author } from '@vapetool/types';
 import SaveModal from '@/components/SaveModal';
 import { saveLiquid } from '@/services/items';
 import { LiquidModelState } from '@/models/liquid';
-import { CurrentUser } from '@/app';
+import { CurrentUser } from '@/app-umi';
 import { PageContainer } from '@ant-design/pro-layout';
 import Banner from '@/components/Banner';
 import styles from './LiquidBlender.less';

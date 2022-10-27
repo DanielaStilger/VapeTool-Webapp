@@ -3,7 +3,7 @@ import { Editor, EditorState } from 'draft-js';
 import { Button, Card, Input } from 'antd';
 import { ShareAltOutlined } from '@ant-design/icons/lib';
 import { useIntl, FormattedMessage, useModel } from 'umi';
-import { CurrentUser } from '@/app';
+import { CurrentUser } from '@/app-umi';
 
 const UploadLink: React.FC = () => {
   const [editorState, setEditorState] = React.useState(EditorState.createEmpty());

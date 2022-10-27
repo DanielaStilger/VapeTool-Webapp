@@ -1,4 +1,4 @@
-import { CurrentUser } from '@/app';
+import { CurrentUser } from '@/app-umi';
 import { UserProfile } from '@/models/profile';
 import React, { useEffect, useState } from 'react';
 import FirebaseImage from '@/components/StorageAvatar';

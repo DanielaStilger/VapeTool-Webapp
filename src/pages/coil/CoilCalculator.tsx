@@ -8,7 +8,7 @@ import PropertyItem from '@/components/PropertyItem';
 import { CalculatorOutlined, LockFilled, UnlockOutlined, SaveOutlined } from '@ant-design/icons';
 import { isProUser } from '@/utils/utils';
 import CoilHelper from '@/components/CoilHelper';
-import { CurrentUser } from '@/app';
+import { CurrentUser } from '@/app-umi';
 import { saveCoil } from '@/services/items';
 import SaveModal from '@/components/SaveModal';
 import { sendRequest } from '@/services/coil';

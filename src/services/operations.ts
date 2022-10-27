@@ -17,7 +17,7 @@ import {
   deleteLinkComment,
 } from '@/services/items';
 import { ItemName } from '@/types';
-import { CurrentUser } from '@/app';
+import { CurrentUser } from '@/app-umi';
 
 export async function like(what: ItemName, itemId: string, userId: string) {
   try {

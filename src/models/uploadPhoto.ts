@@ -4,7 +4,7 @@ import { Author } from '@vapetool/types';
 import { message } from 'antd';
 import { createPhoto } from '@/services/items';
 import { useState } from 'react';
-import { CurrentUser } from '@/app';
+import { CurrentUser } from '@/app-umi';
 
 export const UPLOAD_PHOTO = 'uploadPhoto';
 export const SET_SRC = 'setSrc';
