@@ -1,6 +1,7 @@
 import { createContext, useContext } from 'react'
 import useFirebaseAuth, { FirebaseAuth } from '../src/useFirebaseAuth';
 
+// https://usehooks.com/useAuth/
 const authUserContext = createContext<FirebaseAuth>({
     firebaseUser: null,
     dbUser: null,

@@ -1,10 +1,19 @@
-import { useSnackbar } from "notistack";
+import { SnackbarAction, useSnackbar } from "notistack";
 
-function success(message: string) {
-  useSnackbar().enqueueSnackbar(message, { variant: 'success' });
+function success(message: string, action?: SnackbarAction) {
+  useSnackbar().enqueueSnackbar(message, { variant: 'success', action });
 }
 
-function error(message: string) {
-  useSnackbar().enqueueSnackbar(message, { variant: 'error' });
+function error(message: string, action?: SnackbarAction) {
+  useSnackbar().enqueueSnackbar(message, { variant: 'error', action });
 }
-export default {success, error}
+
+function warning(message: string, action?: SnackbarAction) {
+  useSnackbar().enqueueSnackbar(message, { variant: 'warning', action });
+}
+
+function info(message: string, action?: SnackbarAction) {
+  useSnackbar().enqueueSnackbar(message, { variant: 'info', action });
+}
+
+export default {success, error, warning, info};

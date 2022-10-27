@@ -1,13 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Actions } from './ItemView';
 import UserCard from './UserCard';
 import { Photo, ItemName } from '../../types';
+import { observePhoto } from '../../services/items';
 
 export default function PhotoView({
+  uid,
   item,
 }: {
+  uid: string;
   item: Photo;
 }) {
+  // TODO: consider removing observer on photo
+  const [photo, setPhoto] = React.useState<Photo | undefined>(item);
+
+  useEffect(() => { observePhoto(uid, setPhoto) }, [uid]);
+
   return (
     <article
       style={{ marginBottom: 30 }}

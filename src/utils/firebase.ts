@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getDatabase, Database, ref } from 'firebase/database';
+import { getDatabase, Database, ref, child } from 'firebase/database';
 import { getStorage, FirebaseStorage, ref as storageRef } from 'firebase/storage';
 import { getAuth, Auth, onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import { getFunctions, httpsCallable } from 'firebase/functions';
@@ -67,18 +67,19 @@ export const batteriesRef = ref(prodDb, 'batteries');
 export const postsRef = dbRef('posts');
 export const linksRef = dbRef('links');
 export const photosRef = dbRef('gears');
+export const photoRef = (uid: string) => child(dbRef('gears'), uid);
 export const usersRef = dbRef('users');
-export const userRef = (uid: string) => dbRef('users/' + uid);
+export const userRef = (uid: string) => child(dbRef('users/'), uid);
 export const coilsRef = dbRef('coils');
 export const liquidsRef = dbRef('liquids');
 
-export const photoLikesRef = (uid: string) => dbRef('gear-likes/' + uid);
-export const postLikesRef = (uid: string) => dbRef('post-likes/' + uid);
-export const linkLikesRef = (uid: string) => dbRef('link-likes/' + uid);
-export const coilLikesRef = (uid: string) => dbRef('coil-likes/' + uid);
-export const liquidLikesRef = (uid: string) => dbRef('liquid-likes/' + uid);
+export const photoLikesRef = (uid: string) => child(dbRef('gear-likes/'), uid);
+export const postLikesRef = (uid: string) => child(dbRef('post-likes/'), uid);
+export const linkLikesRef = (uid: string) => child(dbRef('link-likes/'), uid);
+export const coilLikesRef = (uid: string) => child(dbRef('coil-likes/'), uid);
+export const liquidLikesRef = (uid: string) => child(dbRef('liquid-likes/'), uid);
 
-export const likesRef = (item: ItemName, uid: string) => {
+export const likesRef = (item: ItemName) => (uid: string) => {
   switch (item) {
     case ItemName.PHOTO:
       return photoLikesRef(uid);
@@ -95,11 +96,11 @@ export const likesRef = (item: ItemName, uid: string) => {
   }
 };
 
-export const photoCommentsRef = (uid: string) => dbRef('gear-comments/' + uid);
-export const postCommentsRef = (uid: string) => dbRef('post-comments/' + uid);
-export const linkCommentsRef = (uid: string) => dbRef('link-comments/' + uid);
-export const coilCommentsRef = (uid: string) => dbRef('coil-comments/' + uid);
-export const liquidCommentsRef = (uid: string) => dbRef('liquid-comments/' + uid);
+export const photoCommentsRef = (uid: string) => child(dbRef('gear-comments/'), uid);
+export const postCommentsRef = (uid: string) => child(dbRef('post-comments/'), uid);
+export const linkCommentsRef = (uid: string) => child(dbRef('link-comments/'), uid);
+export const coilCommentsRef = (uid: string) => child(dbRef('coil-comments/'), uid);
+export const liquidCommentsRef = (uid: string) => child(dbRef('liquid-comments/'), uid);
 
 export const commentsRef = (item: ItemName, uid: string) => {
   switch (item) {

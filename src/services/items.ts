@@ -15,13 +15,20 @@ import {
   database,
   linksRef,
   liquidsRef,
+  photoRef,
   photosRef,
   postsRef,
 } from '../utils/firebase';
 import { getPhotoUrl, uploadPhoto } from '../services/storage';
-import { serverTimestamp, DataSnapshot, DatabaseReference, Query, query, ref, orderByChild, equalTo, limitToLast, onValue, get, startAt, endAt, push, set, remove, runTransaction } from 'firebase/database'
+import { Unsubscribe, serverTimestamp, DataSnapshot, DatabaseReference, Query, query, ref, orderByChild, equalTo, limitToLast, onValue, get, startAt, endAt, push, set, remove, runTransaction } from 'firebase/database'
 
 type FirebaseContent = 'gear' | 'post' | 'link';
+
+export function observePhoto(uid: string, listener: (photo: Photo | undefined) => void): Unsubscribe {
+  return onValue(photoRef(uid), (snapshot: DataSnapshot) =>{
+    return snapshot.exists() ? listener(snapshot.val()) : listener(undefined)
+  });
+}
 
 export function subscribePhotos(
   onValueChange: (items: Photo[]) => void,
