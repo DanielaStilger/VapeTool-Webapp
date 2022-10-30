@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
-import { Button } from 'antd';
-import { Routes, Route, useLocation, useNavigate, useParams, useNavigationType } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import './App.css';
 import Welcome from './pages/Welcome';
 import Cloud from './pages/cloud/Cloud';

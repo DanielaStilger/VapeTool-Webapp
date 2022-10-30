@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Carousel, Modal, Button } from 'antd';
 import ImageWebp from '../ImageWebp';
 import innerDiameterJpg from '../../assets/innerCoilDiameter.jpg';
@@ -7,8 +7,10 @@ import coilWrapsJpg from '../../assets/coilWraps.jpg';
 import innerDiameterWebp from '../../assets/innerCoilDiameter.webp';
 import coilLengsLengthWebp from '../../assets/coilLegsLength.webp';
 import coilWrapsWebp from '../../assets/coilWraps.webp';
+import { CarouselRef } from 'antd/lib/carousel';
 
 export default function CoilHelper(props: any) {
+  const [slider, setSlider] = useState<CarouselRef|null>();
   return (
     <Modal
       style={{ top: 20 }}
@@ -19,28 +21,20 @@ export default function CoilHelper(props: any) {
         <Button
           key="back"
           type="primary"
-          onClick={() =>
-            props.slider
-              ? props.slider.prev()
-              : console.error('Please restart page, something went wrong')
-          }
+          onClick={slider?.prev}
         >
           Previous
         </Button>,
         <Button
           key="next"
           type="primary"
-          onClick={() =>
-            props.slider
-              ? props.slider.next()
-              : console.error('Please restart page, something went wrong')
-          }
+          onClick={slider?.next}
         >
           Next
         </Button>,
       ]}
-      // onOk={this.handleOk}
-      // onCancel={this.handleCancel}
+    // onOk={this.handleOk}
+    // onCancel={this.handleCancel}
     >
       <Carousel
         dots={false}
@@ -49,7 +43,7 @@ export default function CoilHelper(props: any) {
         draggable
         swipeToSlide
         touchMove
-        ref={(c) => props.setSlider(c)}
+        ref={setSlider}
       >
         <div>
           <div style={{ height: '14em' }}>

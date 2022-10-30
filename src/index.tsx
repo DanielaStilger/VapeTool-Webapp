@@ -3,7 +3,7 @@ import NavigationDrawer from './components/NavigationDrawer';
 import { AuthUserProvider, useAuth } from '@/context/FirebaseAuthContext';
 import FirebaseAuth from './pages/login';
 import UserWizard from '@/pages/user/wizard';
-import App from './App';
+import App from './app';
 import ReactDOM from 'react-dom';
 import { PageLoading } from '@ant-design/pro-layout';
 
@@ -26,13 +26,13 @@ const RequireCreatedUserInDatabase = ({ children }) => {
 
 ReactDOM.render(
     <AuthUserProvider>
-                    <RequireLoggedInUser>
-                        <RequireCreatedUserInDatabase>
-                            <NavigationDrawer>
-                                <App />
-                            </NavigationDrawer>
-                        </RequireCreatedUserInDatabase>
-                    </RequireLoggedInUser>
+        <RequireLoggedInUser>
+            <RequireCreatedUserInDatabase>
+                <NavigationDrawer>
+                    <App />
+                </NavigationDrawer>
+            </RequireCreatedUserInDatabase>
+        </RequireLoggedInUser>
     </AuthUserProvider>
     ,
     document.getElementById("root")

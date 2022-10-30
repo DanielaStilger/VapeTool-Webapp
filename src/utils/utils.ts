@@ -1,8 +1,8 @@
 import { parse } from 'querystring';
 import moment from 'moment';
-import { history } from 'umi';
 import { UserPermission } from '@vapetool/types';
 import { UserAuthorities } from '@/types/UserAuthorities';
+import useRouter from './useRouter';
 
 /* eslint no-useless-escape:0 import/prefer-default-export:0 */
 const reg = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(?::\d+)?|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/;
@@ -129,7 +129,7 @@ export const redirectBack = () => {
   }
 
   console.log(`isAbout to redirect to ${redirect || '/'}`);
-  history.replace(redirect || '/');
+  useRouter().replace(redirect || '/');
 };
 
 export const userPermissionToAuthority = (

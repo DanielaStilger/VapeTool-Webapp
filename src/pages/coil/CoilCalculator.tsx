@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Card, Col, InputNumber, Row, Select, Typography, Carousel, message } from 'antd';
+import { Button, Card, Col, InputNumber, Row, Select, Typography, message } from 'antd';
 import { FormattedMessage, useModel } from 'umi';
 import { Coil, Properties, Wire, Author } from '@vapetool/types';
 import { Coil as CoilType } from '@/types';
@@ -62,7 +62,6 @@ const CoilCalculator: React.FC<CoilCalculatorProps> = () => {
 
   const [lastEdit, setLastEdit] = useState<Field>(Field.WRAPS);
   const [helpModalVisibile, setHelpModalVisible] = useState(false);
-  const [slider, setSlider] = useState<Carousel>();
   const [saveModalVisible, setSaveModalVisible] = useState(false);
   const [calculateBtnLoading, setCalculateBtnLoading] = useState(false);
 
@@ -272,10 +271,8 @@ const CoilCalculator: React.FC<CoilCalculatorProps> = () => {
         </div>
         <Col xs={24} sm={20} md={20}>
           <CoilHelper
-            setSlider={setSlider}
             helpModalVisible={helpModalVisibile}
             setHelpModalVisible={setHelpModalVisible}
-            slider={slider}
           />
           <Row style={{}} justify="center">
             <Col xs={{ span: 24, order: 2 }} xl={{ span: 8, order: 1 }}>
