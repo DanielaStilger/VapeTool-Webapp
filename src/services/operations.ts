@@ -35,7 +35,9 @@ export async function like(what: ItemName, itemId: string, userId: string) {
         throw Error('unsupported operation');
     }
   } catch (e) {
-    notification.error({ message: e.message });
+    if (e instanceof Error) {
+      notification.error({ message: e.message });
+    }
   }
 }
 
@@ -56,7 +58,9 @@ export async function deleteItem(what: ItemName, itemId: string) {
     }
     message.success(`Successfully deleted ${what}`);
   } catch (e) {
-    notification.error({ message: e.message });
+    if (e instanceof Error) {
+      notification.error({ message: e.message });
+    }
   }
 }
 
@@ -77,7 +81,9 @@ export async function report(what: ItemName, itemId: string, userId: string) {
     }
     message.success(`Successfully reported ${what}`);
   } catch (e) {
-    notification.error({ message: e.message });
+    if (e instanceof Error) {
+      notification.error({ message: e.message });
+    }
   }
 }
 export async function commentItem(what: ItemName, body: string, itemId: string, user: CurrentUser) {
@@ -97,8 +103,10 @@ export async function commentItem(what: ItemName, body: string, itemId: string, 
         throw Error('unsupported operation');
     }
   } catch (e) {
-    console.log('Errors occurs here', e);
-    notification.error({ message: e.message });
+    if (e instanceof Error) {
+      console.log('Errors occurs here', e);
+      notification.error({ message: e.message });
+    }
   }
 }
 
@@ -119,6 +127,8 @@ export async function deleteComment(what: ItemName, itemId: string, commentId: s
     }
     message.success('Successfully deleted comment');
   } catch (e) {
-    notification.error({ message: e.message });
+    if (e instanceof Error) {
+      notification.error({ message: e.message });
+    }
   }
 }
