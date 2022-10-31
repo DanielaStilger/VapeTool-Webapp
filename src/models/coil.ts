@@ -2,7 +2,7 @@ import { Coil, Properties, Wire, wireGenerator, WireStyle } from '@vapetool/type
 import { message } from 'antd';
 import * as server from '@/services/coil';
 import { useState } from 'react';
-import { verifyCurrentUser } from '@/services';
+import { isLoggedInOrShowNotification } from '@/services/user';
 
 export interface Path {
   style: WireStyle;
@@ -68,20 +68,26 @@ export default () => {
   };
 
   const calculateProperties = async (coil: Coil) => {
-    if (!verifyCurrentUser()) return;
+    if (!isLoggedInOrShowNotification()) return;
     try {
-      const response = await server.calculateProperties(coil, baseVoltage);
-      console.log(response);
-      setProperties(response);
+      const response = await server.calculateProperties(currentCoil, baseVoltage);
+      if (response instanceof Response) {
+        throw new Error(response.statusText);
+      } else if (response instanceof Object) {
+        console.log(response);
+        setProperties(response);
+      }
     } catch (e) {
-      message.error(e.message);
+      if (e instanceof Error) {
+        message.error(e.message);
+      }
     }
   };
 
-  const calculateEffect = async (method: (coil: Coil) => Promise<Coil | Response>) => {
-    if (!verifyCurrentUser()) return;
+  const calculateForResistance = async () => {
+    if (!isLoggedInOrShowNotification()) return;
     try {
-      const response = await method(currentCoil);
+      const response = await server.calculateForResistance(currentCoil, baseVoltage);
       if (response instanceof Response) {
         throw new Error(response.statusText);
       } else if (response instanceof Object) {
@@ -89,15 +95,27 @@ export default () => {
         await calculateProperties(response);
       }
     } catch (e) {
-      message.error(e.message);
+      if (e instanceof Error) {
+        message.error(e.message);
+      }
     }
   };
 
-  const calculateForResistance = () => {
-    return calculateEffect(server.calculateForResistance);
-  };
-  const calculateForWraps = () => {
-    return calculateEffect(server.calculateForWraps);
+  const calculateForWraps = async () => {
+    if (!isLoggedInOrShowNotification()) return;
+    try {
+      const response = await server.calculateForWraps(currentCoil, baseVoltage);
+      if (response instanceof Response) {
+        throw new Error(response.statusText);
+      } else if (response instanceof Object) {
+        setCoil(response);
+        await calculateProperties(response);
+      }
+    } catch (e) {
+      if (e instanceof Error) {
+        message.error(e.message);
+      }
+    }
   };
 
   return {

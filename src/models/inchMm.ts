@@ -1,7 +1,7 @@
 import { identity, nanToUndefined, safeConvert } from '@/utils/utils';
 import { useState } from 'react';
 import { message } from 'antd';
-import { verifyCurrentUser } from '@/services';
+import { isLoggedInOrShowNotification } from '@/services/user';
 
 const INCHES_TO_MM_FACTOR = 0.03937;
 
@@ -12,7 +12,7 @@ export default () => {
   const [denominator, setDenominator] = useState<number | undefined>(undefined);
 
   const reduceNominator = (nominatorStr: string | number | undefined) => {
-    if (!verifyCurrentUser()) return;
+    if (!isLoggedInOrShowNotification()) return;
     if (!nominatorStr) {
       message.error('Nominator is not defined');
       return;
@@ -28,7 +28,7 @@ export default () => {
   };
 
   const reduceDenominator = (denominatorStr: string | number | undefined) => {
-    if (!verifyCurrentUser()) return;
+    if (!isLoggedInOrShowNotification()) return;
     if (!denominatorStr) {
       message.error('Denominator is not defined');
       return;
@@ -44,7 +44,7 @@ export default () => {
   };
 
   const reduceInch = (inchStr: string | number | undefined) => {
-    if (!verifyCurrentUser()) return;
+    if (!isLoggedInOrShowNotification()) return;
     if (!inchStr) {
       message.error('Inch is not defined');
       return;
@@ -57,7 +57,7 @@ export default () => {
   };
 
   const reduceMm = (mmStr: string | number | undefined) => {
-    if (!verifyCurrentUser()) return;
+    if (!isLoggedInOrShowNotification()) return;
     if (!mmStr) {
       message.error('"mm" is not defined');
       return;

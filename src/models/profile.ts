@@ -1,4 +1,3 @@
-import { history } from 'umi';
 import { User } from '@vapetool/types';
 import { Coil, ItemName, Link, Liquid, Photo, Post } from '@/types';
 import {
@@ -7,10 +6,11 @@ import {
   getUserLiquids,
   getUserPhotos,
   getUserPosts,
+  getUser,
 } from '@/services/userCenter';
-import { getUser } from '@/services/user';
 import { isProUser } from '@/utils/utils';
 import { useState } from 'react';
+import useRouter from '@/utils/useRouter';
 
 export interface UserProfile {
   readonly uid: string;
@@ -37,7 +37,7 @@ export default () => {
     const user: User | undefined = await getUser(userId);
     setLoadingProfile(false);
     if (!user) {
-      history.replace({ pathname: '/404' });
+      useRouter().replace('/404');
       return;
     }
 
