@@ -7,6 +7,7 @@ import { auth } from '@/utils/firebase';
 import { uploadAvatar } from '@/services/storage';
 import { notification } from 'antd';
 import useRouter from '@/utils/useRouter';
+import { useAuth } from '@/context/FirebaseAuthContext';
 
 
 export function listenForUserInDb(uid: string, listener: (user: User | null) => void) {
@@ -78,4 +79,14 @@ export function notifyToLogIn() {
     },
     onClick: () => useRouter().push('/login'),
   });
+}
+
+export function isLoggedInOrShowNotification() {
+  const { dbUser } = useAuth();
+  if (!dbUser) {
+    notifyToLogIn();
+    return false;
+  } else {
+    return true;
+  }
 }

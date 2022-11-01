@@ -1,33 +1,31 @@
+import { useAuth } from '@/context/FirebaseAuthContext';
 import { Properties, Coil } from '@vapetool/types';
-import { request } from 'umi';
-import { auth, callFirebaseFunction } from '@/utils/firebase';
+import { callFirebaseFunction } from '../utils/firebase';
 
-export async function calculateForWraps(coil: Coil): Promise<Coil> {
-  return callFirebaseFunction<Coil>('calculateForWraps', { coil });
+export async function calculateForWraps(coil: Coil, baseVoltage: number): Promise<Coil | Response> {
+  return callFirebaseFunction<Coil>('calculateForWraps', { coil, baseVoltage });
 }
 
-export function calculateForResistance(coil: Coil): Promise<Coil> {
-  return callFirebaseFunction<Coil>('calculateForResistance', { coil });
+export function calculateForResistance(coil: Coil, baseVoltage: number): Promise<Coil | Response> {
+  return callFirebaseFunction<Coil>('calculateForResistance', { coil, baseVoltage });
 }
 
-export function calculateProperties(coil: Coil, baseVoltage: number): Promise<Properties> {
+export function calculateProperties(coil: Coil, baseVoltage: number): Promise<Properties | Response> {
   return callFirebaseFunction<Properties>('calculateForProperties', { coil, baseVoltage });
 }
 
-export async function sendRequest<T>(
-  calcFor: 'wraps' | 'resistance' | 'properties',
+export async function sendRequest<T extends Properties | Coil>(
+  calcFor: 'calculateForWraps' | 'calculateForResistance' | 'calculateForProperties',
   coil: Coil,
   baseVoltage?: number,
 ): Promise<T> {
   try {
-    if (!auth.currentUser) {
+    const auth = useAuth()
+    if (!auth.dbUser) {
       throw Error('You are not logged in');
     }
-    const idToken = await auth.currentUser!.getIdToken(false);
-    return await request(`/api/calculator/coil/${calcFor}`, {
-      method: 'POST',
-      data: { coil, idToken, baseVoltage },
-    });
+
+    return await callFirebaseFunction<T>(calcFor, { coil, baseVoltage });
   } catch (e) {
     console.error(e);
     throw e;
