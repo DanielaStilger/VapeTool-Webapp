@@ -1,3 +1,4 @@
+import { Author, User } from '@vapetool/types';
 import { createContext, useContext } from 'react'
 import useFirebaseAuth, { FirebaseAuth } from './useFirebaseAuth';
 
@@ -5,9 +6,7 @@ import useFirebaseAuth, { FirebaseAuth } from './useFirebaseAuth';
 const authUserContext = createContext<FirebaseAuth>({
     firebaseUser: null,
     dbUser: null,
-    loading: true,
-    signInWithEmailAndPassword: async (email: string, password: string) => { return null },
-    createUserWithEmailAndPassword: async (email: string, password: string) => { return null },
+    toAuthor: (user: User) => new Author("", "Anonymous"),
     signOut: async () => { }
 });
 

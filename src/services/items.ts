@@ -9,7 +9,7 @@ import {
   Liquid as FirebaseLiquid,
   Coil as FirebaseCoil,
 } from '@vapetool/types';
-import { Item, ItemName, Photo, Liquid, Coil, Post, Link } from '@/types';
+import { Item, ItemName, Photo, Liquid, Coil, Post, Link } from '../types';
 import {
   coilsRef,
   commentsRef,

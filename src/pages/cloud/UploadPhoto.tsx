@@ -1,17 +1,13 @@
 import React, { useState } from 'react';
 import { Button, Card, Input } from 'antd';
-import { useIntl, FormattedMessage, useModel } from 'umi';
+import { useIntl, FormattedMessage } from 'react-intl';
 import UploadAndCropImage from '@/components/UploadAndCropImage';
 import { CaretLeftOutlined, ShareAltOutlined } from '@ant-design/icons';
-import { CurrentUser } from '@/app-umi';
+import { useUploadPhotoModel } from '@/models/uploadPhoto';
 
 const UploadPhoto: React.FC = () => {
-  const { description, setDescription, submitPhoto, croppedImage, setCroppedImage } = useModel(
-    'uploadPhoto',
-  );
+  const { description, setDescription, submitPhoto, croppedImage, setCroppedImage } = useUploadPhotoModel();
   const [isCropping, setIsCropping] = useState(true);
-  const { initialState } = useModel('@@initialState');
-  const currentUser = initialState?.currentUser as CurrentUser;
 
   const onResizeImage = (
     imageUrl: string,
@@ -25,10 +21,6 @@ const UploadPhoto: React.FC = () => {
       width,
       height,
     });
-  };
-
-  const postPhoto = () => {
-    submitPhoto(currentUser);
   };
 
   const onDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,7 +63,7 @@ const UploadPhoto: React.FC = () => {
           <CaretLeftOutlined />
           <FormattedMessage id="user.uploadPhoto.cropAgain" defaultMessage="Crop again" />
         </Button>
-        <Button type="primary" onClick={postPhoto}>
+        <Button type="primary" onClick={submitPhoto}>
           <FormattedMessage id="user.actions.publishPost" defaultMessage="Publish post" />
           <ShareAltOutlined />
         </Button>

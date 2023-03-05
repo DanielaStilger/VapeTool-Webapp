@@ -1,11 +1,12 @@
 import React from 'react';
-import { PageHeaderWrapper } from '@ant-design/pro-layout';
+import PageHeaderWrapper from '@ant-design/pro-layout';
 import { Button, Card, Col, Form, InputNumber, Row } from 'antd';
-import { useIntl, FormattedMessage, useModel } from 'umi';
+import { useIntl, FormattedMessage } from 'react-intl';
 import { LockOutlined } from '@ant-design/icons';
 import ButtonGroup from 'antd/es/button/button-group';
 import ImageWebp from '@/components/ImageWebp';
 import Banner from '@/components/Banner';
+import { useOhmModel } from '@/models/ohm';
 
 const ohmLawWebp = require('@/assets/ohm_law.webp');
 const ohmLawPng = require('@/assets/ohm_law.png');
@@ -25,7 +26,8 @@ const OhmLaw: React.FC = () => {
     current,
     power,
     resistance,
-  } = useModel('ohm');
+  } = useOhmModel();
+
   const lastEdits = [lastEdit, latestEdit];
 
   const handleClear = () => clear();

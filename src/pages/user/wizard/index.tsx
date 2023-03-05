@@ -1,12 +1,14 @@
 import { Button, Card, Col, Input, Row, Spin } from 'antd';
 import React from 'react';
-import { FormattedMessage, useModel } from 'umi';
+import { FormattedMessage } from 'react-intl';
 import ButtonGroup from 'antd/es/button/button-group';
-import styles from '@/pages/user/profile/styles.less';
-import FirebaseImage from '@/components/StorageAvatar';
-import ImageChooser from '@/components/ImageChoser';
-import { ImageType } from '@/services/storage';
+import styles from '../profile/styles.less';
+import FirebaseImage from '../../../components/StorageAvatar';
+import ImageChooser from '../../../components/ImageChoser';
+import { ImageType } from '../../../services/storage';
 import { SaveOutlined } from '@ant-design/icons';
+import { useUserWizardModel } from '../../../models/userWizard';
+import { useAuth } from '../../../context/FirebaseAuthContext';
 
 const UserWizard: React.FC = () => {
   const {
@@ -19,10 +21,9 @@ const UserWizard: React.FC = () => {
     setShowAvatarChooser,
     redirectBack,
     updateUser,
-  } = useModel('userWizard');
+  } = useUserWizardModel()
 
-  const { initialState } = useModel('@@initialState');
-  const { currentUser } = initialState || {};
+  const { dbUser } = useAuth();
 
   const onDisplayNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setDisplayName(e.target.value);
@@ -32,7 +33,8 @@ const UserWizard: React.FC = () => {
     setShowAvatarChooser(false);
   };
 
-  if (!currentUser) {
+  // TODO: make sure it won't hang here
+  if (!dbUser) {
     return <Spin />;
   }
   return (
@@ -51,7 +53,7 @@ const UserWizard: React.FC = () => {
                   {!newAvatarUrl && (
                     <FirebaseImage
                       type={ImageType.USER}
-                      id={currentUser.uid}
+                      id={dbUser.uid}
                       size={200}
                       shape="square"
                     />
@@ -73,7 +75,7 @@ const UserWizard: React.FC = () => {
                     fontSize: 28,
                     fontFamily: 'Proxima Nova Bold,Helvetica Neue,Helvetica,Arial,sans-serif',
                   }}
-                  placeholder={currentUser.name}
+                  placeholder={dbUser.display_name}
                   onChange={onDisplayNameChange}
                   value={displayName}
                 />
@@ -88,7 +90,7 @@ const UserWizard: React.FC = () => {
                 <Button
                   icon={<SaveOutlined />}
                   type="primary"
-                  onClick={() => updateUser(currentUser)}
+                  onClick={() => updateUser(dbUser)}
                 >
                   <FormattedMessage id="misc.actions.save" defaultMessage="Save" />
                 </Button>

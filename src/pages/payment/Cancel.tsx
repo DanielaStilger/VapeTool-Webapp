@@ -1,10 +1,10 @@
 import React from 'react';
 import { Button, Result } from 'antd';
 import { getPaymentUrl } from '@/places/user.places';
-import { history } from 'umi';
+import useRouter from '@/utils/useRouter';
 
 const CancelPayment: React.FC = () => {
-  const onBuyAgainClick = () => history.replace(getPaymentUrl());
+  const onBuyAgainClick = () => useRouter().replace(getPaymentUrl());
 
   return (
     <Result

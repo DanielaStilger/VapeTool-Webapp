@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Avatar } from 'antd';
-import { getImageUrl, ImageType } from '@/services/storage';
 import { UserOutlined } from '@ant-design/icons';
+import { getImageUrl, ImageType } from '../../services/storage';
 
 interface FirebaseImageProps {
   type: ImageType;

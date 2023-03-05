@@ -1,10 +1,11 @@
 import { Form, Input, InputNumber, Modal, message } from 'antd';
 import * as React from 'react';
-import { FormattedMessage, useIntl, useModel } from 'umi';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Flavor } from '@vapetool/types';
+import { useLiquidModel } from '@/models/liquid';
 
 const NewFlavorModal = () => {
-  const { addFlavor, hideFlavorModal, showNewFlavorModal } = useModel('liquid');
+  const { addFlavor, hideFlavorModal, showNewFlavorModal } = useLiquidModel();
   const [form] = Form.useForm();
   const onFinish = (values: any) => {
     const { name, manufacturer, percentage, price, ratio } = values;

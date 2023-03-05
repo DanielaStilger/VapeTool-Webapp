@@ -1,6 +1,6 @@
 import React from 'react';
 import { Col, InputNumber, Row, Slider, Tooltip, Typography } from 'antd';
-import { useIntl, FormattedMessage } from 'umi';
+import { useIntl, FormattedMessage } from 'react-intl';
 
 const { Text } = Typography;
 
@@ -72,7 +72,7 @@ const VgPgRatioView: React.FC<VgPgRatioProps> = (props) => {
             step={5}
             precision={0}
             value={ratio}
-            onChange={(value: number | string | undefined) =>
+            onChange={(value: number | string | undefined | null) =>
               value && Number.isFinite(value) && onRatioChange(100 - Number(value))
             }
           />

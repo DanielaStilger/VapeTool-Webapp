@@ -1,14 +1,14 @@
 import { Col, Row, Tabs } from 'antd';
 import React from 'react';
-import { FormattedMessage, useModel } from 'umi';
+import { FormattedMessage } from 'react-intl';
 import UploadPost from '@/components/UploadPost';
 import UploadPhoto from '@/pages/cloud/UploadPhoto';
-import { Tab } from '@/models/upload';
+import { Tab, useUploadModel } from '@/models/upload';
 import { PictureOutlined, LinkOutlined, FormOutlined } from '@ant-design/icons';
 import UploadLink from '@/components/UploadLink';
 
 const Upload: React.FC = () => {
-  const { currentTab, setTab } = useModel('upload');
+  const { currentTab, setTab } = useUploadModel();
   const onTabChange = (key: string) => setTab(Tab[key]);
 
   return (

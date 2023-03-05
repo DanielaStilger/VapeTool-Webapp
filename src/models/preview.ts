@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Item } from '@/types';
 
-export default () => {
+export const usePreviewModel = () => {
   const [selectedItem, setSelectedItem] = useState<Item | undefined>(undefined);
 
   const unselectItem = () => {

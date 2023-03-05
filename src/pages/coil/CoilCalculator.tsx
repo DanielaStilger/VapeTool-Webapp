@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
 import { Button, Card, Col, InputNumber, Row, Select, Typography, message } from 'antd';
-import { FormattedMessage, useModel } from 'umi';
-import { Coil, Properties, Wire, Author } from '@vapetool/types';
+import { FormattedMessage } from 'react-intl';
+import { Coil, Properties, Wire } from '@vapetool/types';
 import { Coil as CoilType } from '@/types';
 import ComplexWire from '@/components/ComplexWire';
 import PropertyItem from '@/components/PropertyItem';
 import { CalculatorOutlined, LockFilled, UnlockOutlined, SaveOutlined } from '@ant-design/icons';
-import { isProUser } from '@/utils/utils';
 import CoilHelper from '@/components/CoilHelper';
-import { CurrentUser } from '@/app-umi';
+import { User as DatabaseUser } from '@vapetool/types'
 import { saveCoil } from '@/services/items';
 import SaveModal from '@/components/SaveModal';
 import { sendRequest } from '@/services/coil';
-import { Path } from '@/models/coil';
+import { Path, useCoilModel } from '@/models/coil';
 import { PageContainer } from '@ant-design/pro-layout';
 import Banner from '@/components/Banner';
 import styles from './styles.less';
+import { useAuth } from '@/context/FirebaseAuthContext';
 
 const { Option } = Select;
 const { Title } = Typography;
@@ -25,7 +25,7 @@ export interface CoilCalculatorProps {
   properties?: Properties;
   baseVoltage: number;
   isPro: boolean;
-  user?: CurrentUser;
+  user?: DatabaseUser;
 }
 
 enum Field {
@@ -38,9 +38,7 @@ enum Field {
 }
 
 const CoilCalculator: React.FC<CoilCalculatorProps> = () => {
-  const { initialState } = useModel('@@initialState');
-  const { currentUser } = initialState || {};
-  const isPro = isProUser(currentUser?.subscription);
+  const { dbUser, toAuthor } = useAuth()
 
   const {
     currentCoil,
@@ -58,14 +56,14 @@ const CoilCalculator: React.FC<CoilCalculatorProps> = () => {
     addWire,
     deleteWire,
     setWire,
-  } = useModel('coil');
+  } = useCoilModel();
 
   const [lastEdit, setLastEdit] = useState<Field>(Field.WRAPS);
   const [helpModalVisibile, setHelpModalVisible] = useState(false);
   const [saveModalVisible, setSaveModalVisible] = useState(false);
   const [calculateBtnLoading, setCalculateBtnLoading] = useState(false);
 
-  const onValueChanged = (field: Field) => (value?: number | string) => {
+  const onValueChanged = (field: Field) => (value: number|null) => {
     if (field === Field.WRAPS || field === Field.RESISTANCE) {
       setLastEdit(field);
     }
@@ -83,7 +81,7 @@ const CoilCalculator: React.FC<CoilCalculatorProps> = () => {
     }
   };
 
-  const onSetupChange = (value: string) => onValueChanged(Field.SETUP)(value);
+  const onSetupChange = onValueChanged(Field.SETUP);
   const onInnerDiameterChange = onValueChanged(Field.INNER_DIAMETER);
   const onLegsLengthChange = onValueChanged(Field.LEGS_LENGTH);
   const onResistanceChange = onValueChanged(Field.RESISTANCE);
@@ -107,15 +105,15 @@ const CoilCalculator: React.FC<CoilCalculatorProps> = () => {
 
   const validateAndSaveCoil = async (name: string, description?: string) => {
     const res = await sendRequest(
-      lastEdit === Field.RESISTANCE ? 'wraps' : 'resistance',
+      lastEdit === Field.RESISTANCE ? 'calculateForWraps' : 'calculateForResistance',
       currentCoil as CoilType,
     );
     if (res instanceof Response && !res.ok) {
       message.error("Couldn't save coil");
       return;
     }
-    if (currentUser && currentUser.uid && currentUser.name) {
-      saveCoil(currentCoil, new Author(currentUser.uid, currentUser.name), name, description || '');
+    if (dbUser) {
+      saveCoil(currentCoil, toAuthor(dbUser), name, description || '');
     } else {
       throw new Error('Can not save with undefined user ');
     }
@@ -131,24 +129,21 @@ const CoilCalculator: React.FC<CoilCalculatorProps> = () => {
         unit="V"
         editable
         onChangeValue={onBaseVoltageChange}
-        isPro={isPro}
       />
-      <PropertyItem property="current" value={properties?.current} unit="A" isPro={isPro} />
-      <PropertyItem property="power" value={properties?.power} unit="W" isPro={isPro} />
-      <PropertyItem property="heat" value={properties?.heat} unit="mW/cm²" proOnly isPro={isPro} />
+      <PropertyItem property="current" value={properties?.current} unit="A" />
+      <PropertyItem property="power" value={properties?.power} unit="W" />
+      <PropertyItem property="heat" value={properties?.heat} unit="mW/cm²" proOnly />
       <PropertyItem
         property="surface"
         value={properties?.surface}
         unit="cm²"
         proOnly
-        isPro={isPro}
       />
       <PropertyItem
         property="totalLength"
         value={properties?.totalLength}
         unit="mm"
         proOnly
-        isPro={isPro}
       />
     </Col>
   );
@@ -163,7 +158,7 @@ const CoilCalculator: React.FC<CoilCalculatorProps> = () => {
       <Typography.Link onClick={() => setHelpModalVisible(true)}>Need some help?</Typography.Link>
       <Row justify="space-between" align="middle">
         <FormattedMessage id="coilCalculator.inputs.setup" />
-        <Select defaultValue={`${currentCoil.setup}`} onChange={onSetupChange}>
+        <Select defaultValue={currentCoil.setup} onChange={onSetupChange}>
           <Option value="1">Single Coil (1)</Option>
           <Option value="2">Dual Coil (2)</Option>
           <Option value="3">Triple Coil (3)</Option>
@@ -253,7 +248,6 @@ const CoilCalculator: React.FC<CoilCalculatorProps> = () => {
       <ComplexWire
         complexWire={currentCoil}
         path={[]}
-        isPro={isPro}
         onSetWireType={handleWireTypeChange}
         onSetInnerDiameter={onInnerDiameterChange}
         onAddWire={handleAddWire}

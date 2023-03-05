@@ -1,7 +1,7 @@
 import { Item, ItemName, Link, Photo, Post } from '@/types';
 import { useState } from 'react';
 
-export default () => {
+export const useCloudModel = () => {
      const [photos, setPhotos] = useState<Photo[] | undefined>();
      const [posts, setPosts] = useState<Post[] | undefined>();
      const [links, setLinks] = useState<Link[] | undefined>();

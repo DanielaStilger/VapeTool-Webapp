@@ -2,15 +2,15 @@ import { Button, Dropdown, Menu, Typography } from 'antd';
 import * as React from 'react';
 import FirebaseImage from '@/components/StorageAvatar';
 import { Comment } from '@/types';
-import { CurrentUser } from '@/app-umi';
 import { ImageType } from '@/services/storage';
 import { getUserProfileUrl } from '@/places/user.places';
-import { Link, FormattedMessage, useModel } from 'umi';
+import { FormattedMessage } from 'react-intl';
 import { MoreOutlined } from '@ant-design/icons';
 import { canRemove } from '@/access';
+import { useAuth } from '@/context/FirebaseAuthContext';
+import { Link } from 'react-router-dom';
 
 interface CommentViewProps {
-  user: CurrentUser;
   comment: Comment;
   onReply: (comment: Comment) => void;
   onDelete: (comment: Comment) => void;
@@ -23,14 +23,13 @@ export const CommentView: React.FC<CommentViewProps> = (props) => {
     onDelete,
   } = props;
 
-  const { initialState } = useModel('@@initialState');
-  const user = initialState?.currentUser as CurrentUser;
+  const { dbUser } = useAuth()
 
   const deleteComment = () => onDelete(props.comment);
 
   const menu = (
     <Menu>
-      {canRemove(author.uid, user) && (
+      {canRemove(author.uid, dbUser) && (
         <Menu.Item onClick={deleteComment} key="delete">
           <FormattedMessage id="misc.actions.delete" defaultMessage="Delete" />
         </Menu.Item>

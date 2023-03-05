@@ -15,9 +15,9 @@ import {
   deletePhotoComment,
   deletePostComment,
   deleteLinkComment,
-} from '@/services/items';
-import { ItemName } from '@/types';
-import { CurrentUser } from '@/app-umi';
+} from '../services/items';
+import { ItemName } from '../types';
+import { User as DatabaseUser } from '@vapetool/types'
 
 export async function like(what: ItemName, itemId: string, userId: string) {
   try {
@@ -86,7 +86,7 @@ export async function report(what: ItemName, itemId: string, userId: string) {
     }
   }
 }
-export async function commentItem(what: ItemName, body: string, itemId: string, user: CurrentUser) {
+export async function commentItem(what: ItemName, body: string, itemId: string, user: DatabaseUser) {
   try {
     if (!body) throw new Error('Comment can not be empty');
     switch (what) {

@@ -4,7 +4,7 @@ import { getStorage, FirebaseStorage, ref as storageRef } from 'firebase/storage
 import { getAuth, Auth, onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { getRemoteConfig, RemoteConfig } from 'firebase/remote-config';
-import { ItemName } from '@/types';
+import { ItemName } from '../types';
 import { Mixable, Coil, MixResult, Liquid, Result, Properties } from '@vapetool/types';
 import { IS_PRODUCTION } from './utils';
 

@@ -1,4 +1,4 @@
-import { IS_NOT_PRODUCTION } from '@/utils/utils';
+import { IS_NOT_PRODUCTION } from '../utils/utils';
 
 export const getPaymentUrl = (): string => `/payment`;
 export const getUserWizard = (): string => `/user/wizard`;

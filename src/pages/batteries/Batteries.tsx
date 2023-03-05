@@ -1,5 +1,4 @@
 import React from 'react';
-import { useModel } from 'umi';
 import { List, Row, Col } from 'antd';
 import { id } from '@vapetool/types';
 import BatteryView from '@/components/BatteryView';
@@ -8,9 +7,10 @@ import styles from '@/components/ItemView/styles.less';
 import { Battery } from '@/types';
 import { PageContainer } from '@ant-design/pro-layout';
 import Banner from '@/components/Banner';
+import { useBatteriesModel } from '@/models/batteries';
 
 const Batteries = () => {
-  const { setSelectedBattery, batteries } = useModel('batteries');
+  const { setSelectedBattery, batteries } = useBatteriesModel();
 
   const onBatteryClick = (battery: Battery) => setSelectedBattery(battery);
 

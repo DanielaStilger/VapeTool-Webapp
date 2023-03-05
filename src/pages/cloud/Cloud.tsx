@@ -1,24 +1,26 @@
 import React, { useEffect } from 'react';
 import { Affix, Button, List } from 'antd';
-import { useModel, history } from 'umi';
 import styles from '@/components/ItemView/styles.less';
 import { PhotoView } from '@/components/ItemView';
 import PhotoPreviewModal from '@/components/PreviewModal';
 import PostView from '@/components/ItemView/PostView';
 import { Link, Photo, Post } from '@/types';
-import PageLoading from '@/components/PageLoading';
-import LinkView from '@/components/ItemView/LinkView';
-import { subscribeLinks, subscribePhotos, subscribePosts } from '@/services/items';
+import PageLoading from '../../components/PageLoading';
+import LinkView from '../../components/ItemView/LinkView';
+import { subscribeLinks, subscribePhotos, subscribePosts } from '../../services/items';
 
 import { PlusOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
+import { useCloudModel } from '../../models/cloud';
+import useRouter from '../../utils/useRouter';
+import { useAuth } from '../../context/FirebaseAuthContext';
 
 const Cloud: React.FC = () => {
-  const onUploadPhotoClicked = () => history.push('/cloud/upload');
-  const { setLinks, setPhotos, setPosts, posts, links, photos } = useModel('cloud');
+  const router = useRouter()
+  const onUploadPhotoClicked = () => router.push('/cloud/upload');
+  const { setLinks, setPhotos, setPosts, posts, links, photos } = useCloudModel();
 
-  const { initialState } = useModel('@@initialState');
-  const { firebaseUser } = initialState || {};
+  const auth = useAuth()
 
   useEffect(() => subscribeLinks(setLinks), []);
   useEffect(() => subscribePhotos(setPhotos), []);
@@ -52,7 +54,7 @@ const Cloud: React.FC = () => {
         }}
       />
       <PhotoPreviewModal />
-      {firebaseUser && !firebaseUser.isAnonymous && (
+      {auth.firebaseUser && !auth.firebaseUser.isAnonymous && (
         <Affix offsetBottom={30}>
           <Button
             type="primary"

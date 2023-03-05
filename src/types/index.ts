@@ -7,6 +7,6 @@ import Liquid from './Liquid';
 import Photo from './Photo';
 import Post from './Post';
 import Typable from './Typable';
-import { ItemName, Item } from './Item';
+import { ItemName, type Item } from './Item';
 
 export { Affiliate, Battery, Coil, Comment, Item, ItemName, Link, Liquid, Photo, Post, Typable };

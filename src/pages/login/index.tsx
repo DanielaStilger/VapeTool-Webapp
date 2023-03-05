@@ -1,9 +1,9 @@
 import React from 'react'
-import StyledFirebaseAuth from '@/components/StyledFirebaseAuth'
-import { auth } from '@/utils/firebase'
+import StyledFirebaseAuth from '../../components/StyledFirebaseAuth'
+import { auth } from '../../utils/firebase'
 import { UserCredential, GoogleAuthProvider, FacebookAuthProvider, EmailAuthProvider } from 'firebase/auth'
 
-import Footer from '@/components/Footer';
+import Footer from '../../components/Footer';
 import CookieConsent from 'react-cookie-consent';
 import { Typography } from 'antd';
 import styles from './style.less';

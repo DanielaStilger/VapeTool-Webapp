@@ -1,17 +1,16 @@
 import { Card, Typography } from 'antd';
 import React from 'react';
-import { Link, useModel } from 'umi';
-// @ts-ignore
-import Microlink from '@microlink/react';
+import { Link } from 'react-router-dom';
 import FirebaseImage from '@/components/StorageAvatar';
 import { Link as LinkType, ItemName } from '@/types';
 import { ImageType } from '@/services/storage';
 import { getUserProfileUrl } from '@/places/user.places';
 import { Actions } from './ItemView';
 import styles from './styles.less';
+import { usePreviewModel } from '@/models/preview';
 
 export default function LinkView({ item }: { item: LinkType }) {
-  const { setSelectedItem, unselectItem } = useModel('preview');
+  const { setSelectedItem, unselectItem } = usePreviewModel();
   const onSelectItem = () => setSelectedItem(item);
 
   return (
@@ -34,7 +33,7 @@ export default function LinkView({ item }: { item: LinkType }) {
         }
       />
       <br />
-      <Microlink url={item.url} lazy />
+      {/* <Microlink url={item.url} lazy /> */}
       <Actions what={ItemName.LINK} item={item} unselectItem={unselectItem} />
     </Card>
   );

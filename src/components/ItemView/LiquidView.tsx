@@ -1,12 +1,13 @@
 import React from 'react';
-import { FormattedMessage, useModel } from 'umi';
+import { FormattedMessage } from 'react-intl';
 import { Card, Descriptions, Typography } from 'antd';
 import { ItemName, Liquid } from '@/types';
 import styles from './styles.less';
 import { Actions } from './ItemView';
+import { usePreviewModel } from '@/models/preview';
 
 export default function LiquidView({ item }: { item: Liquid }) {
-  const { setSelectedItem, unselectItem } = useModel('preview');
+  const { setSelectedItem, unselectItem } = usePreviewModel();
   const onSelectItem = () => setSelectedItem(item);
 
   return (
@@ -48,7 +49,6 @@ export default function LiquidView({ item }: { item: Liquid }) {
         <Actions
           what={ItemName.LIQUID}
           item={item}
-          displayCommentsLength={displayCommentsLength}
           unselectItem={unselectItem}
         />
       </Card>

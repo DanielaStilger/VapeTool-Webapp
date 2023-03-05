@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Button, InputNumber, Tag } from 'antd';
-import { FormattedMessage } from 'umi';
+import { FormattedMessage } from 'react-intl';
 
 import styles from './styles.less';
+import { useAuth } from '@/context/FirebaseAuthContext';
+import { isUserPro } from '@/utils/utils';
 
 interface PropertyItemProps {
   property: string;
@@ -10,12 +12,13 @@ interface PropertyItemProps {
   unit: string;
   proOnly?: boolean;
   editable?: boolean;
-  isPro: boolean;
   onChangeValue?: (newValue?: number | string) => void;
 }
 
 const PropertyItem = (props: PropertyItemProps) => {
-  const { property, value, unit, proOnly, isPro, editable, onChangeValue } = props;
+  const {dbUser} = useAuth()
+  const isPro = isUserPro(dbUser?.subscription)
+  const { property, value, unit, proOnly, editable, onChangeValue } = props;
   const displayProOnlyTag = proOnly && !isPro;
 
   const [editValue, setEditValue] = useState<number | undefined>();

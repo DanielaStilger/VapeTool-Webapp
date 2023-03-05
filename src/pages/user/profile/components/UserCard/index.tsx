@@ -1,4 +1,4 @@
-import { CurrentUser } from '@/app-umi';
+import { User as DatabaseUser } from '@vapetool/types'
 import { UserProfile } from '@/models/profile';
 import React, { useEffect, useState } from 'react';
 import FirebaseImage from '@/components/StorageAvatar';
@@ -8,13 +8,14 @@ import { EditOutlined } from '@ant-design/icons';
 import UserTags from '@/pages/user/profile/components/UserCard/UserTags';
 import { getCancelSubscriptionUrl, getUserWizard, getPaymentUrl } from '@/places/user.places';
 import { getUserTotalContentCount, getUserTotalLikesCount } from '@/services/userCenter';
-import { FormattedMessage, history } from 'umi';
-import { isProUser } from '@/utils/utils';
+import { FormattedMessage } from 'react-intl';
 import styles from './styles.less';
+import useRouter from '@/utils/useRouter';
+import { isUserPro } from '@/utils/utils';
 
 interface UserCardProps {
   isCurrentUser: boolean;
-  currentUser?: CurrentUser;
+  currentUser: DatabaseUser|null;
   userProfile?: UserProfile;
   isLoading: boolean;
 }
@@ -61,14 +62,6 @@ const UserCard: React.FC<UserCardProps> = ({
                   <i className={styles.title} />
                   {currentUser ? currentUser.email : ''}
                 </p>
-                <p>
-                  <i className={styles.title} />
-                  {currentUser ? currentUser.title : ''}
-                </p>
-                <p>
-                  <i className={styles.group} />
-                  {currentUser ? currentUser.group : ''}
-                </p>
               </div>
             )}
 
@@ -104,13 +97,13 @@ const UserCard: React.FC<UserCardProps> = ({
                 shape="round"
                 size="small"
                 block
-                onClick={() => history.push(getUserWizard())}
+                onClick={() => useRouter().push(getUserWizard())}
               >
                 <EditOutlined />
                 <FormattedMessage id="user.actions.editProfile" defaultMessage="Edit profile" />
               </Button>
 
-              {isProUser(currentUser?.subscription) && (
+              {isUserPro(currentUser?.subscription) && ( //TODO: cluch together isCurrentUser with currentUser, don't make them separate 
                 <Button
                   type="default"
                   shape="round"
@@ -125,13 +118,13 @@ const UserCard: React.FC<UserCardProps> = ({
                   />
                 </Button>
               )}
-              {!isProUser(currentUser?.subscription) && (
+              {!isUserPro(currentUser?.subscription) && ( //TODO: cluch together isCurrentUser with currentUser, don't make them separate
                 <Button
                   type="default"
                   shape="round"
                   size="small"
                   block
-                  onClick={() => history.push(getPaymentUrl())}
+                  onClick={() => useRouter().push(getPaymentUrl())}
                 >
                   Unlock Pro
                 </Button>

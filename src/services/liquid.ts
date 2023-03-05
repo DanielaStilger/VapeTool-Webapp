@@ -1,6 +1,6 @@
 import { callFirebaseFunction } from '../utils/firebase';
 import { Liquid, Result } from '@vapetool/types';
-import { useAuth } from '@/context/FirebaseAuthContext';
+import { useAuth } from '../context/FirebaseAuthContext';
 
 export async function calculateResults(liquid: Liquid): Promise<Result[]> {
   try {

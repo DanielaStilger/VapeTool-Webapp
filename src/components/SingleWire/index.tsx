@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button, Card, Col, Row, Select, Typography } from 'antd';
-import { FormattedMessage } from 'umi';
+import { FormattedMessage } from 'react-intl';
 
 import { Material, Materials, Wire, WireKind, WireStyle } from '@vapetool/types';
 import { getResistancePerMeter } from '@/utils/math';

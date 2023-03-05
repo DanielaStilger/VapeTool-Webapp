@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { FormattedMessage, useModel } from 'umi';
+import { FormattedMessage } from 'react-intl';
 import { Card, Typography, Descriptions } from 'antd';
 import { ItemName, Coil } from '@/types';
 import { getCoilUrl } from '@/services/storage';
 import { WireType } from '@vapetool/types/dist/wire';
 import { Actions } from './ItemView';
 import styles from './styles.less';
+import { usePreviewModel } from '@/models/preview';
 
 enum SetupsName {
   Single = 1,
@@ -32,7 +33,7 @@ function useCoilImage(itemUid: string) {
 
 export default function CoilView({ item }: { item: Coil }) {
   const coilImageUrl = useCoilImage(item.uid);
-  const { setSelectedItem, unselectItem } = useModel('preview');
+  const { setSelectedItem, unselectItem } = usePreviewModel();
   const onSelectItem = () => setSelectedItem(item);
 
   return (

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, notification } from 'antd';
-import UploadAndCropImage from '@/components/UploadAndCropImage';
+import UploadAndCropImage from '../UploadAndCropImage';
 
 interface ImageChooserProps {
   visible: boolean;

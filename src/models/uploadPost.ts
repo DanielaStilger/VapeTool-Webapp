@@ -1,11 +1,12 @@
-import { history } from 'umi';
 import { message } from 'antd';
 import { Author } from '@vapetool/types';
 import { createPost } from '@/services/items';
 import { useState } from 'react';
-import { CurrentUser } from '@/app-umi';
+import useRouter from '@/utils/useRouter';
+import { useAuth } from '@/context/FirebaseAuthContext';
 
-export default function UploadPost() {
+export const useUploadPostModel= () => {
+  const auth = useAuth()
   const [title, setTitle] = useState<string>('');
   const [text, setText] = useState<string>('');
 
@@ -14,18 +15,24 @@ export default function UploadPost() {
     setText('');
   };
 
-  const submitPost = async (currentUser: CurrentUser) => {
+  const submitPost = async () => {
+    if (!auth.dbUser) {
+      message.error('You must be logged in to create a post');
+      return;
+    }
     const author: Author = {
-      uid: currentUser.uid,
-      displayName: currentUser.display_name,
+      uid: auth.dbUser.uid,
+      displayName: auth.dbUser.display_name,
     };
     try {
       await createPost(title, text, author);
       message.success('Successfully published post');
       reset();
-      history.replace({ pathname: '/cloud' });
+      useRouter().replace('/cloud');
     } catch (e) {
-      message.error(e.message);
+      if (e instanceof Error){
+        message.error(e.message);
+      }
     }
   };
   return {

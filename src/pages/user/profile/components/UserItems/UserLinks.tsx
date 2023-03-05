@@ -1,8 +1,8 @@
-import UserItems from '@/pages/user/profile/components/UserItems/index';
+import UserItems from '../../../../../pages/user/profile/components/UserItems/index';
 import React from 'react';
-import { Link } from '@/types';
-import LinkView from '@/components/ItemView/LinkView';
-import { subscribeLinks } from '@/services/items';
+import { Link } from '../../../../../types';
+import LinkView from '../../../../../components/ItemView/LinkView';
+import { subscribeLinks } from '../../../../../services/items';
 
 interface Props {
   userId: string;

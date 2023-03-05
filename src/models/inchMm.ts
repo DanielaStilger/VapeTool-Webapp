@@ -5,7 +5,7 @@ import { isLoggedInOrShowNotification } from '@/services/user';
 
 const INCHES_TO_MM_FACTOR = 0.03937;
 
-export default () => {
+export const useInchMmModel = () => {
   const [inch, setInch] = useState<number | undefined>(undefined);
   const [mm, setMm] = useState<number | undefined>(undefined);
   const [nominator, setNominator] = useState<number | undefined>(undefined);

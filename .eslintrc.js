@@ -1,11 +1,15 @@
 module.exports = {
-  extends: [require.resolve('@umijs/fabric/dist/eslint')],
+
+	parser: '@typescript-eslint/parser',
+	extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'prettier'],
+	plugins: ['@typescript-eslint'],
+
   globals: {
-    ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION: true,
     page: true,
     REACT_APP_ENV: true,
   },
   rules: {
+    "@typescript-eslint/ban-ts-comment": 0,
     'no-mixed-operators': 0,
     'jsx-a11y/label-has-for': 0,
     'jsx-a11y/label-has-associated-control': 0,

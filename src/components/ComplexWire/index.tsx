@@ -2,10 +2,12 @@ import * as React from 'react';
 import { Button, Card, InputNumber, Select, Tag } from 'antd';
 import { Coil, isComplex, Wire, wireGenerator, WireStyle, WireType } from '@vapetool/types';
 import SingleWire from '@/components/SingleWire';
-import { FormattedMessage } from 'umi';
+import { FormattedMessage } from 'react-intl';
 import { Path } from '@/models/coil';
 import ImageWebp from '../ImageWebp';
 import types from './coilTypes';
+import { useAuth } from '@/context/FirebaseAuthContext';
+import { isUserPro } from '@/utils/utils';
 
 const { Option } = Select;
 
@@ -15,7 +17,6 @@ const { Option } = Select;
 export interface WireComponentProps {
   complexWire: Coil | Wire;
   path: Path[];
-  isPro: boolean;
   onSetWireType: (type: number, path: Path[]) => void;
   onSetInnerDiameter: (diameter: number) => void;
   onAddWire: (path: Path[], wire: Wire) => void;
@@ -26,15 +27,16 @@ export interface WireComponentProps {
 const ComplexWire: React.FC<WireComponentProps> = ({
   complexWire,
   path,
-  isPro,
   onSetWireType,
   onSetInnerDiameter,
   onAddWire,
   onSetWire,
   onDeleteWire,
 }) => {
+  const auth = useAuth()
+  const isPro = isUserPro(auth.dbUser?.subscription)
   const handleTypeChange = (key: string) => key && onSetWireType(WireType[key], path);
-  const onPitchChange = (value: string | number | undefined) =>
+  const onPitchChange = (value: string | number | undefined| null) =>
     value && Number.isFinite(value) && onSetInnerDiameter(Number(value));
   const onAddWireClick = () => onAddWire(path, wireGenerator.normalWire());
 
@@ -90,7 +92,6 @@ const ComplexWire: React.FC<WireComponentProps> = ({
             key={index}
             path={childPath}
             complexWire={wire}
-            isPro={isPro}
             onSetWireType={onSetWireType}
             onSetInnerDiameter={onPitchChange}
             onAddWire={onAddWireClick}
@@ -121,7 +122,6 @@ const ComplexWire: React.FC<WireComponentProps> = ({
             key={index}
             path={childPath}
             complexWire={wire}
-            isPro={isPro}
             onSetWireType={onSetWireType}
             onSetInnerDiameter={onPitchChange}
             onAddWire={onAddWireClick}

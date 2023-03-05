@@ -32,20 +32,20 @@ const WireDiameter: React.FC<WireComponentProps> = (props) => {
     }
   };
 
-  const onMmChange = (value: number | string | undefined) => {
-    if (value === undefined || !Number.isFinite(value)) return;
+  const onMmChange = (value: number | string | undefined | null) => {
+    if (value === undefined || value === null || !Number.isFinite(value)) return;
     wire.mm = Number(value);
     onSetWire(path, wire);
   };
 
-  const onWidthChange = (value: number | string | undefined) => {
-    if (value === undefined || !Number.isFinite(value)) return;
+  const onWidthChange = (value: number | string | undefined | null) => {
+    if (value === undefined || value === null || !Number.isFinite(value)) return;
     wire.width = Number(value);
     onSetWire(path, wire);
   };
 
-  const onHeightChange = (value: number | string | undefined) => {
-    if (value === undefined || !Number.isFinite(value)) return;
+  const onHeightChange = (value: number | string | undefined | null) => {
+    if (value === undefined || value === null || !Number.isFinite(value)) return;
     wire.height = Number(value);
     onSetWire(path, wire);
   };

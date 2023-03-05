@@ -1,10 +1,11 @@
-import { history } from 'umi';
 import ReactCrop from 'react-image-crop';
 import { Author } from '@vapetool/types';
 import { message } from 'antd';
 import { createPhoto } from '@/services/items';
 import { useState } from 'react';
-import { CurrentUser } from '@/app-umi';
+import useRouter from '@/utils/useRouter';
+import { useAuth } from '@/context/FirebaseAuthContext';
+import { notifyToLogIn } from '@/services/user';
 
 export const UPLOAD_PHOTO = 'uploadPhoto';
 export const SET_SRC = 'setSrc';
@@ -35,7 +36,8 @@ export interface UploadPhotoState {
   cancelled?: boolean;
 }
 
-export default function UploadPhotoModel() {
+export const useUploadPhotoModel = () => {
+  const auth = useAuth()
   const [src, setSrc] = useState<string | undefined>(undefined);
   const [crop, setCrop] = useState<ReactCrop.Crop | undefined>(undefined);
   const [croppedImage, setCroppedImage] = useState<CroppedImage>({});
@@ -57,15 +59,14 @@ export default function UploadPhotoModel() {
     setHeight(undefined);
   };
 
-  const submitPhoto = async (currentUser: CurrentUser) => {
-    Object.create({
-      croppedImageBlob,
-      description,
-      width,
-      height,
-    });
+  const submitPhoto = async () => {
+    if (!auth.dbUser){
+      console.error("User not logged in")
+      notifyToLogIn()
+      return
+    }
     try {
-      const author = new Author(currentUser.uid, currentUser.display_name);
+      const author = new Author(auth.dbUser.uid, auth.dbUser.display_name);
       await createPhoto(
         croppedImage.imageBlob,
         description,
@@ -75,9 +76,11 @@ export default function UploadPhotoModel() {
       );
       message.success('Successfully published photo');
       reset();
-      history.replace({ pathname: '/cloud' });
+      useRouter().replace('/cloud');
     } catch (e) {
-      message.error(e.message);
+      if (e instanceof Error){
+        message.error(e.message);
+      }
     }
   };
 

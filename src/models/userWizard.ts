@@ -1,9 +1,9 @@
-import { history } from 'umi';
 import { message } from 'antd';
 import { updateDisplayName } from '@/services/user';
 import { uploadAvatar } from '@/services/storage';
 import { User } from '@vapetool/types';
 import { useState } from 'react';
+import useRouter from '@/utils/useRouter';
 
 export interface UserWizardState {
   displayName?: string;
@@ -13,14 +13,14 @@ export interface UserWizardState {
   showNewAvatarChooser?: boolean;
 }
 
-export default () => {
+export const useUserWizardModel = () => {
   const [displayName, setDisplayName] = useState<string | undefined>(undefined);
   const [newAvatarBlob, setNewAvatarBlob] = useState<Blob | File | undefined>(undefined);
   const [newAvatarUrl, setNewAvatarUrl] = useState<string>('');
   const [showAvatarChooser, setShowAvatarChooser] = useState<boolean>(false);
   const updateUser = async (currentUser: User) => {
     if (!displayName) {
-      message.error({ message: 'Can not save user with empty user name' });
+      message.error('Can not save user with empty user name');
       return;
     }
     if (displayName && displayName !== currentUser.display_name) {
@@ -30,8 +30,10 @@ export default () => {
       try {
         await updateDisplayName(currentUser.uid, displayName);
       } catch (e) {
-        console.error(e);
-        message.error({ message: `Update user name failed. ${e.message}` });
+        if (e instanceof Error) {
+          console.error(e);
+          message.error(`Update user name failed. ${e.message}`);
+        }
       }
     } else {
       console.info('Skipping updating displayName');
@@ -42,16 +44,18 @@ export default () => {
       try {
         await uploadAvatar(newAvatarBlob, currentUser.uid);
       } catch (e) {
-        console.error(e);
-        message.error({ message: `Upload new avatar failed ${e.message}` });
+        if (e instanceof Error) {
+          console.error(e);
+          message.error(`Upload new avatar failed ${e.message}`);
+        }
       }
     } else {
       console.info('Skipping updating uploadAvatar');
     }
-    history.goBack();
+    useRouter().goBack();
   };
   const redirectBack = () => {
-    history.goBack();
+    useRouter().goBack();
   };
   return {
     displayName,

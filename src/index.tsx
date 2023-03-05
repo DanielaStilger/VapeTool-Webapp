@@ -1,8 +1,8 @@
 import * as React from 'react';
 import NavigationDrawer from './components/NavigationDrawer';
-import { AuthUserProvider, useAuth } from '@/context/FirebaseAuthContext';
+import { AuthUserProvider, useAuth } from './context/FirebaseAuthContext';
 import FirebaseAuth from './pages/login';
-import UserWizard from '@/pages/user/wizard';
+import UserWizard from './pages/user/wizard';
 import App from './app';
 import ReactDOM from 'react-dom';
 import { PageLoading } from '@ant-design/pro-layout';

@@ -5,9 +5,9 @@ import { CheckCircleFilled } from '@ant-design/icons';
 import { stripePromise } from '@/utils/stripe';
 import { createStripeManageLink, createStripePayment } from '@/utils/firebase';
 import { verifyCurrentUserWithRedirect } from '@/services';
-import { useModel } from 'umi';
 import { IS_PRODUCTION, IS_NOT_PRODUCTION } from '@/utils/utils';
 import styles from './payment.less';
+import { useAuth } from '@/context/FirebaseAuthContext';
 
 const stripeLogo = require('@/assets/stripe.png');
 const paypalLogo = require('@/assets/paypal.png');
@@ -43,8 +43,7 @@ const stripeCodes = {
 };
 
 const Payment: React.FC = () => {
-  const { initialState } = useModel('@@initialState');
-  const { currentUser } = initialState || {};
+  const auth = useAuth()
   const [type, setType] = useState(SubscriptionPlan.ANNUALLY);
   const [step, setStep] = useState(0);
   const [processingPayment, setProcessingPayment] = useState(false);
@@ -69,7 +68,7 @@ const Payment: React.FC = () => {
 
   const handleStripeClick = async () => {
     const stripe = await stripePromise;
-    if (!currentUser?.email) {
+    if (!auth.dbUser?.email) {
       console.error('userEmail is undefined');
       message.error('You need to be logged in');
     } else if (stripe) {
@@ -90,8 +89,10 @@ const Payment: React.FC = () => {
           window.location.href = link;
         }
       } catch (err) {
-        console.error(err);
-        message.error(err.error.message);
+        if (err instanceof Error) {
+          console.error(err);
+          message.error(err.message);
+        }
       }
 
       setProcessingPayment(false);
@@ -126,9 +127,8 @@ const Payment: React.FC = () => {
           <Radio.Group onChange={onChange} value={type}>
             <Radio
               value={SubscriptionPlan.MONTHLY}
-              className={`${styles.paymentOption} ${
-                type === SubscriptionPlan.MONTHLY ? styles.active : ''
-              }`}
+              className={`${styles.paymentOption} ${type === SubscriptionPlan.MONTHLY ? styles.active : ''
+                }`}
             >
               <div className={styles.radioText}>
                 <Tag color="blue">Just trying out</Tag>
@@ -137,9 +137,8 @@ const Payment: React.FC = () => {
             </Radio>
             <Radio
               value={SubscriptionPlan.ANNUALLY}
-              className={`${styles.paymentOption} ${
-                type === SubscriptionPlan.ANNUALLY ? styles.active : ''
-              }`}
+              className={`${styles.paymentOption} ${type === SubscriptionPlan.ANNUALLY ? styles.active : ''
+                }`}
             >
               <div className={styles.radioText}>
                 <Tag color="green">I&apos;m in</Tag>
@@ -148,9 +147,8 @@ const Payment: React.FC = () => {
             </Radio>
             <Radio
               value={SubscriptionPlan.LIFETIME}
-              className={`${styles.paymentOption} ${
-                type === SubscriptionPlan.LIFETIME ? styles.active : ''
-              }`}
+              className={`${styles.paymentOption} ${type === SubscriptionPlan.LIFETIME ? styles.active : ''
+                }`}
             >
               <div className={styles.radioText}>
                 <Tag color="red">

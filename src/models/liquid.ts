@@ -11,7 +11,8 @@ export interface LiquidModelState {
   showNewFlavorModal?: boolean;
 }
 
-export default () => {
+export const useLiquidModel = () => {
+  const [calculateBtnLoading, setCalculateBtnLoading] = useState(false);
   const [currentLiquid, setCurrentLiquid] = useState<Liquid>(new Liquid());
   const [resultsState, setResultsState] = useState<Result[]>();
   const [editingFlavor, setEditingFlavor] = useState<string>();
@@ -127,6 +128,8 @@ export default () => {
     showFlavorModal,
     calculateResult,
     setSaveModalVisible,
+    setCalculateBtnLoading,
+    calculateBtnLoading,
     currentLiquid,
     resultsState,
     editingFlavor,

@@ -1,8 +1,8 @@
-import UserItems from '@/pages/user/profile/components/UserItems';
+import UserItems from '../../../../../pages/user/profile/components/UserItems';
 import React from 'react';
-import { Liquid } from '@/types';
-import LiquidView from '@/components/ItemView/LiquidView';
-import { subscribeLiquids } from '@/services/items';
+import { Liquid } from '../../../../../types';
+import LiquidView from '../../../../../components/ItemView/LiquidView';
+import { subscribeLiquids } from '../../../../../services/items';
 
 interface Props {
   userId: string;

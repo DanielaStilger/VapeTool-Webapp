@@ -5,7 +5,7 @@ export enum Tab {
   POST = 'post',
   LINK = 'link',
 }
-export default function UploadModel() {
+export const useUploadModel = () => {
   const [currentTab, setCurrentTab] = useState<Tab>(Tab.PHOTO);
 
   return {

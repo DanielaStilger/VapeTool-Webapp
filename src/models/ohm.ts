@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 type Inputs = 'voltage' | 'resistance' | 'current' | 'power';
 
-export default () => {
+export const useOhmModel = () => {
   const [voltage, setVoltage] = useState<number | undefined>(undefined);
   const [resistance, setResistance] = useState<number | undefined>(undefined);
   const [current, setCurrent] = useState<number | undefined>(undefined);
@@ -11,25 +11,25 @@ export default () => {
   const [latestEdit, setLatestEdit] = useState<Inputs | undefined>(undefined);
   const [lastEdit, setLastEdit] = useState<Inputs | undefined>(undefined);
 
-  const onVoltageChange = (volts: number | string | undefined) => {
+  const onVoltageChange = (volts: number | string | undefined | null) => {
     if (!volts) return;
     setVoltage(Number(volts));
     setLatestEdit(lastEdit !== 'voltage' ? lastEdit : latestEdit);
     setLastEdit('voltage');
   };
-  const onResistanceChange = (ohms: number | string | undefined) => {
+  const onResistanceChange = (ohms: number | string | undefined | null) => {
     if (!ohms) return;
     setResistance(Number(ohms));
     setLatestEdit(lastEdit !== 'resistance' ? lastEdit : latestEdit);
     setLastEdit('resistance');
   };
-  const onCurrentChange = (amps: number | string | undefined) => {
+  const onCurrentChange = (amps: number | string | undefined | null) => {
     if (!amps) return;
     setCurrent(Number(amps));
     setLatestEdit(lastEdit !== 'current' ? lastEdit : latestEdit);
     setLastEdit('current');
   };
-  const onPowerChange = (watts: number | string | undefined) => {
+  const onPowerChange = (watts: number | string | undefined | null) => {
     if (!watts) return;
     setPower(Number(watts));
     setLatestEdit(lastEdit !== 'power' ? lastEdit : latestEdit);

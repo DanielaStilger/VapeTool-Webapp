@@ -1,8 +1,8 @@
-import { Auth } from 'firebase/auth';
-import { FirebaseAuth } from '@/context/useFirebaseAuth';
-import { notifyToLogIn, logoutFirebase } from '@/services/user';
+import { useAuth } from '../context/FirebaseAuthContext';
+import { notifyToLogIn, logoutFirebase } from '../services/user';
 
-export function verifyCurrentUser(auth: FirebaseAuth): boolean {
+export function verifyCurrentUser(): boolean {
+  const auth = useAuth()
   if (!auth.firebaseUser) {
     notifyToLogIn();
     return false;
@@ -10,8 +10,9 @@ export function verifyCurrentUser(auth: FirebaseAuth): boolean {
   return true;
 }
 
-export function verifyCurrentUserWithRedirect(auth: Auth) {
-  if (!auth.currentUser || auth.currentUser.isAnonymous) {
+export function verifyCurrentUserWithRedirect() {
+  const auth = useAuth()
+  if (!auth.firebaseUser) {
     logoutFirebase();
     return false;
   }

@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { getAdImageProperties, BannerProperties, getBannerUrl } from '@/services/storage';
-import { useModel } from 'umi';
-import { isProUser } from '@/utils/utils';
+import { useAuth } from '@/context/FirebaseAuthContext';
+import { isUserPro } from '@/utils/utils';
 
 export default (props: { providerName: string }) => {
-  const { initialState } = useModel('@@initialState');
-  const { firebaseUser, currentUser } = initialState || {};
+  const { firebaseUser, dbUser } = useAuth()
+  const isPro = isUserPro(dbUser?.subscription)
 
   const [bannerProperties, setBannerProperties] = useState<BannerProperties>();
   const [bannerSrc, setBannerSrc] = useState<string | undefined>();
-  if (firebaseUser?.isAnonymous || isProUser(currentUser?.subscription)) {
+  if (firebaseUser?.isAnonymous || isPro) {
     return <></>;
   }
 

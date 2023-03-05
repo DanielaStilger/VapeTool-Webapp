@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Button, Form, Input, InputNumber, message, Popconfirm, Table } from 'antd';
 import { Flavor } from '@vapetool/types';
-import { FormattedMessage, useModel } from 'umi';
+import { FormattedMessage } from 'react-intl';
 import ButtonGroup from 'antd/es/button/button-group';
 import { DeleteOutlined, EditOutlined, CloseOutlined, CheckOutlined } from '@ant-design/icons';
+import { useLiquidModel } from '@/models/liquid';
 
 type Column = 'name' | 'manufacturer' | 'percentage' | 'price' | 'ratio';
 
@@ -56,7 +57,7 @@ const EditableCell: React.FC<EditableCellProps> = (props) => {
 };
 
 const EditableTable = () => {
-  const { setFlavor, removeFlavor, currentLiquid } = useModel('liquid');
+  const { setFlavor, removeFlavor, currentLiquid } = useLiquidModel();
   const [form] = Form.useForm();
   const [editingFlavor, setEditingFlavor] = useState('');
   const isEditing = (flavor: Flavor) => flavor.uid === editingFlavor;
@@ -81,7 +82,9 @@ const EditableTable = () => {
       setFlavor(uid, row);
       cancel();
     } catch (e) {
-      message.error(e.message);
+      if (e instanceof Error) {
+        message.error(e.message);
+      }
     }
   };
 

@@ -8,9 +8,9 @@ import {
   getUserPosts,
   getUser,
 } from '@/services/userCenter';
-import { isProUser } from '@/utils/utils';
 import { useState } from 'react';
 import useRouter from '@/utils/useRouter';
+import { isUserPro } from '@/utils/utils';
 
 export interface UserProfile {
   readonly uid: string;
@@ -22,7 +22,7 @@ export interface UserProfile {
   }[];
 }
 
-export default () => {
+export const useProfileModel = () => {
   const [loadingProfile, setLoadingProfile] = useState<boolean>(false);
   const [userProfile, setUserProfile] = useState<UserProfile | undefined>();
   const [userPhotos, setUserPhotos] = useState<Photo[] | undefined>();
@@ -83,7 +83,7 @@ export default () => {
 
   function setProfile(user: User) {
     const tags = [];
-    const isPro = isProUser(user.subscription);
+    const isPro = isUserPro(user.subscription);
     if (isPro) {
       tags.push({ key: 'pro', label: 'Pro' });
     }

@@ -9,7 +9,7 @@ export interface BatteriesModelState {
   showNewAffiliateModal?: boolean;
 }
 
-export default () => {
+export const useBatteriesModel = () => {
   const [batteries, setBatteries] = useState<Battery[]>([]);
   const [selectedBattery, setSelectedBattery] = useState<Battery | undefined>(undefined);
   const [editBattery, setEditBattery] = useState<Battery | undefined>(undefined);

@@ -4,7 +4,7 @@ import { nanToUndefined, safeConvert } from '@/utils/utils';
 import { message } from 'antd';
 import { verifyCurrentUser } from '@/services';
 
-export default () => {
+export const useTempModel = () => {
   const [celsius, setCelsius] = useState<number | undefined>(undefined);
   const [fahrenheit, setFahrenheit] = useState<number | undefined>(undefined);
 

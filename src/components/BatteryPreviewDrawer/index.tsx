@@ -1,8 +1,10 @@
 import { Col, Divider, Drawer, Row, Tag } from 'antd';
 import React, { useState } from 'react';
-import { FormattedMessage, useModel } from 'umi';
-import useMedia from 'react-media-hook2';
-import { UserAuthorities } from '@/types/UserAuthorities';
+import { FormattedMessage } from 'react-intl';
+import { useBatteriesModel } from '@/models/batteries';
+import { useAuth } from '@/context/FirebaseAuthContext';
+import { useMedia } from '@/utils/useMedia';
+import { isUserPro } from '@/utils/utils';
 
 const pStyle = {
   fontSize: 16,
@@ -13,10 +15,11 @@ const pStyle = {
 };
 
 const BatteryPreviewDrawer = () => {
-  const { setSelectedBattery, selectedBattery, editBattery } = useModel('batteries');
+  
+  const { setSelectedBattery, selectedBattery, editBattery } = useBatteriesModel();
+  const auth = useAuth();
 
-  const { initialState } = useModel('@@initialState');
-  const isPro = initialState?.currentUser?.authorities?.includes(UserAuthorities.PRO);
+  const isPro = isUserPro(auth.dbUser?.subscription);
 
   const onClose = () => setSelectedBattery(undefined);
 
@@ -42,7 +45,7 @@ const BatteryPreviewDrawer = () => {
     </div>
   );
   const [collapsed, setCollapsed] = useState(false);
-  useMedia({ query: { maxWidth: 500 }, onChange: setCollapsed });
+  setCollapsed(useMedia(['(max-width: 500px)'], [false], false))
 
   if (!selectedBattery) {
     return <div />;

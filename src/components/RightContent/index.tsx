@@ -1,10 +1,12 @@
 import { Tag, Space, Typography } from 'antd';
 import React from 'react';
-import { useModel, SelectLang } from 'umi';
-import { logoutFirebaseWithRedirect } from '@/services/user';
+// import { SelectLang } from 'react-intl';
+import { logoutFirebase } from '@/services/user';
 import { IS_NOT_PRODUCTION } from '@/utils/utils';
 import Avatar from './AvatarDropdown';
 import styles from './index.less';
+import { useAuth } from '@/context/FirebaseAuthContext';
+import { useSettings } from '@/models/useSettings';
 
 export type SiderTheme = 'light' | 'dark';
 
@@ -15,24 +17,20 @@ const ENVTagColor = {
 };
 
 const GlobalHeaderRight: React.FC<{}> = () => {
-  const { initialState } = useModel('@@initialState');
+  const {firebaseUser} = useAuth()
+  const {settings: { navTheme, layout }} = useSettings(); //TODO: implement useSettings()
 
-  if (!initialState || !initialState.settings) {
-    return null;
-  }
-
-  const { navTheme, layout } = initialState.settings;
   let className = styles.right;
 
-  if ((navTheme === 'dark' && layout === 'top') || layout === 'mix') {
+  if ((navTheme === 'realDark' && layout === 'top') || layout === 'mix') {
     className = `${styles.right}  ${styles.dark}`;
   }
   return (
     <Space className={className}>
-      {!initialState.firebaseUser?.isAnonymous ? (
+      {firebaseUser ? (
         <Avatar />
       ) : (
-        <a onClick={() => logoutFirebaseWithRedirect()}>
+          <a onClick={logoutFirebase}>
           <Typography style={{ color: 'white' }}>Log in</Typography>
         </a>
       )}
@@ -41,7 +39,8 @@ const GlobalHeaderRight: React.FC<{}> = () => {
           <Tag color={ENVTagColor[REACT_APP_ENV]}>{REACT_APP_ENV}</Tag>
         </span>
       )}
-      <SelectLang className={styles.action} />
+      {/* TODO: add i18n */}
+      {/* <SelectLang className={styles.action} /> */}
     </Space>
   );
 };

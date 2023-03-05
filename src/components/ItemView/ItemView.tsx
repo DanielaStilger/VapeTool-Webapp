@@ -1,18 +1,18 @@
 import React, { useEffect, useState, useRef } from 'react';
 import moment from 'moment';
-import { Input, List, Menu, Modal, message, Typography, Col, Row } from 'antd';
+import { Input, List, Menu, Modal, message, Typography, Col } from 'antd';
 import { likesRef, commentsRef } from '@/utils/firebase';
-import { CurrentUser } from '@/app-umi';
-import { FormattedMessage, useIntl, useModel } from 'umi';
-import firebase from 'firebase';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { like, report, deleteItem, deleteComment, commentItem } from '@/services/operations';
 import { LikeIconText } from '@/components/LikeIconText';
 import { CommentIconText } from '@/components/CommentIconText';
 import Dropdown from 'antd/es/dropdown';
-import { UserPermission } from '@vapetool/types';
+import { User as DatabaseUser, UserPermission } from '@vapetool/types';
 import { Liquid, Coil, Post, Link, Photo, Comment, ItemName } from '@/types';
 import { DeleteOutlined, FlagOutlined, MoreOutlined } from '@ant-design/icons';
 import { CommentView } from './CommentView';
+import { useAuth } from '@/context/FirebaseAuthContext';
+import { DataSnapshot, onValue } from 'firebase/database';
 
 export interface ItemViewProps<T> {
   item: T;
@@ -31,17 +31,15 @@ export interface ItemViewState {
 export function Actions<T extends Photo | Post | Link | Coil | Liquid>({
   what,
   item,
-  unselectItem,
+  unselectItem
 }: ItemViewProps<T>) {
-  const { initialState } = useModel('@@initialState');
-  const currentUser = initialState?.currentUser as CurrentUser;
-  const firebaseUser = initialState?.firebaseUser as firebase.User;
+  const { firebaseUser, dbUser } = useAuth()
 
   const [draftComment, setDraftComment] = useState<string>('');
-  const { displayComments, commentsCount } = useComments(what, item, currentUser);
+  const { displayComments, commentsCount } = useComments(what, item);
   const [visibleCommentsLength, setVisibleCommentsLength] = useState(3);
-  const inputRef = useRef<Input>(null);
-  const { likedByMe, likesCount } = useLikes(what, item, currentUser);
+  const inputRef = useRef<any>(null);
+  const { likedByMe, likesCount } = useLikes(what, item, dbUser);
   const intl = useIntl();
   useEffect(() => {
     moment.locale(intl.locale);
@@ -51,18 +49,16 @@ export function Actions<T extends Photo | Post | Link | Coil | Liquid>({
     setDraftComment(e.target.value);
   };
 
-  function usersOnly<RightFunc>(fn: RightFunc): RightFunc | (() => void) {
-    if (firebaseUser.isAnonymous) {
-      return () => message.error('You need to be logged in');
+  function usersOnly(fn: ((user: DatabaseUser) => Promise<void>)): (() => Promise<void>) {
+    if (!firebaseUser || !dbUser) {
+      return () => Promise.resolve(message.error('You need to be logged in')); //TODO: check if it works
     }
-    return fn;
+    return () => fn(dbUser);
   }
 
-  const onLikeClick = usersOnly(() => like(what, item.uid, currentUser.uid));
-  const onReportClick = usersOnly(() => report(what, item.uid, currentUser.uid));
-  const submitComment = usersOnly(() => {
-    commentItem(what, draftComment, item.uid, currentUser).then(() => setDraftComment(''));
-  });
+  const onLikeClick = usersOnly((user: DatabaseUser) => like(what, item.uid, user.uid));
+  const onReportClick = usersOnly((user: DatabaseUser) => report(what, item.uid, user.uid));
+  const submitComment = usersOnly((user: DatabaseUser) => commentItem(what, draftComment, item.uid, user).then(() => setDraftComment('')));
 
   const onReplyComment = (replyingComment: Comment) => {
     if (draftComment.trim().length === 0) {
@@ -77,10 +73,10 @@ export function Actions<T extends Photo | Post | Link | Coil | Liquid>({
 
   const onCommentClick = () => inputRef.current?.focus();
 
-  const postComment = () => {
-    commentItem(what, draftComment, item.uid, currentUser);
+  const postComment = usersOnly((user: DatabaseUser) => {
     setDraftComment('');
-  };
+    return commentItem(what, draftComment, item.uid, user);
+  });
 
   const onDeleteClick = () => {
     Modal.confirm({
@@ -119,7 +115,7 @@ export function Actions<T extends Photo | Post | Link | Coil | Liquid>({
       <Menu.Item
         key="report"
         onClick={onReportClick}
-        disabled={!currentUser || currentUser.uid === item.author.uid}
+        disabled={!dbUser || dbUser.uid === item.author.uid}
       >
         <FlagOutlined />
         <FormattedMessage id="user.actions.report" defaultMessage="Report" />
@@ -129,9 +125,9 @@ export function Actions<T extends Photo | Post | Link | Coil | Liquid>({
         key="delete"
         onClick={onDeleteClick}
         disabled={
-          !currentUser ||
-          (currentUser.uid !== item.author.uid &&
-            currentUser.permission < UserPermission.ONLINE_MODERATOR)
+          !dbUser ||
+          (dbUser.uid !== item.author.uid &&
+            dbUser.permission < UserPermission.ONLINE_MODERATOR)
         }
       >
         <DeleteOutlined />
@@ -177,7 +173,6 @@ export function Actions<T extends Photo | Post | Link | Coil | Liquid>({
           )}
           renderItem={(comment) => (
             <CommentView
-              user={currentUser}
               comment={comment}
               onReply={onReplyComment}
               onDelete={onDeleteCommentClick}
@@ -204,41 +199,41 @@ export function Actions<T extends Photo | Post | Link | Coil | Liquid>({
   );
 }
 
-function useLikes(what: ItemName, item: Photo | Post | Link | Coil | Liquid, user: CurrentUser) {
+function useLikes(what: ItemName, item: Photo | Post | Link | Coil | Liquid, user: DatabaseUser | null) {
   const [likesCount, setLikesCount] = useState<number | undefined>();
   const [likedByMe, setLikedByMe] = useState<boolean | undefined>(false);
 
   useEffect(() => {
-    const ref = likesRef(what).child(item.uid);
-    const listener = ref.on('value', (snapshot: firebase.database.DataSnapshot) => {
-      setLikesCount(snapshot.numChildren());
+    const ref = likesRef(what)(item.uid);
+    const listener = onValue(ref, (snapshot: DataSnapshot) => {
+      setLikesCount(snapshot.size);
       snapshot.forEach((snap) => {
-        if (user !== undefined && snap.key === user.uid) {
+        if (user !== null && snap.key === user.uid) {
           setLikedByMe(true);
         }
       });
     });
-    return () => ref.off('value', listener);
+    return listener
   }, [item.uid]);
 
   return { likedByMe, likesCount };
 }
 
-function useComments(what: ItemName, item: Photo | Post | Link | Coil | Liquid, user: CurrentUser) {
+function useComments(what: ItemName, item: Photo | Post | Link | Coil | Liquid) {
   const [commentsCount, setCommentsCount] = useState<number | undefined>();
   const [displayComments, setDisplayComments] = useState<Comment[]>([]);
 
   useEffect(() => {
-    const ref = commentsRef(what).child(item.uid);
-    const listener = ref.on('value', (snapshot: firebase.database.DataSnapshot) => {
-      setCommentsCount(snapshot.numChildren());
+    const ref = commentsRef(what)(item.uid);
+    const listener = onValue(ref, (snapshot: DataSnapshot) => {
+      setCommentsCount(snapshot.size);
       const comments: Comment[] = [];
       snapshot.forEach((snap) => {
         comments.push({ ...snap.val(), uid: snap.key });
       });
       setDisplayComments(comments);
     });
-    return () => ref.off('value', listener);
+    return listener
   }, [item.uid]);
 
   return { commentsCount, displayComments };

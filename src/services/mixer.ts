@@ -1,6 +1,6 @@
 import { Mixable, MixResult } from '@vapetool/types';
-import { callFirebaseFunction } from '@/utils/firebase';
-import { useAuth } from '@/context/FirebaseAuthContext';
+import { callFirebaseFunction } from '../utils/firebase';
+import { useAuth } from '../context/FirebaseAuthContext';
 
 export async function calculate(mixable1: Mixable, mixable2: Mixable): Promise<MixResult> {
   try {

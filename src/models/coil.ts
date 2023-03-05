@@ -9,7 +9,7 @@ export interface Path {
   index: number;
 }
 
-export default () => {
+export const useCoilModel = () => {
   const [currentCoil, setCurrentCoil] = useState<Coil>(wireGenerator.normalCoil());
   const [baseVoltage, setBaseVoltage] = useState<number>(3.7);
   const [properties, setProperties] = useState<Properties>();

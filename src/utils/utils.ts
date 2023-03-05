@@ -1,8 +1,8 @@
-import { parse } from 'querystring';
-import moment from 'moment';
 import { UserPermission } from '@vapetool/types';
-import { UserAuthorities } from '@/types/UserAuthorities';
+import { UserAuthorities } from '../types/UserAuthorities';
 import useRouter from './useRouter';
+import moment from 'moment';
+import { parseParams } from './querystring';
 
 /* eslint no-useless-escape:0 import/prefer-default-export:0 */
 const reg = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(?::\d+)?|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/;
@@ -12,6 +12,15 @@ export const isUrl = (path: string): boolean => reg.test(path);
 export const isAntDesignPro = (): boolean => {
   return window.location.hostname === 'web.vapetool.app';
 };
+
+export const isUserPro = (userSubscription: Date | null | undefined): boolean => {
+  if (userSubscription) {
+    return userSubscription && moment(userSubscription).isAfter();
+  } else {
+    return false
+  }
+}
+
 
 export const IS_NOT_PRODUCTION = REACT_APP_ENV !== 'prod';
 export const IS_PRODUCTION = REACT_APP_ENV === 'prod';
@@ -25,8 +34,8 @@ export const isAntDesignProOrDev = (): boolean => {
   return isAntDesignPro();
 };
 
-export const getPageQuery = () => parse(window.location.href.split('?')[1]);
-export const getPageFragment = () => parse(window.location.href.split('#')[1]);
+export const getPageQuery = () => parseParams(window.location.href.split('?')[1]);
+export const getPageFragment = () => parseParams(window.location.href.split('#')[1]);
 
 export function unitFormatter(
   decimals: number,
@@ -107,9 +116,6 @@ export const capitalize = (s: string) => {
   if (typeof s !== 'string') return '';
   return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 };
-
-export const isProUser = (userSubscription?: Date | null | undefined): boolean =>
-  userSubscription !== undefined && moment(userSubscription).isAfter();
 
 export const redirectBack = () => {
   const urlParams = new URL(window.location.href);

@@ -1,25 +1,26 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Affix, Button, Card, Col, InputNumber, Row, Table, Typography } from 'antd';
-import { FormattedMessage, useModel } from 'umi';
-import FlavorTable from '@/components/FlavorTable';
-import NewFlavorModal from '@/components/NewFlavorModal';
-import VgPgRatioView from '@/components/VgPgRatioView';
+import { FormattedMessage } from 'react-intl';
+import FlavorTable from '../../components/FlavorTable';
+import NewFlavorModal from '../../components/NewFlavorModal';
+import VgPgRatioView from '../..//components/VgPgRatioView';
 import { CalculatorOutlined, PlusOutlined } from '@ant-design/icons';
 import { Author } from '@vapetool/types';
-import SaveModal from '@/components/SaveModal';
-import { saveLiquid } from '@/services/items';
-import { LiquidModelState } from '@/models/liquid';
-import { CurrentUser } from '@/app-umi';
+import SaveModal from '../../components/SaveModal';
+import { saveLiquid } from '../../services/items';
+import { LiquidModelState, useLiquidModel } from '../../models/liquid';
+import { User as DatabaseUser } from '@vapetool/types'
 import { PageContainer } from '@ant-design/pro-layout';
-import Banner from '@/components/Banner';
+import Banner from '../../components/Banner';
 import styles from './LiquidBlender.less';
 import LiquidResultsChart from './LiquidResultsChart';
+import { useAuth } from '../../context/FirebaseAuthContext';
 
 const { Title } = Typography;
 
 export interface LiquidBlenderProps {
   liquid: LiquidModelState;
-  user?: CurrentUser;
+  user?: DatabaseUser;
 }
 
 const resultColumns = [
@@ -62,12 +63,14 @@ const LiquidBlender = () => {
     resultsState,
     calculateResult,
     saveModalVisible,
+    calculateBtnLoading,
     setSaveModalVisible,
-  } = useModel('liquid');
+    setCalculateBtnLoading,
+  } = useLiquidModel();
 
-  const { initialState } = useModel('@@initialState');
-  const [calculateBtnLoading, setCalculateBtnLoading] = useState(false);
-  const user = initialState?.currentUser as CurrentUser;
+
+  const { dbUser } = useAuth();
+  const user = dbUser;
 
   const onBaseStrengthChange = (value: number) => setBaseStrength(value);
 
@@ -104,8 +107,8 @@ const LiquidBlender = () => {
             visible={saveModalVisible}
             setVisible={setSaveModalVisible}
             save={async (name, description) => {
-              if (user && user.uid && user.name) {
-                saveLiquid(currentLiquid, new Author(user.uid, user.name), name, description || '');
+              if (user && user.uid && user.display_name) {
+                saveLiquid(currentLiquid, new Author(user.uid, user.display_name), name, description || '');
               } else {
                 throw new Error('Can not save with undefined user ');
               }
@@ -279,13 +282,13 @@ const LiquidBlender = () => {
                   dataSource={
                     resultsState
                       ? resultsState.map((result) => ({
-                          name: result.name,
-                          percentage: `${result.percentage.toFixed(1)}%`,
-                          ml: `${result.ml.toFixed(1)} ml`,
-                          drips: result.drips.toFixed(0),
-                          price: `${result.price.toFixed(2)}$`,
-                          weight: `${result.weight.toFixed(3)}g`,
-                        }))
+                        name: result.name,
+                        percentage: `${result.percentage.toFixed(1)}%`,
+                        ml: `${result.ml.toFixed(1)} ml`,
+                        drips: result.drips.toFixed(0),
+                        price: `${result.price.toFixed(2)}$`,
+                        weight: `${result.weight.toFixed(3)}g`,
+                      }))
                       : []
                   }
                 />

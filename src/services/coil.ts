@@ -1,4 +1,4 @@
-import { useAuth } from '@/context/FirebaseAuthContext';
+import { useAuth } from '../context/FirebaseAuthContext';
 import { Properties, Coil } from '@vapetool/types';
 import { callFirebaseFunction } from '../utils/firebase';
 

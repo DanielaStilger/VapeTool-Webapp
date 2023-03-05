@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { PageHeaderWrapper } from '@ant-design/pro-layout';
+import PageHeaderWrapper from "@ant-design/pro-layout"
 import { Button, Card, Col, Form, InputNumber, Row, Typography } from 'antd';
-import { useIntl, FormattedMessage } from 'umi';
+import { useIntl, FormattedMessage } from 'react-intl';
 import ButtonGroup from 'antd/es/button/button-group';
 import { verifyCurrentUser } from '@/services';
 import Banner from '@/components/Banner';

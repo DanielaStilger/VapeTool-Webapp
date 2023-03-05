@@ -1,5 +1,4 @@
-import type { ProSettings } from '@ant-design/pro-layout';
-import { PageContainer, ProLayout, SettingDrawer } from '@ant-design/pro-layout';
+import { ProLayout } from '@ant-design/pro-layout';
 import React from 'react';
 
 

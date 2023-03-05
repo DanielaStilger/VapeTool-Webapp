@@ -3,8 +3,8 @@ import {
     useLocation,
     useNavigate,
 } from "react-router-dom";
-import queryString from "query-string";
 import { useMemo } from "react";
+import { parseParams } from "./querystring";
 
 export default function useRouter() {
     const params = useParams();
@@ -23,9 +23,9 @@ export default function useRouter() {
             // so that they can be used interchangeably.
             // Example: /:topic?sort=popular -> { topic: "react", sort: "popular" }
             query: {
-                ...queryString.parse(location.search), // Convert string to object
-                ...params,
+                ...parseParams(location.search), // Convert string to object
             },
+            params: params,
             // Include match, location, history objects so we have
             // access to extra React Router functionality if needed.
             location,

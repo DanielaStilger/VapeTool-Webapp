@@ -6,7 +6,7 @@ import { isLoggedInOrShowNotification } from '@/services/user';
 
 const precision = 3;
 
-export default () => {
+export const useAwgMmModel = () => {
   const [awg, setAwg] = useState<number | undefined>(undefined);
   const [mm, setMm] = useState<number | undefined>(undefined);
 

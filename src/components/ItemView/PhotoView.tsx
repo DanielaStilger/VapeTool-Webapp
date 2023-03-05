@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useModel } from 'umi';
+import { Link } from 'react-router-dom';
 import { Card, Skeleton, Typography } from 'antd';
 import { Photo } from '@/types';
 import FirebaseImage from '@/components/StorageAvatar';
@@ -8,9 +8,11 @@ import { ImageType } from '@/services/storage';
 import { getUserProfileUrl } from '@/places/user.places';
 import styles from './styles.less';
 import { Actions } from './ItemView';
+import { usePreviewModel } from '@/models/preview';
 
 export default function PhotoView({ item }: { item: Photo }) {
-  const { setSelectedItem, unselectItem } = useModel('preview');
+  
+  const { setSelectedItem, unselectItem } = usePreviewModel();
   const onSelectItem = () => setSelectedItem(item);
 
   return (
