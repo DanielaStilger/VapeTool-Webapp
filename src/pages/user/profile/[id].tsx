@@ -10,7 +10,7 @@ import UserPosts from './components/UserItems/UserPosts';
 import UserLinks from './components/UserItems/UserLinks';
 import UserLiquids from './components/UserItems/UserLiquids';
 import UserCoils from './components/UserItems/UserCoils';
-import styles from './styles.less';
+import useStyles from './style';
 import useRouter from '@/utils/useRouter';
 import { useProfileModel } from '@/models/profile';
 import { useAuth } from '@/context/FirebaseAuthContext';
@@ -20,6 +20,7 @@ const Profile: React.FC = () => {
   const { dbUser } = useAuth();
   const [tabKey, setTabKey] = useState(ItemName.PHOTO);
   const router = useRouter();
+  const { styles } = useStyles();
 
   const queryId = router.query?.id
   const userId = (queryId || dbUser?.uid) ? String(queryId || dbUser?.uid) : null;

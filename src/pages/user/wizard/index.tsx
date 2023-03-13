@@ -2,7 +2,7 @@ import { Button, Card, Col, Input, Row, Spin } from 'antd';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import ButtonGroup from 'antd/es/button/button-group';
-import styles from '../profile/styles.less';
+import useStyles from '../profile/style';
 import FirebaseImage from '../../../components/StorageAvatar';
 import ImageChooser from '../../../components/ImageChoser';
 import { ImageType } from '../../../services/storage';
@@ -24,6 +24,7 @@ const UserWizard: React.FC = () => {
   } = useUserWizardModel()
 
   const { dbUser } = useAuth();
+  const { styles } = useStyles();
 
   const onDisplayNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setDisplayName(e.target.value);

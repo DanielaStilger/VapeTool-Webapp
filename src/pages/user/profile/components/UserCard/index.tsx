@@ -9,7 +9,7 @@ import UserTags from '@/pages/user/profile/components/UserCard/UserTags';
 import { getCancelSubscriptionUrl, getUserWizard, getPaymentUrl } from '@/places/user.places';
 import { getUserTotalContentCount, getUserTotalLikesCount } from '@/services/userCenter';
 import { FormattedMessage } from 'react-intl';
-import styles from './styles.less';
+import useStyles from './style';
 import useRouter from '@/utils/useRouter';
 import { isUserPro } from '@/utils/utils';
 
@@ -26,6 +26,7 @@ const UserCard: React.FC<UserCardProps> = ({
   isCurrentUser,
   currentUser,
 }) => {
+  const { styles } = useStyles();
   const [userContentCount, setUserContentCount] = useState<number | undefined>(undefined);
   const [userLikesCount, setUserLikesCount] = useState<number | undefined>(undefined);
   const userTags = profile?.tags || [];
@@ -57,9 +58,9 @@ const UserCard: React.FC<UserCardProps> = ({
           <Col xs={24} lg={isCurrentUser ? 16 : 24}>
             <h4 className={styles.name}>{profile ? profile.name : ''}</h4>
             {isCurrentUser && (
-              <div className={styles.detail}>
+              <div>
                 <p>
-                  <i className={styles.title} />
+                  <i />
                   {currentUser ? currentUser.email : ''}
                 </p>
               </div>

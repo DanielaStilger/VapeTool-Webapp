@@ -6,11 +6,12 @@ import { Link as LinkType, ItemName } from '@/types';
 import { ImageType } from '@/services/storage';
 import { getUserProfileUrl } from '@/places/user.places';
 import { Actions } from './ItemView';
-import styles from './styles.less';
+import useStyles from './style';
 import { usePreviewModel } from '@/models/preview';
 
 export default function LinkView({ item }: { item: LinkType }) {
   const { setSelectedItem, unselectItem } = usePreviewModel();
+  const { styles } = useStyles();
   const onSelectItem = () => setSelectedItem(item);
 
   return (

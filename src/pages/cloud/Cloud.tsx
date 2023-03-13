@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Affix, Button, List } from 'antd';
-import styles from '@/components/ItemView/styles.less';
+import useStyles from '@/components/ItemView/style';
 import { PhotoView } from '@/components/ItemView';
 import PhotoPreviewModal from '@/components/PreviewModal';
 import PostView from '@/components/ItemView/PostView';
@@ -17,6 +17,7 @@ import { useAuth } from '../../context/FirebaseAuthContext';
 
 const Cloud: React.FC = () => {
   const router = useRouter()
+  const {styles} = useStyles();
   const onUploadPhotoClicked = () => router.push('/cloud/upload');
   const { setLinks, setPhotos, setPosts, posts, links, photos } = useCloudModel();
 

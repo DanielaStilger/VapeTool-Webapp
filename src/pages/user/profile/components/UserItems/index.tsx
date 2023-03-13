@@ -1,6 +1,6 @@
 import { List } from 'antd';
 import React, { useEffect, useState } from 'react';
-import styles from '@/components/ItemView/styles.less';
+import useStyles from '@/components/ItemView/style';
 import { Item } from '@/types';
 
 interface UserItemProps<T extends Item> {
@@ -14,6 +14,7 @@ export default function UserItems<T extends Item>({
   renderItem,
   subscribe,
 }: UserItemProps<T>) {
+  const {styles} = useStyles();
   const [items, setItems] = useState<T[]>([]);
   useEffect(() => {
     return subscribe(setItems, userId);

@@ -6,13 +6,13 @@ import FirebaseImage from '@/components/StorageAvatar';
 import { ItemName } from '@/types/Item';
 import { ImageType } from '@/services/storage';
 import { getUserProfileUrl } from '@/places/user.places';
-import styles from './styles.less';
+import useStyles from './style';
 import { Actions } from './ItemView';
 import { usePreviewModel } from '@/models/preview';
 
 export default function PhotoView({ item }: { item: Photo }) {
-  
   const { setSelectedItem, unselectItem } = usePreviewModel();
+  const { styles } = useStyles();
   const onSelectItem = () => setSelectedItem(item);
 
   return (

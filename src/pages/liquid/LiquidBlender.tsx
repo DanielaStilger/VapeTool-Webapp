@@ -12,7 +12,7 @@ import { LiquidModelState, useLiquidModel } from '../../models/liquid';
 import { User as DatabaseUser } from '@vapetool/types'
 import { PageContainer } from '@ant-design/pro-layout';
 import Banner from '../../components/Banner';
-import styles from './LiquidBlender.less';
+import useStyles from './style';
 import LiquidResultsChart from './LiquidResultsChart';
 import { useAuth } from '../../context/FirebaseAuthContext';
 
@@ -67,7 +67,7 @@ const LiquidBlender = () => {
     setSaveModalVisible,
     setCalculateBtnLoading,
   } = useLiquidModel();
-
+  const { styles } = useStyles();
 
   const { dbUser } = useAuth();
   const user = dbUser;
@@ -114,11 +114,11 @@ const LiquidBlender = () => {
               }
             }}
           />
-          <Row style={{ alignItems: 'stretch' }} justify="center" className={styles.root}>
+          <Row style={{ alignItems: 'stretch' }} justify="center">
             <Col {...responsivenessProps}>
               <Card
                 title={
-                  <Title level={1}>
+                  <Title style={{ marginTop: "16px" }} level={1}>
                     <FormattedMessage id="liquid.titles.base" defaultMessage="Base" />
                   </Title>
                 }

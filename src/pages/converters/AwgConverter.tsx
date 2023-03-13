@@ -2,11 +2,12 @@ import React from 'react';
 import { Card, Col, InputNumber, Row } from 'antd';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { SwapOutlined } from '@ant-design/icons';
-import styles from './converters.less';
+import useStyles from './style';
 import { useAwgMmModel } from '@/models/awgMm';
 
 const AwgConverter: React.FC = () => {
   const { awg, setAwg, mm, setMm } = useAwgMmModel();
+  const { styles } = useStyles();
 
   const onChangeAwg = setAwg;
   const onChangeMm = setMm;

@@ -14,19 +14,12 @@ import { sendRequest } from '@/services/coil';
 import { Path, useCoilModel } from '@/models/coil';
 import { PageContainer } from '@ant-design/pro-layout';
 import Banner from '@/components/Banner';
-import styles from './styles.less';
+import useStyles from './style';
 import { useAuth } from '@/context/FirebaseAuthContext';
 
 const { Option } = Select;
 const { Title } = Typography;
 
-export interface CoilCalculatorProps {
-  coil: Coil;
-  properties?: Properties;
-  baseVoltage: number;
-  isPro: boolean;
-  user?: DatabaseUser;
-}
 
 enum Field {
   SETUP = 'SETUP',
@@ -37,8 +30,9 @@ enum Field {
   VOLTAGE = 'VOLTAGE',
 }
 
-const CoilCalculator: React.FC<CoilCalculatorProps> = () => {
+const CoilCalculator: React.FC = () => {
   const { dbUser, toAuthor } = useAuth()
+  const { styles } = useStyles();
 
   const {
     currentCoil,

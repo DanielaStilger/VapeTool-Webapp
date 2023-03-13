@@ -5,8 +5,8 @@ import { ItemName, Coil } from '@/types';
 import { getCoilUrl } from '@/services/storage';
 import { WireType } from '@vapetool/types/dist/wire';
 import { Actions } from './ItemView';
-import styles from './styles.less';
 import { usePreviewModel } from '@/models/preview';
+import useStyles from './style';
 
 enum SetupsName {
   Single = 1,
@@ -34,6 +34,7 @@ function useCoilImage(itemUid: string) {
 export default function CoilView({ item }: { item: Coil }) {
   const coilImageUrl = useCoilImage(item.uid);
   const { setSelectedItem, unselectItem } = usePreviewModel();
+  const { styles } = useStyles();
   const onSelectItem = () => setSelectedItem(item);
 
   return (

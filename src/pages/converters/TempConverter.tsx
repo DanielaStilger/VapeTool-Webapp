@@ -2,11 +2,12 @@ import React from 'react';
 import { Card, Col, InputNumber, Row } from 'antd';
 import { useIntl, FormattedMessage } from 'react-intl';
 import { SwapOutlined } from '@ant-design/icons';
-import styles from './converters.less';
+import useStyles from './style';
 import { useTempModel } from '@/models/temp';
 
 const TempConverter: React.FC = () => {
   const { celsius, setCelsius, fahrenheit, setFahrenheit } = useTempModel();
+  const { styles } = useStyles();
 
   return (
     <Card

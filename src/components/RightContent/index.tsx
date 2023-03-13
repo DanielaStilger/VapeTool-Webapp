@@ -4,21 +4,16 @@ import React from 'react';
 import { logoutFirebase } from '@/services/user';
 import { IS_NOT_PRODUCTION } from '@/utils/utils';
 import Avatar from './AvatarDropdown';
-import styles from './index.less';
+import useStyles from './style';
 import { useAuth } from '@/context/FirebaseAuthContext';
 import { useSettings } from '@/models/useSettings';
 
 export type SiderTheme = 'light' | 'dark';
 
-const ENVTagColor = {
-  dev: 'orange',
-  test: 'green',
-  pre: '#87d068',
-};
-
 const GlobalHeaderRight: React.FC<{}> = () => {
-  const {firebaseUser} = useAuth()
-  const {settings: { navTheme, layout }} = useSettings(); //TODO: implement useSettings()
+  const { firebaseUser } = useAuth()
+  const { styles } = useStyles();
+  const { settings: { navTheme, layout } } = useSettings(); //TODO: implement useSettings()
 
   let className = styles.right;
 
@@ -30,13 +25,13 @@ const GlobalHeaderRight: React.FC<{}> = () => {
       {firebaseUser ? (
         <Avatar />
       ) : (
-          <a onClick={logoutFirebase}>
+        <a onClick={logoutFirebase}>
           <Typography style={{ color: 'white' }}>Log in</Typography>
         </a>
       )}
       {IS_NOT_PRODUCTION && (
         <span>
-          <Tag color={ENVTagColor[REACT_APP_ENV]}>{REACT_APP_ENV}</Tag>
+          <Tag>{REACT_APP_ENV}</Tag>
         </span>
       )}
       {/* TODO: add i18n */}

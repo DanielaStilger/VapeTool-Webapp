@@ -1,6 +1,6 @@
 import { Card, List, Typography } from 'antd';
 import React from 'react';
-import styles from '@/components/ItemView/styles.less';
+import useStyles from '../ItemView/style';
 import { Battery } from '@/types';
 import { FormattedMessage } from 'react-intl';
 
@@ -12,6 +12,7 @@ interface BatteryViewProps {
 }
 
 const BatteryView: React.FC<BatteryViewProps> = ({ battery, height, width, onBatteryClick }) => {
+  const { styles } = useStyles();
   return (
     <List.Item style={{ height, width }}>
       <Card

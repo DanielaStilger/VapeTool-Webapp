@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { auth } from '@/utils/firebase';
+import { auth } from '../utils/firebase';
 import { signOut, onAuthStateChanged, User as FirebaseUser, Unsubscribe } from 'firebase/auth'
 import { Author, User as DatabaseUser } from '@vapetool/types'
 import { listenForUserInDb } from '../services/user';

@@ -1,199 +1,69 @@
-import { ProLayout } from '@ant-design/pro-layout';
 import React from 'react';
+import { LaptopOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
+import type { MenuProps } from 'antd';
+import { Breadcrumb, Layout, Menu, theme } from 'antd';
 
+const { Header, Content, Footer, Sider } = Layout;
 
-export default ({children}: any) => (
-    <div
-        style={{
-            height: '100vh',
-        }}
-    >
-        <ProLayout
-            location={{
-                pathname: '/config/template/new',
-            }}
-            menu={{
-                hideMenuWhenCollapsed: true,
-            }}
-            route={{
-                routes: [
-                    {
-                        path: '/config',
-                        name: '配置中心',
-                        routes: [
-                            {
-                                path: 'product',
-                                name: '产品配置',
-                                indexRoute: {
-                                    component: 'ConfigProduct/index',
-                                },
-                                routes: [
-                                    {
-                                        path: 'new',
-                                        component: 'ConfigProduct/NewConfig',
-                                    },
-                                    {
-                                        path: 'edit/:productKey',
-                                        component: 'ConfigProduct/NewConfig',
-                                    },
-                                    {
-                                        path: 'detail/:productKey',
-                                        component: 'ConfigProduct/Detail',
-                                    },
-                                ],
-                            },
-                            {
-                                path: 'productManage',
-                                name: '产品管理',
-                                indexRoute: {
-                                    component: 'ConfigProductAll/index',
-                                },
-                                routes: [
-                                    {
-                                        path: 'detail/:productKey',
-                                        component: 'ConfigProductAll/Detail',
-                                    },
-                                ],
-                            },
-                            {
-                                path: 'template',
-                                name: '产品模板管理',
-                                indexRoute: {
-                                    component: 'ConfigTemplate/index',
-                                },
-                                routes: [
-                                    {
-                                        path: 'new',
-                                        component: 'ConfigTemplate/NewConfig',
-                                    },
-                                    {
-                                        path: 'edit/:templateKey',
-                                        component: 'ConfigTemplate/NewConfig',
-                                    },
-                                    {
-                                        path: 'detail/:templateKey',
-                                        component: 'ConfigTemplate/Detail',
-                                    },
-                                ],
-                            },
-                            {
-                                path: 'configItem',
-                                name: '配置项模板管理',
-                                indexRoute: {
-                                    component: 'ConfigItem/index',
-                                },
-                                routes: [
-                                    {
-                                        path: 'new',
-                                        component: 'ConfigItem/NewConfig',
-                                    },
-                                    {
-                                        path: 'edit/:productKey',
-                                        component: 'ConfigItem/NewConfig',
-                                    },
-                                    {
-                                        path: 'detail/:productKey',
-                                        component: 'ConfigItem/Detail',
-                                    },
-                                ],
-                            },
-                            {
-                                path: 'meta',
-                                name: '元数据管理',
-                                component: 'ConfigMeta',
-                            },
-                        ],
-                    },
-                    {
-                        path: 'asset',
-                        name: '资产',
-                        routes: [
-                            {
-                                path: 'query',
-                                name: '资产查询',
-                                component: 'Asset',
-                            },
-                            {
-                                path: 'collateral',
-                                name: '抵押查询',
-                                component: 'Collateral',
-                            },
-                        ],
-                    },
-                    {
-                        path: 'bill',
-                        name: '账单',
-                        routes: [
-                            {
-                                path: 'billNo',
-                                name: '账单编号',
-                                component: 'BillNo',
-                            },
-                            {
-                                path: 'bill',
-                                name: '账单查询',
-                                component: 'Bill',
-                            },
-                            {
-                                path: 'billItem',
-                                name: '账单条目',
-                                component: 'BillItem',
-                            },
-                        ],
-                    },
-                    {
-                        path: 'cif',
-                        name: 'CIF',
-                        routes: [
-                            {
-                                path: 'bankAccount',
-                                name: '绑卡信息',
-                                component: 'CifBankAccount',
-                            },
-                            {
-                                path: 'userGroup',
-                                name: '查询 Group',
-                                component: 'CifUserGroup',
-                            },
-                            {
-                                path: 'userId',
-                                name: '查询 ID',
-                                component: 'CifUserId',
-                            },
-                            {
-                                path: 'newInstitution',
-                                name: '新增机构',
-                                indexRoute: {
-                                    component: 'CifNewInstitution/index',
-                                },
-                                routes: [
-                                    {
-                                        path: 'new',
-                                        component: 'CifNewInstitution/ApplyNew',
-                                    },
-                                    {
-                                        path: 'bind/:id',
-                                        component: 'CifNewInstitution/BindAccount',
-                                    },
-                                ],
-                            },
-                        ],
-                    },
-                    {
-                        path: 'tools',
-                        name: '小工具',
-                        routes: [
-                            {
-                                path: 'ttsql',
-                                name: 'MySQL转BlinkTT流表',
-                                component: 'ToolTT',
-                            },
-                        ],
-                    },
-                ],
-            }}
-        >
-                {children}
-        </ProLayout>
-    </div>
+const items1: MenuProps['items'] = ['1', '2', '3'].map((key) => ({
+    key,
+    label: `nav ${key}`,
+}));
+
+const items2: MenuProps['items'] = [UserOutlined, LaptopOutlined, NotificationOutlined].map(
+    (icon, index) => {
+        const key = String(index + 1);
+
+        return {
+            key: `sub${key}`,
+            icon: React.createElement(icon),
+            label: `subnav ${key}`,
+
+            children: new Array(4).fill(null).map((_, j) => {
+                const subKey = index * 4 + j + 1;
+                return {
+                    key: subKey,
+                    label: `option${subKey}`,
+                };
+            }),
+        };
+    },
 );
+
+// @ts-ignore
+const NavigationDrawer = ({children}) => {
+    const {
+        token: { colorBgContainer },
+    } = theme.useToken();
+
+    return (
+        <Layout>
+            <Header className="header">
+                <div className="logo" />
+                <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['2']} items={items1} />
+            </Header>
+            <Content style={{ padding: '0 50px' }}>
+                <Breadcrumb style={{ margin: '16px 0' }}>
+                    <Breadcrumb.Item>Home</Breadcrumb.Item>
+                    <Breadcrumb.Item>List</Breadcrumb.Item>
+                    <Breadcrumb.Item>App</Breadcrumb.Item>
+                </Breadcrumb>
+                <Layout style={{ padding: '24px 0', background: colorBgContainer }}>
+                    <Sider style={{ background: colorBgContainer }} width={200}>
+                        <Menu
+                            mode="inline"
+                            defaultSelectedKeys={['1']}
+                            defaultOpenKeys={['sub1']}
+                            style={{ height: '100%' }}
+                            items={items2}
+                        />
+                    </Sider>
+                    <Content style={{ padding: '0 24px', minHeight: 280 }}>{children}</Content>
+                </Layout>
+            </Content>
+            <Footer style={{ textAlign: 'center' }}>Ant Design ©2023 Created by Ant UED</Footer>
+        </Layout>
+    );
+};
+
+export default NavigationDrawer;

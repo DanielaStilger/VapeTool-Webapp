@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Button, InputNumber, Tag } from 'antd';
 import { FormattedMessage } from 'react-intl';
-
-import styles from './styles.less';
+import classNames from 'classnames';
+import useStyles from './style';
 import { useAuth } from '@/context/FirebaseAuthContext';
 import { isUserPro } from '@/utils/utils';
 
@@ -17,6 +17,7 @@ interface PropertyItemProps {
 
 const PropertyItem = (props: PropertyItemProps) => {
   const {dbUser} = useAuth()
+  const { styles } = useStyles();
   const isPro = isUserPro(dbUser?.subscription)
   const { property, value, unit, proOnly, editable, onChangeValue } = props;
   const displayProOnlyTag = proOnly && !isPro;
@@ -48,9 +49,7 @@ const PropertyItem = (props: PropertyItemProps) => {
         <FormattedMessage id={`coilCalculator.properties.${property}`} />:
       </div>
       <div
-        className={`${styles.value} ${displayProOnlyTag ? styles.proOnly : ''} ${
-          isEditing ? styles.isEditing : ''
-        }`}
+        className={classNames(styles.value, displayProOnlyTag ? styles.proOnly : '', isEditing ? styles.isEditing : '')}
       >
         {displayProOnlyTag && <Tag color="blue">Pro only</Tag>}
         {!displayProOnlyTag && value === undefined && (

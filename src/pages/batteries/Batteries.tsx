@@ -3,7 +3,7 @@ import { List, Row, Col } from 'antd';
 import { id } from '@vapetool/types';
 import BatteryView from '@/components/BatteryView';
 import BatteryPreviewDrawer from '@/components/BatteryPreviewDrawer';
-import styles from '@/components/ItemView/styles.less';
+import useStyles from '@/components/ItemView/style';
 import { Battery } from '@/types';
 import { PageContainer } from '@ant-design/pro-layout';
 import Banner from '@/components/Banner';
@@ -11,7 +11,7 @@ import { useBatteriesModel } from '@/models/batteries';
 
 const Batteries = () => {
   const { setSelectedBattery, batteries } = useBatteriesModel();
-
+  const { styles } = useStyles();
   const onBatteryClick = (battery: Battery) => setSelectedBattery(battery);
 
   return (

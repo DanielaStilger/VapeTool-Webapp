@@ -1,20 +1,83 @@
-import { Author, User } from '@vapetool/types';
-import { createContext, useContext } from 'react'
-import useFirebaseAuth, { FirebaseAuth } from './useFirebaseAuth';
+import React, { useContext, useState, useEffect } from 'react'
+import { auth } from '@/utils/firebase'
+import {
+    GoogleAuthProvider,
+    signInWithPopup,
+    GithubAuthProvider,
+} from 'firebase/auth'
 
-// https://usehooks.com/useAuth/
-const authUserContext = createContext<FirebaseAuth>({
-    firebaseUser: null,
-    dbUser: null,
-    toAuthor: (user: User) => new Author("", "Anonymous"),
-    signOut: async () => { }
-});
-
-// @ts-ignore: Don't worry about type here
-export function AuthUserProvider({ children }) {
-    const auth = useFirebaseAuth();
-    // @ts-ignore: Don't worry about type here
-    return <authUserContext.Provider value={auth}>{children}</authUserContext.Provider>;
+interface IAuthProviderProps {
+    children: JSX.Element
 }
 
-export const useAuth = (): FirebaseAuth => useContext(authUserContext);
+const AuthContext = React.createContext({})
+
+export function useAuth(): any {
+    return useContext(AuthContext)
+}
+
+export function AuthProvider({ children }: IAuthProviderProps): JSX.Element {
+    const [currentUser, setCurrentUser] = useState<any>()
+    const [loading, setLoading] = useState(true)
+
+    function signup(email: string, password: string): Promise<any> {
+        return auth.createUserWithEmailAndPassword(email, password)
+    }
+
+    function googleSignin(): Promise<any> {
+        const provider = new GoogleAuthProvider()
+        return signInWithPopup(auth, provider)
+    }
+
+    function githubSignin(): Promise<any> {
+        const provider = new GithubAuthProvider()
+        return signInWithPopup(auth, provider)
+    }
+
+    function login(email: string, password: string): Promise<any> {
+        return auth.signInWithEmailAndPassword(email, password)
+    }
+
+    function logout(): Promise<any> {
+        return auth.signOut()
+    }
+
+    function resetPassword(email: string): Promise<any> {
+        return auth.sendPasswordResetEmail(email)
+    }
+
+    function updateEmail(email: string): Promise<any> {
+        return currentUser.updateEmail(email)
+    }
+
+    function updatePassword(password: string): Promise<any> {
+        return currentUser.updatePassword(password)
+    }
+
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            setCurrentUser(user)
+            setLoading(false)
+        })
+
+        return unsubscribe
+    }, [])
+
+    const value = {
+        currentUser,
+        login,
+        signup,
+        googleSignin,
+        githubSignin,
+        logout,
+        resetPassword,
+        updateEmail,
+        updatePassword,
+    }
+
+    return (
+        <AuthContext.Provider value={value}>
+            {!loading && children}
+        </AuthContext.Provider>
+    )
+}

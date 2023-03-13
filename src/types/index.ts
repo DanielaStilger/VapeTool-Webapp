@@ -9,4 +9,5 @@ import Post from './Post';
 import Typable from './Typable';
 import { ItemName, type Item } from './Item';
 
-export { Affiliate, Battery, Coil, Comment, Item, ItemName, Link, Liquid, Photo, Post, Typable };
+export type { Affiliate, Battery, Coil, Comment, Item, Link, Liquid, Photo, Post, Typable };
+export { ItemName }

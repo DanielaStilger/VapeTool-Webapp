@@ -4,10 +4,9 @@ import { getStorage, FirebaseStorage, ref as storageRef } from 'firebase/storage
 import { getAuth, Auth, onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { getRemoteConfig, RemoteConfig } from 'firebase/remote-config';
-import { ItemName } from '../types';
 import { Mixable, Coil, MixResult, Liquid, Result, Properties } from '@vapetool/types';
 import { IS_PRODUCTION } from './utils';
-
+import { ItemName } from '@/types';
 
 
 const firebaseProdConfig = {
@@ -61,9 +60,7 @@ export function storage(): FirebaseStorage {
   return IS_PRODUCTION ? prodStorage : devStorage;
 }
 
-export function auth(): Auth {
-  return IS_PRODUCTION ? prodAuth : devAuth;
-}
+export const auth = IS_PRODUCTION ? prodAuth : devAuth;
 
 const dbRef = (path: string) => ref(database(), path);
 

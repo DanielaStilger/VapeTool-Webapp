@@ -1,6 +1,6 @@
 import React from 'react';
-import styles from '@/components/ItemView/styles.less';
 import { LikeFilled, LikeOutlined } from '@ant-design/icons';
+import useStyles from './style';
 
 export const LikeIconText = ({
   text,
@@ -10,13 +10,17 @@ export const LikeIconText = ({
   text: string;
   onClick: any;
   likedByMe?: boolean;
-}) => (
-  <span onClick={onClick}>
-    {likedByMe ? (
-      <LikeFilled className={likedByMe ? styles.liked : ''} style={{ marginRight: 8 }} />
-    ) : (
-      <LikeOutlined className={likedByMe ? styles.liked : ''} style={{ marginRight: 8 }} />
-    )}
-    {text}
-  </span>
-);
+}) => {
+  const { styles } = useStyles();
+  return (
+    <span onClick={onClick}>
+      {likedByMe ? (
+        <LikeFilled className={likedByMe ? styles.liked : ''} style={{ marginRight: 8 }} />
+      ) : (
+        <LikeOutlined className={likedByMe ? styles.liked : ''} style={{ marginRight: 8 }} />
+      )}
+      {text}
+    </span>
+  );
+
+} 

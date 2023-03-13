@@ -6,7 +6,7 @@ import { stripePromise } from '@/utils/stripe';
 import { createStripeManageLink, createStripePayment } from '@/utils/firebase';
 import { verifyCurrentUserWithRedirect } from '@/services';
 import { IS_PRODUCTION, IS_NOT_PRODUCTION } from '@/utils/utils';
-import styles from './payment.less';
+import useStyles from './style';
 import { useAuth } from '@/context/FirebaseAuthContext';
 
 const stripeLogo = require('@/assets/stripe.png');
@@ -47,6 +47,7 @@ const Payment: React.FC = () => {
   const [type, setType] = useState(SubscriptionPlan.ANNUALLY);
   const [step, setStep] = useState(0);
   const [processingPayment, setProcessingPayment] = useState(false);
+  const { styles } = useStyles();
 
   useEffect(() => {
     verifyCurrentUserWithRedirect();

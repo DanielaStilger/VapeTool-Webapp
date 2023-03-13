@@ -1,7 +1,4 @@
 {
-  // Workaround for rewriting paths in tsconfig.json usig CRA 
-  // https://github.com/facebook/create-react-app/issues/10178#issuecomment-860247467
-  // fix if you can
   "compilerOptions": {
     "target": "ESNext",
     "useDefineForClassFields": true,
@@ -21,30 +18,31 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "paths": {
+      "@/*": [
+        "./src"
+      ]
+    }
   },
-  "include": [
-    "src"
-  ],
   "references": [
     {
       "path": "./tsconfig.node.json"
     }
   ],
 
-  // "include": [
-  //   "mock/**/*",
-  //   "src/**/*",
-  //   "tests/**/*",
-  //   "test/**/*",
-  //   "__test__/**/*",
-  //   "typings/**/*",
-  //   "config/**/*",
-  //   ".eslintrc.js",
-  //   ".stylelintrc.js",
-  //   ".prettierrc.js",
-  //   "jest.config.js",
-  //   "mock/*"
-  // ],
+  "include": [
+    "src",
+    "mock",
+    "tests",
+    "test",
+    "__test__",
+    "typings",
+    "config",
+    ".eslintrc.js",
+    ".stylelintrc.js",
+    ".prettierrc.js",
+    "jest.config.js",
+  ],
   "exclude": ["node_modules", "build", "dist", "scripts", "webpack", "jest"]
 }

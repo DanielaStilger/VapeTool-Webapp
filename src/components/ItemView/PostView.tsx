@@ -5,12 +5,13 @@ import { Post, ItemName } from '@/types';
 import { ImageType } from '@/services/storage';
 import { getUserProfileUrl } from '@/places/user.places';
 import { Actions } from './ItemView';
-import styles from './styles.less';
 import FirebaseImage from '../StorageAvatar';
 import { usePreviewModel } from '@/models/preview';
+import useStyles from './style';
 
 export default function PostView({ item }: { item: Post }) {
   const { setSelectedItem, unselectItem } = usePreviewModel();
+  const { styles } = useStyles();
 
   const onSelectItem = () => setSelectedItem(item);
 

@@ -2,13 +2,14 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Card, Descriptions, Typography } from 'antd';
 import { ItemName, Liquid } from '@/types';
-import styles from './styles.less';
 import { Actions } from './ItemView';
 import { usePreviewModel } from '@/models/preview';
+import useStyles from './style';
 
 export default function LiquidView({ item }: { item: Liquid }) {
   const { setSelectedItem, unselectItem } = usePreviewModel();
   const onSelectItem = () => setSelectedItem(item);
+  const { styles } = useStyles();
 
   return (
     <>

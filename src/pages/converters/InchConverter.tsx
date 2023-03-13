@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, Col, InputNumber, Row } from 'antd';
 import { useIntl, FormattedMessage } from 'react-intl';
 import { LineOutlined, PauseOutlined, SwapOutlined } from '@ant-design/icons';
-import styles from './converters.less';
+import useStyles from './style';
 import { useInchMmModel } from '@/models/inchMm';
 
 const InchConverter: React.FC = () => {
@@ -16,6 +16,7 @@ const InchConverter: React.FC = () => {
     denominator,
     setDenominator,
   } = useInchMmModel();
+  const { styles } = useStyles();
 
   return (
     <Card
