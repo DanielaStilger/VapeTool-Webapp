@@ -1,5 +1,4 @@
 import React from 'react';
-import PageHeaderWrapper from '@ant-design/pro-layout';
 import { Button, Card, Col, Form, InputNumber, Row } from 'antd';
 import { useIntl, FormattedMessage } from 'react-intl';
 import { LockOutlined } from '@ant-design/icons';
@@ -8,8 +7,8 @@ import ImageWebp from '@/components/ImageWebp';
 import Banner from '@/components/Banner';
 import { useOhmModel } from '@/models/ohm';
 
-const ohmLawWebp = require('@/assets/ohm_law.webp');
-const ohmLawPng = require('@/assets/ohm_law.png');
+import ohmLawWebp from '../../assets/ohm_law.webp';
+import ohmLawPng from '../../assets/ohm_law.png';
 
 // TODO check if not needed adjust to new Form API
 const OhmLaw: React.FC = () => {
@@ -61,7 +60,6 @@ const OhmLaw: React.FC = () => {
   };
 
   return (
-    <PageHeaderWrapper>
       <Card>
         <Row justify="center" gutter={32}>
           <Col xs={24} sm={20} md={14}>
@@ -178,7 +176,6 @@ const OhmLaw: React.FC = () => {
           </div>
         </Row>
       </Card>
-    </PageHeaderWrapper>
   );
 };
 

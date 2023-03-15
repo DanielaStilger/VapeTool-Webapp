@@ -2,17 +2,19 @@ import React from 'react';
 import { theme } from 'antd';
 import { Link } from 'react-router-dom';
 import logo from "../../assets/logo.svg"
-import { Navbar, Dropdown, Avatar } from 'flowbite-react';
+import { Navbar, Dropdown, Avatar, Footer } from 'flowbite-react';
 import { LogoutOutlined, UnlockOutlined, UserOutlined } from '@ant-design/icons';
 import { FormattedMessage } from 'react-intl';
+import { Outlet } from "react-router-dom";
 
 // @ts-ignore
-const NavigationDrawer = ({ children }) => {
+const NavigationDrawer = () => {
     const {
         token: { colorBgContainer },
     } = theme.useToken();
 
     return (
+        <>
         <Navbar
             fluid={true}
             rounded={true}
@@ -78,7 +80,26 @@ const NavigationDrawer = ({ children }) => {
                 </Navbar.Link>
             </Navbar.Collapse>
         </Navbar>
-
+        <Outlet/>
+            <Footer container={true}>
+                <Footer.Copyright
+                    href="#"
+                    by="Vape Tool"
+                    year={2023}
+                />
+                <Footer.LinkGroup>
+                    <Footer.Link href="#">
+                        About
+                    </Footer.Link>
+                    <Footer.Link href="#">
+                        Privacy Policy
+                    </Footer.Link>
+                    <Footer.Link href="#">
+                        Contact
+                    </Footer.Link>
+                </Footer.LinkGroup>
+            </Footer>
+        </>
     )
 };
 

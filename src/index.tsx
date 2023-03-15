@@ -4,7 +4,12 @@ import { AuthProvider, useAuth } from './context/FirebaseAuthContext';
 // import FirebaseAuth from './pages/login';
 // import UserWizard from './pages/user/wizard';
 import { FC } from 'react';
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
+import {
+    createBrowserRouter,
+    RouterProvider,
+} from "react-router-dom";
+
 import Welcome from './pages/Welcome';
 import Cloud from './pages/cloud/Cloud';
 import CoilCalculator from './pages/coil/CoilCalculator';
@@ -13,9 +18,22 @@ import "./index.css";
 // import Login from './pages/login';
 import Oops from './pages/Oops';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { IntlProvider } from 'react-intl';
+import routes from "./routes";
+import Payment from './pages/payment/Payment';
+import SuccessPayment from './pages/payment/Success';
+import CancelPayment from './pages/payment/Cancel';
+import Upload from './pages/cloud/Upload';
+import UploadPhoto from './pages/cloud/UploadPhoto';
+import UploadPost from './components/UploadPost';
+import LiquidBlender from './pages/liquid/LiquidBlender';
+import Mixer from './pages/mixer/Mixer';
+import OhmLaw from './pages/ohm/OhmLaw';
+import Converters from './pages/converters/Converters';
+import Batteries from './pages/batteries/Batteries';
+import BatteryLife from './pages/batterylife/BatteryLife';
+import Profile from './pages/user/profile';
 // import { PageLoading } from '@ant-design/pro-layout';
 
 
@@ -35,7 +53,6 @@ import { IntlProvider } from 'react-intl';
 //     return auth.dbUser ? auth.dbUser.setup ? children : <UserWizard /> : <PageLoading />;
 // };
 
-
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>
         <ConfigProvider
@@ -51,16 +68,31 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                     {/* <AuthProvider> */}
                     {/* <RequireLoggedInUser> */}
                     {/* <RequireCreatedUserInDatabase> */}
-                    <NavigationDrawer>
                         <Routes>
-                            <Route path="/" element={<Welcome />} />
-                            <Route path="/cloud" element={<Cloud />} />
-                            <Route path="/coil" element={<CoilCalculator />} />
-                            {/* <Route path="/wizard" element={<Wizard/>} /> */}
-                            {/* <Route path="/login" element={<Login />} /> */}
-                            <Route path="*" element={<Oops />} />
+                            <Route path="/" element={<NavigationDrawer />} >
+                                <Route index element={<Welcome />} />
+                                <Route path="welcome" element={<Welcome />} />
+                                <Route path="coil-calculator" element={<CoilCalculator />} />
+                                <Route path="liquid-blender" element={<LiquidBlender />} />
+                                <Route path="converters" element={<Converters />} />
+                                <Route path="battery-life" element={<BatteryLife />} /> 
+                                <Route path="mixer" element={<Mixer />} />
+                                <Route path="ohm-law" element={<OhmLaw />} />
+                                <Route path="*" element={<Oops />} />
+                                {/* 
+                                <Route path="batteries" element={<Batteries />} />
+                                <Route path="/cloud" element={<Cloud />} />
+                                <Route path="/payment" element={<Payment />} />
+                                <Route path="/payment-success" element={<SuccessPayment />} />
+                                <Route path="/payment-cancel" element={<CancelPayment />} />
+                                <Route path="/upload" element={<Upload />} />
+                                <Route path="/upload-photo" element={<UploadPhoto />} />
+                                <Route path="/upload-post" element={<UploadPost />} />
+                                <Route path="/user/profile" element={<Profile />} />
+                                <Route path="/user/profile/:id" element={<Profile />} /> 
+                                */}
+                            </Route>
                         </Routes>
-                    </NavigationDrawer>
                     {/* </RequireCreatedUserInDatabase> */}
                     {/* </RequireLoggedInUser> */}
                     {/* </AuthProvider> */}

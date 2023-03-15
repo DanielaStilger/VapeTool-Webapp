@@ -1,7 +1,11 @@
+import React from 'react';
+import Welcome from "./pages/Welcome";
+
 const routes = [
   {
     path: '/',
     redirect: '/welcome',
+    component: React.createElement(Welcome),
   },
   {
     name: 'welcome',
