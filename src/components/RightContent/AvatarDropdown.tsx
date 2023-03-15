@@ -1,18 +1,23 @@
 import React, { useCallback } from 'react';
 import { LogoutOutlined, UserOutlined, UnlockOutlined } from '@ant-design/icons';
-import { Menu, message, Spin } from 'antd';
+import { Dropdown, Menu, message, Spin } from 'antd';
 import { FormattedMessage } from 'react-intl';
 import { ImageType } from '@/services/storage';
 import { getPaymentUrl, getUserProfileUrl } from '@/places/user.places';
 import { logoutFirebase } from '@/services/user';
-import HeaderDropdown from '../HeaderDropdown';
-import styles from './index.less';
+import useStyles from './style';
 import FirebaseImage from '../StorageAvatar';
 import useRouter from '@/utils/useRouter';
 import { useAuth } from '@/context/FirebaseAuthContext';
 
+
+const AvatarDropdown: React.FC = () => {
+  const { styles } = useStyles()
+  const router = useRouter();
+  const { firebaseUser, dbUser } = useAuth();
+
 const loading = (
-  <span className={`${styles.action} ${styles.account}`}>
+  <span className={`${styles.action}`}>
     <Spin
       size="small"
       style={{
@@ -22,10 +27,6 @@ const loading = (
     />
   </span>
 );
-
-const AvatarDropdown: React.FC = () => {
-  const router = useRouter();
-  const { firebaseUser, dbUser } = useAuth();
 
   const onMenuClick = useCallback(async (event: any) => {
     const { key } = event;
@@ -73,8 +74,8 @@ const AvatarDropdown: React.FC = () => {
   );
 
   return (
-    <HeaderDropdown overlay={menuHeaderDropdown}>
-      <span className={`${styles.action} ${styles.account}`}>
+    <Dropdown>
+      <span className={`${styles.action}`}>
         <FirebaseImage
           size="small"
           type={ImageType.USER}
@@ -84,7 +85,7 @@ const AvatarDropdown: React.FC = () => {
         />
         <span className={`${styles.name} anticon`}>{dbUser.display_name}</span>
       </span>
-    </HeaderDropdown>
+    </Dropdown>
   );
 };
 

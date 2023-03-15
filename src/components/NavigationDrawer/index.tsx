@@ -1,69 +1,85 @@
 import React from 'react';
-import { LaptopOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
-import type { MenuProps } from 'antd';
-import { Breadcrumb, Layout, Menu, theme } from 'antd';
-
-const { Header, Content, Footer, Sider } = Layout;
-
-const items1: MenuProps['items'] = ['1', '2', '3'].map((key) => ({
-    key,
-    label: `nav ${key}`,
-}));
-
-const items2: MenuProps['items'] = [UserOutlined, LaptopOutlined, NotificationOutlined].map(
-    (icon, index) => {
-        const key = String(index + 1);
-
-        return {
-            key: `sub${key}`,
-            icon: React.createElement(icon),
-            label: `subnav ${key}`,
-
-            children: new Array(4).fill(null).map((_, j) => {
-                const subKey = index * 4 + j + 1;
-                return {
-                    key: subKey,
-                    label: `option${subKey}`,
-                };
-            }),
-        };
-    },
-);
+import { theme } from 'antd';
+import { Link } from 'react-router-dom';
+import logo from "../../assets/logo.svg"
+import { Navbar, Dropdown, Avatar } from 'flowbite-react';
+import { LogoutOutlined, UnlockOutlined, UserOutlined } from '@ant-design/icons';
+import { FormattedMessage } from 'react-intl';
 
 // @ts-ignore
-const NavigationDrawer = ({children}) => {
+const NavigationDrawer = ({ children }) => {
     const {
         token: { colorBgContainer },
     } = theme.useToken();
 
     return (
-        <Layout>
-            <Header className="header">
-                <div className="logo" />
-                <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['2']} items={items1} />
-            </Header>
-            <Content style={{ padding: '0 50px' }}>
-                <Breadcrumb style={{ margin: '16px 0' }}>
-                    <Breadcrumb.Item>Home</Breadcrumb.Item>
-                    <Breadcrumb.Item>List</Breadcrumb.Item>
-                    <Breadcrumb.Item>App</Breadcrumb.Item>
-                </Breadcrumb>
-                <Layout style={{ padding: '24px 0', background: colorBgContainer }}>
-                    <Sider style={{ background: colorBgContainer }} width={200}>
-                        <Menu
-                            mode="inline"
-                            defaultSelectedKeys={['1']}
-                            defaultOpenKeys={['sub1']}
-                            style={{ height: '100%' }}
-                            items={items2}
-                        />
-                    </Sider>
-                    <Content style={{ padding: '0 24px', minHeight: 280 }}>{children}</Content>
-                </Layout>
-            </Content>
-            <Footer style={{ textAlign: 'center' }}>Ant Design ©2023 Created by Ant UED</Footer>
-        </Layout>
-    );
+        <Navbar
+            fluid={true}
+            rounded={true}
+        >
+            <Navbar.Brand href="https://flowbite.com/">
+                <img
+                    src={logo}
+                    className="mr-3 h-6 sm:h-9"
+                    alt="Vape Tool Logo"
+                />
+                <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
+                    VapeTool
+                </span>
+            </Navbar.Brand>
+            <div className="flex md:order-2">
+                <Dropdown
+                    arrowIcon={false}
+                    inline={true}
+                    label={<Avatar alt="User settings" img="https://flowbite.com/docs/images/people/profile-picture-5.jpg" rounded={true} />}
+                >
+                    <Dropdown.Header>
+                        <span className="block text-sm">
+                            Bonnie Green
+                        </span>
+                        <span className="block truncate text-sm font-medium">
+                            name@flowbite.com
+                        </span>
+                    </Dropdown.Header>
+                    <Dropdown.Item>
+                        <UserOutlined />
+                        <FormattedMessage id="menu.account.center" defaultMessage="account center" />
+                    </Dropdown.Item>
+                    <Dropdown.Item>
+                        <UnlockOutlined />
+                        <FormattedMessage id="menu.account.unlock-pro" defaultMessage="unlock pro" />
+                    </Dropdown.Item>
+                    <Dropdown.Divider />
+                    <Dropdown.Item>
+                        <LogoutOutlined />
+                        <FormattedMessage id="menu.account.logout" defaultMessage="logout" />
+                    </Dropdown.Item>
+                </Dropdown>
+                <Navbar.Toggle />
+            </div>
+            <Navbar.Collapse>
+                <Navbar.Link
+                    href="/navbars"
+                    active={true}
+                >
+                    Home
+                </Navbar.Link>
+                <Navbar.Link href="/navbars">
+                    About
+                </Navbar.Link>
+                <Navbar.Link href="/navbars">
+                    Services
+                </Navbar.Link>
+                <Navbar.Link href="/navbars">
+                    Pricing
+                </Navbar.Link>
+                <Navbar.Link href="/navbars">
+                    Contact
+                </Navbar.Link>
+            </Navbar.Collapse>
+        </Navbar>
+
+    )
 };
 
 export default NavigationDrawer;
