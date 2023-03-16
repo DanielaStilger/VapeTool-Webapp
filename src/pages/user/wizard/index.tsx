@@ -21,13 +21,12 @@ const UserWizard: React.FC = () => {
     setShowAvatarChooser,
     redirectBack,
     updateUser,
-  } = useUserWizardModel()
+  } = useUserWizardModel();
 
   const { dbUser } = useAuth();
   const { styles } = useStyles();
 
-  const onDisplayNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setDisplayName(e.target.value);
+  const onDisplayNameChange = (e: React.ChangeEvent<HTMLInputElement>) => setDisplayName(e.target.value);
   const onNewAvatarChoose = (imageUrl: string, imageBlob: Blob | File) => {
     setNewAvatarBlob(imageBlob);
     setNewAvatarUrl(imageUrl);
@@ -43,22 +42,12 @@ const UserWizard: React.FC = () => {
       <Row>
         <Col xs={0} md={4} lg={6} xl={8} />
         <Col xs={24} md={16} lg={14} xl={10}>
-          <Card
-            style={{ maxWidth: 500 }}
-            title={<FormattedMessage id="user.setupUser" defaultMessage="Setup user" />}
-          >
+          <Card style={{ maxWidth: 500 }} title={<FormattedMessage id="user.setupUser" defaultMessage="Setup user" />}>
             <div className={styles.avatarHolder}>
               <div onClick={() => setShowAvatarChooser(true)}>
                 <div style={{ textAlign: 'center' }}>
                   {newAvatarUrl && <img alt="avatar" src={newAvatarUrl} width={200} />}
-                  {!newAvatarUrl && (
-                    <FirebaseImage
-                      type={ImageType.USER}
-                      id={dbUser.uid}
-                      size={200}
-                      shape="square"
-                    />
-                  )}
+                  {!newAvatarUrl && <FirebaseImage type={ImageType.USER} id={dbUser.uid} size={200} shape="square" />}
                 </div>
               </div>
               <br />
@@ -88,11 +77,7 @@ const UserWizard: React.FC = () => {
                   <FormattedMessage id="misc.actions.cancel" defaultMessage="Cancel" />
                 </Button>
 
-                <Button
-                  icon={<SaveOutlined />}
-                  type="primary"
-                  onClick={() => updateUser(dbUser)}
-                >
+                <Button icon={<SaveOutlined />} type="primary" onClick={() => updateUser(dbUser)}>
                   <FormattedMessage id="misc.actions.save" defaultMessage="Save" />
                 </Button>
               </ButtonGroup>

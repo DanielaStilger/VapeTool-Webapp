@@ -8,25 +8,24 @@ import { Mixable, Coil, MixResult, Liquid, Result, Properties } from '@vapetool/
 import { IS_PRODUCTION } from './utils';
 import { ItemName } from '@/types';
 
-
 const firebaseProdConfig = {
-  apiKey: "AIzaSyC1XSnUoeupHRqN8kuTqypGNkVYUWP0-uA",
-  authDomain: "vape-tool-pro.firebaseapp.com",
-  databaseURL: "https://vape-tool-pro.firebaseio.com",
-  projectId: "vape-tool-pro",
-  storageBucket: "vape-tool-pro.appspot.com",
-  messagingSenderId: "526012004991",
-  appId: "1:526012004991:web:fdaee9605b24874b"
+  apiKey: 'AIzaSyC1XSnUoeupHRqN8kuTqypGNkVYUWP0-uA',
+  authDomain: 'vape-tool-pro.firebaseapp.com',
+  databaseURL: 'https://vape-tool-pro.firebaseio.com',
+  projectId: 'vape-tool-pro',
+  storageBucket: 'vape-tool-pro.appspot.com',
+  messagingSenderId: '526012004991',
+  appId: '1:526012004991:web:fdaee9605b24874b',
 };
 
 const firebaseDevConfig = {
-  apiKey: "AIzaSyAmf_Tmb5VnPwH3niIX9Q2QPJOrCNgTEto",
-  authDomain: "dev-vapetool.firebaseapp.com",
-  databaseURL: "https://dev-vapetool.firebaseio.com",
-  projectId: "dev-vapetool",
-  storageBucket: "dev-vapetool.appspot.com",
-  messagingSenderId: "1053309639962",
-  appId: "1:1053309639962:web:a7469df6baf07ff86ee0a3"
+  apiKey: 'AIzaSyAmf_Tmb5VnPwH3niIX9Q2QPJOrCNgTEto',
+  authDomain: 'dev-vapetool.firebaseapp.com',
+  databaseURL: 'https://dev-vapetool.firebaseio.com',
+  projectId: 'dev-vapetool',
+  storageBucket: 'dev-vapetool.appspot.com',
+  messagingSenderId: '1053309639962',
+  appId: '1:1053309639962:web:a7469df6baf07ff86ee0a3',
 };
 
 // firebaseConfig.databaseURL = 'ws://localhost:5555';
@@ -42,7 +41,6 @@ const prodDb = getDatabase(prodApp);
 const prodStorage = getStorage(prodApp);
 const prodAuth: Auth = getAuth(prodApp);
 const prodFunctions = getFunctions(prodApp);
-
 
 export function functions() {
   return IS_PRODUCTION ? prodFunctions : devFunctions;
@@ -72,13 +70,13 @@ export const linkRef = (uid: string) => child(linksRef, uid);
 export const coilsRef = dbRef('coils');
 export const coilRef = (uid: string) => child(coilsRef, uid);
 export const liquidsRef = dbRef('liquids');
-export const liquidRef = (uid: string) =>  child(liquidsRef, uid);
+export const liquidRef = (uid: string) => child(liquidsRef, uid);
 export const photosRef = dbRef('gears');
 export const photoRef = (uid: string) => child(photosRef, uid);
 export const usersRef = dbRef('users');
 export const userRef = (uid: string) => child(usersRef, uid);
 
-export const itemRef = (item: ItemName): (id: string) => DatabaseReference => {
+export const itemRef = (item: ItemName): ((id: string) => DatabaseReference) => {
   switch (item) {
     case ItemName.PHOTO:
       return photoRef;
@@ -93,7 +91,7 @@ export const itemRef = (item: ItemName): (id: string) => DatabaseReference => {
     default:
       throw Error('illegal type');
   }
-}
+};
 
 export const itemsRef = (item: ItemName): DatabaseReference => {
   switch (item) {
@@ -110,7 +108,7 @@ export const itemsRef = (item: ItemName): DatabaseReference => {
     default:
       throw Error('illegal type');
   }
-}
+};
 
 export const photoLikesRef = (uid: string) => child(dbRef('gear-likes'), uid);
 export const postLikesRef = (uid: string) => child(dbRef('post-likes'), uid);
@@ -118,7 +116,7 @@ export const linkLikesRef = (uid: string) => child(dbRef('link-likes'), uid);
 export const coilLikesRef = (uid: string) => child(dbRef('coil-likes'), uid);
 export const liquidLikesRef = (uid: string) => child(dbRef('liquid-likes'), uid);
 
-export const likesRef = (item: ItemName): (uid: string) => DatabaseReference => {
+export const likesRef = (item: ItemName): ((uid: string) => DatabaseReference) => {
   switch (item) {
     case ItemName.PHOTO:
       return photoLikesRef;
@@ -141,7 +139,7 @@ export const linkCommentsRef = (uid: string) => child(dbRef('link-comments'), ui
 export const coilCommentsRef = (uid: string) => child(dbRef('coil-comments'), uid);
 export const liquidCommentsRef = (uid: string) => child(dbRef('liquid-comments'), uid);
 
-export const commentsRef = (item: ItemName): (uid: string) => DatabaseReference => {
+export const commentsRef = (item: ItemName): ((uid: string) => DatabaseReference) => {
   switch (item) {
     case ItemName.PHOTO:
       return photoCommentsRef;
@@ -164,7 +162,7 @@ export const linkReportsRef = (uid: string) => child(dbRef('link-reports'), uid)
 export const coilReportsRef = (uid: string) => child(dbRef('coil-reports'), uid);
 export const liquidReportsRef = (uid: string) => child(dbRef('liquid-reports'), uid);
 
-export const reportsRef = (item: ItemName): (uid: string) => DatabaseReference => {
+export const reportsRef = (item: ItemName): ((uid: string) => DatabaseReference) => {
   switch (item) {
     case ItemName.PHOTO:
       return photoReportsRef;
@@ -181,27 +179,28 @@ export const reportsRef = (item: ItemName): (uid: string) => DatabaseReference =
   }
 };
 
-
-const imagesRef = (path: string) => storageRef(storage(), path)
+const imagesRef = (path: string) => storageRef(storage(), path);
 export const batteriesStorageRef = (uid: string) => storageRef(prodStorage, 'batteries/images/' + uid + '.jpg');
 export const usersStorageRef = (uid: string) => imagesRef('users/images/' + uid + '.jpg');
 export const coilsStorageRef = (uid: string) => imagesRef('coils/images' + uid + '.jpg');
 export const photosStorageRef = (uid: string) => imagesRef('gears/images/' + uid + '.jpg');
 
-
 let userLoaded: boolean = false;
-
 
 export function getCurrentUser(): Promise<FirebaseUser | undefined> {
   return new Promise<FirebaseUser | undefined>((resolve, reject) => {
     if (userLoaded) {
       resolve(getAuth().currentUser ?? undefined);
     }
-    const unsubscribe = onAuthStateChanged(getAuth(), (user) => {
-      userLoaded = true;
-      unsubscribe();
-      resolve(user ?? undefined);
-    }, reject);
+    const unsubscribe = onAuthStateChanged(
+      getAuth(),
+      (user) => {
+        userLoaded = true;
+        unsubscribe();
+        resolve(user ?? undefined);
+      },
+      reject,
+    );
   });
 }
 
@@ -228,12 +227,11 @@ export async function createStripeManageLink(returnUrl: string): Promise<string>
   return res.data as string;
 }
 
-export async function createStripePayment(
-  item: string,
-  successUrl: string,
-  cancelUrl: string,
-): Promise<string> {
-  const res = await httpsCallable(getFunctions(), 'createCheckoutSession')({
+export async function createStripePayment(item: string, successUrl: string, cancelUrl: string): Promise<string> {
+  const res = await httpsCallable(
+    getFunctions(),
+    'createCheckoutSession',
+  )({
     item,
     successUrl,
     cancelUrl,

@@ -35,9 +35,7 @@ const Mixer: React.FC = () => {
     type: MixableType.BASE,
   });
 
-  const [data, setData] = useState<Omit<Omit<MixableResult, 'type'>, 'price'>[] | undefined>(
-    undefined,
-  );
+  const [data, setData] = useState<Omit<Omit<MixableResult, 'type'>, 'price'>[] | undefined>(undefined);
 
   const [strength, setStrength] = useState<number | undefined>(undefined);
 
@@ -103,105 +101,96 @@ const Mixer: React.FC = () => {
     },
   };
   return (
-      <Card>
-        <Row justify="center" gutter={32}>
-          <div style={{ marginBottom: '2%' }}>
-            <Banner providerName="mixer_ad_provider" />
-          </div>
-          <Col xs={24} sm={20} md={20}>
-            <Form
-              form={form}
-              name="mixer_form"
-              onFinish={handleCalculate}
-              onFinishFailed={() => console.log('erro')}
-              {...formItemLayout}
+    <Card>
+      <Row justify="center" gutter={32}>
+        <div style={{ marginBottom: '2%' }}>
+          <Banner providerName="mixer_ad_provider" />
+        </div>
+        <Col xs={24} sm={20} md={20}>
+          <Form
+            form={form}
+            name="mixer_form"
+            onFinish={handleCalculate}
+            onFinishFailed={() => console.log('erro')}
+            {...formItemLayout}
+          >
+            <Col lg={24} style={{ textAlign: 'center' }}>
+              <UpOutlined style={{ fontSize: 60 }} />
+            </Col>
+            <Row
+              style={{
+                textAlign: 'right',
+              }}
             >
-              <Col lg={24} style={{ textAlign: 'center' }}>
-                <UpOutlined style={{ fontSize: 60 }} />
-              </Col>
-              <Row
-                style={{
-                  textAlign: 'right',
-                }}
-              >
-                <Col xs={12}>
-                  <SelectType mixable={mixable1} onChange={setMixable1} />
-                  <Card>
-                    <InputElements mixData={mixable1} onValueChange={setMixable1} side="left" />
-                  </Card>
-                </Col>
-
-                <Col xs={12}>
-                  <SelectType mixable={mixable2} onChange={setMixable2} />
-                  <Card>
-                    <InputElements mixData={mixable2} onValueChange={setMixable2} side="right" />
-                  </Card>
-                </Col>
-              </Row>
-
-              <Col>
-                <Form.Item style={{ marginTop: 20, display: 'flex', marginLeft: 'auto' }}>
-                  <ButtonGroup>
-                    <Button
-                      type="primary"
-                      htmlType="submit"
-                      loading={calculateBtnLoading}
-                      size="large"
-                      icon={<CalculatorOutlined />}
-                    >
-                      {' '}
-                      <FormattedMessage id="misc.actions.calculate" defaultMessage="Calculate" />
-                    </Button>
-                    <Button
-                      type="default"
-                      onClick={handleClear}
-                      size="large"
-                      icon={<DeleteOutlined />}
-                    >
-                      {' '}
-                      <FormattedMessage id="misc.actions.clear" defaultMessage="Reset" />
-                    </Button>
-                  </ButtonGroup>
-                </Form.Item>
-              </Col>
-              {!!ratio && !!strength && data && (
+              <Col xs={12}>
+                <SelectType mixable={mixable1} onChange={setMixable1} />
                 <Card>
-                  <Row
-                    style={{
-                      textAlign: 'center',
-                      alignItems: 'center',
-                      flex: 1,
-                      flexDirection: 'row',
-                      fontSize: 24,
-                    }}
-                  >
-                    <Col style={{ margin: 'auto' }}>
-                      <Row>
-                        <Typography style={{ fontWeight: 'bold', fontSize: 24 }}>
-                          Ratio:&nbsp;
-                        </Typography>
-                        <Typography>
-                          {100 - Math.round(ratio)}VG/
-                          {Math.round(ratio)}PG
-                        </Typography>
-                      </Row>
-                    </Col>
-                    <Col style={{ margin: 'auto' }}>
-                      <Row>
-                        <Typography style={{ fontWeight: 'bold', fontSize: 24 }}>
-                          Strength:&nbsp;
-                        </Typography>
-                        <Typography>{Math.round(strength * 100) / 100}&nbsp;mg/ml</Typography>
-                      </Row>
-                    </Col>
-                  </Row>
-                  <Table columns={columns} dataSource={data} pagination={false} />
+                  <InputElements mixData={mixable1} onValueChange={setMixable1} side="left" />
                 </Card>
-              )}
-            </Form>
-          </Col>
-        </Row>
-      </Card>
+              </Col>
+
+              <Col xs={12}>
+                <SelectType mixable={mixable2} onChange={setMixable2} />
+                <Card>
+                  <InputElements mixData={mixable2} onValueChange={setMixable2} side="right" />
+                </Card>
+              </Col>
+            </Row>
+
+            <Col>
+              <Form.Item style={{ marginTop: 20, display: 'flex', marginLeft: 'auto' }}>
+                <ButtonGroup>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={calculateBtnLoading}
+                    size="large"
+                    icon={<CalculatorOutlined />}
+                  >
+                    {' '}
+                    <FormattedMessage id="misc.actions.calculate" defaultMessage="Calculate" />
+                  </Button>
+                  <Button type="default" onClick={handleClear} size="large" icon={<DeleteOutlined />}>
+                    {' '}
+                    <FormattedMessage id="misc.actions.clear" defaultMessage="Reset" />
+                  </Button>
+                </ButtonGroup>
+              </Form.Item>
+            </Col>
+            {!!ratio && !!strength && data && (
+              <Card>
+                <Row
+                  style={{
+                    textAlign: 'center',
+                    alignItems: 'center',
+                    flex: 1,
+                    flexDirection: 'row',
+                    fontSize: 24,
+                  }}
+                >
+                  <Col style={{ margin: 'auto' }}>
+                    <Row>
+                      <Typography style={{ fontWeight: 'bold', fontSize: 24 }}>Ratio:&nbsp;</Typography>
+                      <Typography>
+                        {100 - Math.round(ratio)}VG/
+                        {Math.round(ratio)}PG
+                      </Typography>
+                    </Row>
+                  </Col>
+                  <Col style={{ margin: 'auto' }}>
+                    <Row>
+                      <Typography style={{ fontWeight: 'bold', fontSize: 24 }}>Strength:&nbsp;</Typography>
+                      <Typography>{Math.round(strength * 100) / 100}&nbsp;mg/ml</Typography>
+                    </Row>
+                  </Col>
+                </Row>
+                <Table columns={columns} dataSource={data} pagination={false} />
+              </Card>
+            )}
+          </Form>
+        </Col>
+      </Row>
+    </Card>
   );
 };
 

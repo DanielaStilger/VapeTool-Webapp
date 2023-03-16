@@ -22,8 +22,8 @@ const Profile: React.FC = () => {
   const router = useRouter();
   const { styles } = useStyles();
 
-  const queryId = router.query?.id
-  const userId = (queryId || dbUser?.uid) ? String(queryId || dbUser?.uid) : null;
+  const queryId = router.query?.id;
+  const userId = queryId || dbUser?.uid ? String(queryId || dbUser?.uid) : null;
   const isCurrentUser = !queryId || queryId == dbUser?.uid;
 
   useEffect(() => {
@@ -35,7 +35,6 @@ const Profile: React.FC = () => {
   if (!userId) {
     return <Typography.Paragraph>Inital state have not been loaded</Typography.Paragraph>;
   }
-
 
   const renderContentByTabKey = () => {
     switch (tabKey) {
@@ -74,37 +73,25 @@ const Profile: React.FC = () => {
             <div className={styles.controlContainer}>
               <div className={styles.controlPanel}>
                 <ul>
-                  <li
-                    onClick={() => setTabKey(ItemName.PHOTO)}
-                    className={`${activeClass(ItemName.PHOTO)}`}
-                  >
+                  <li onClick={() => setTabKey(ItemName.PHOTO)} className={`${activeClass(ItemName.PHOTO)}`}>
                     <CameraOutlined className={styles.icon} />
                     <span className={styles.label}>
                       <FormattedMessage id="user.photos" defaultMessage="Photos" />
                     </span>
                   </li>
-                  <li
-                    onClick={() => setTabKey(ItemName.POST)}
-                    className={`${activeClass(ItemName.POST)}`}
-                  >
+                  <li onClick={() => setTabKey(ItemName.POST)} className={`${activeClass(ItemName.POST)}`}>
                     <MessageOutlined className={styles.icon} />
                     <span className={styles.label}>
                       <FormattedMessage id="user.posts" defaultMessage="Posts" />
                     </span>
                   </li>
-                  <li
-                    onClick={() => setTabKey(ItemName.LINK)}
-                    className={`${activeClass(ItemName.LINK)}`}
-                  >
+                  <li onClick={() => setTabKey(ItemName.LINK)} className={`${activeClass(ItemName.LINK)}`}>
                     <LinkOutlined className={styles.icon} />
                     <span className={styles.label}>
                       <FormattedMessage id="user.links" defaultMessage="Links" />
                     </span>
                   </li>
-                  <li
-                    onClick={() => setTabKey(ItemName.COIL)}
-                    className={`${activeClass(ItemName.COIL)}`}
-                  >
+                  <li onClick={() => setTabKey(ItemName.COIL)} className={`${activeClass(ItemName.COIL)}`}>
                     <i className={styles.icon}>
                       <img
                         src="https://web.vapetool.app/menu_icons/coil_calculator.svg"
@@ -116,10 +103,7 @@ const Profile: React.FC = () => {
                       <FormattedMessage id="user.coils" defaultMessage="Coils" />
                     </span>
                   </li>
-                  <li
-                    onClick={() => setTabKey(ItemName.LIQUID)}
-                    className={`${activeClass(ItemName.LIQUID)}`}
-                  >
+                  <li onClick={() => setTabKey(ItemName.LIQUID)} className={`${activeClass(ItemName.LIQUID)}`}>
                     <i className={styles.icon}>
                       <img
                         src="https://web.vapetool.app/menu_icons/liquid_blender.svg"

@@ -1,7 +1,7 @@
+node_modules/
+dist/
+.prettierrc.js
 package.json
-.umi
-.umi-production
-.umi-test
 /dist
 /img
 .dockerignore

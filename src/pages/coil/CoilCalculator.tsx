@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { Button, Card, Col, InputNumber, Row, Select, Typography, message } from 'antd';
 import { FormattedMessage } from 'react-intl';
-import { Coil, Properties, Wire } from '@vapetool/types';
+import { Coil, Properties, Wire, User as DatabaseUser } from '@vapetool/types';
 import { Coil as CoilType } from '@/types';
 import ComplexWire from '@/components/ComplexWire';
 import PropertyItem from '@/components/PropertyItem';
 import { CalculatorOutlined, LockFilled, UnlockOutlined, SaveOutlined } from '@ant-design/icons';
 import CoilHelper from '@/components/CoilHelper';
-import { User as DatabaseUser } from '@vapetool/types'
 import { saveCoil } from '@/services/items';
 import SaveModal from '@/components/SaveModal';
 import { sendRequest } from '@/services/coil';
@@ -20,7 +19,6 @@ import { useAuth } from '@/context/FirebaseAuthContext';
 const { Option } = Select;
 const { Title } = Typography;
 
-
 enum Field {
   SETUP = 'SETUP',
   INNER_DIAMETER = 'INNER_DIAMETER',
@@ -31,7 +29,7 @@ enum Field {
 }
 
 const CoilCalculator: React.FC = () => {
-  const { dbUser, toAuthor } = useAuth()
+  const { dbUser, toAuthor } = useAuth();
   const { styles } = useStyles();
 
   const {
@@ -57,7 +55,7 @@ const CoilCalculator: React.FC = () => {
   const [saveModalVisible, setSaveModalVisible] = useState(false);
   const [calculateBtnLoading, setCalculateBtnLoading] = useState(false);
 
-  const onValueChanged = (field: Field) => (value: number|null) => {
+  const onValueChanged = (field: Field) => (value: number | null) => {
     if (field === Field.WRAPS || field === Field.RESISTANCE) {
       setLastEdit(field);
     }
@@ -117,38 +115,18 @@ const CoilCalculator: React.FC = () => {
   // {{descriptionItem('Total height', 'totalHeight', 'mm')}} //TODO fix it
   const coilProperties = (
     <Col xs={24}>
-      <PropertyItem
-        property="baseVoltage"
-        value={baseVoltage}
-        unit="V"
-        editable
-        onChangeValue={onBaseVoltageChange}
-      />
+      <PropertyItem property="baseVoltage" value={baseVoltage} unit="V" editable onChangeValue={onBaseVoltageChange} />
       <PropertyItem property="current" value={properties?.current} unit="A" />
       <PropertyItem property="power" value={properties?.power} unit="W" />
       <PropertyItem property="heat" value={properties?.heat} unit="mW/cm²" proOnly />
-      <PropertyItem
-        property="surface"
-        value={properties?.surface}
-        unit="cm²"
-        proOnly
-      />
-      <PropertyItem
-        property="totalLength"
-        value={properties?.totalLength}
-        unit="mm"
-        proOnly
-      />
+      <PropertyItem property="surface" value={properties?.surface} unit="cm²" proOnly />
+      <PropertyItem property="totalLength" value={properties?.totalLength} unit="mm" proOnly />
     </Col>
   );
 
   const coilSetup = (
     <Card style={{ height: '100%' }}>
-      <SaveModal
-        visible={saveModalVisible}
-        setVisible={setSaveModalVisible}
-        save={validateAndSaveCoil}
-      />
+      <SaveModal visible={saveModalVisible} setVisible={setSaveModalVisible} save={validateAndSaveCoil} />
       <Typography.Link onClick={() => setHelpModalVisible(true)}>Need some help?</Typography.Link>
       <Row justify="space-between" align="middle">
         <FormattedMessage id="coilCalculator.inputs.setup" />
@@ -174,13 +152,7 @@ const CoilCalculator: React.FC = () => {
 
       <Row justify="space-between" align="middle">
         <FormattedMessage id="coilCalculator.inputs.legsLength" />
-        <InputNumber
-          min={0.0}
-          step={1}
-          precision={0}
-          value={currentCoil.legsLength}
-          onChange={onLegsLengthChange}
-        />
+        <InputNumber min={0.0} step={1} precision={0} value={currentCoil.legsLength} onChange={onLegsLengthChange} />
       </Row>
 
       <Row justify="space-between" align="middle">
@@ -204,13 +176,7 @@ const CoilCalculator: React.FC = () => {
           <span className={styles.lockIcon} onClick={() => setLastEdit(Field.WRAPS)}>
             {lastEdit === Field.WRAPS ? <LockFilled /> : <UnlockOutlined />}
           </span>
-          <InputNumber
-            min={0}
-            step={1}
-            precision={0}
-            value={currentCoil.wraps}
-            onChange={onWrapsChange}
-          />
+          <InputNumber min={0} step={1} precision={0} value={currentCoil.wraps} onChange={onWrapsChange} />
         </Row>
       </Row>
 
@@ -258,10 +224,7 @@ const CoilCalculator: React.FC = () => {
           <Banner providerName="coil_calculator_ad_provider" />
         </div>
         <Col xs={24} sm={20} md={20}>
-          <CoilHelper
-            helpModalVisible={helpModalVisibile}
-            setHelpModalVisible={setHelpModalVisible}
-          />
+          <CoilHelper helpModalVisible={helpModalVisibile} setHelpModalVisible={setHelpModalVisible} />
           <Row style={{}} justify="center">
             <Col xs={{ span: 24, order: 2 }} xl={{ span: 8, order: 1 }}>
               {coilSetup}

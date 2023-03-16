@@ -2,11 +2,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "useDefineForClassFields": true,
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ESNext"
-    ],
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "allowJs": false,
     "skipLibCheck": true,
     "esModuleInterop": false,
@@ -20,7 +16,7 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "paths": {
-      "@/*": ["./src/*"],
+      "@/*": ["./src/*"]
     }
   },
   "references": [
@@ -37,10 +33,10 @@
     "__test__",
     "typings",
     "config",
-    ".eslintrc.js",
+    ".eslintrc.cjs",
     ".stylelintrc.js",
-    ".prettierrc.js",
-    "jest.config.js",
+    ".prettierrc.cjs",
+    "jest.config.js"
   ],
   "exclude": ["node_modules", "build", "dist", "scripts", "webpack", "jest"]
 }

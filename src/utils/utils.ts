@@ -5,7 +5,8 @@ import moment from 'moment';
 import { parseParams } from './querystring';
 
 /* eslint no-useless-escape:0 import/prefer-default-export:0 */
-const reg = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(?::\d+)?|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/;
+const reg =
+  /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(?::\d+)?|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/;
 
 export const isUrl = (path: string): boolean => reg.test(path);
 
@@ -17,10 +18,9 @@ export const isUserPro = (userSubscription: Date | null | undefined): boolean =>
   if (userSubscription) {
     return userSubscription && moment(userSubscription).isAfter();
   } else {
-    return false
+    return false;
   }
-}
-
+};
 
 export const IS_PRODUCTION = import.meta.env.PROD;
 export const IS_NOT_PRODUCTION = !IS_PRODUCTION;
@@ -37,10 +37,7 @@ export const isAntDesignProOrDev = (): boolean => {
 export const getPageQuery = () => parseParams(window.location.href.split('?')[1]);
 export const getPageFragment = () => parseParams(window.location.href.split('#')[1]);
 
-export function unitFormatter(
-  decimals: number,
-  unit?: string,
-): (value: number | string | undefined) => string {
+export function unitFormatter(decimals: number, unit?: string): (value: number | string | undefined) => string {
   return (value: number | string | undefined) => {
     if (!value || value === '') {
       return '';
