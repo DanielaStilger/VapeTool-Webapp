@@ -185,7 +185,7 @@ export const usersStorageRef = (uid: string) => imagesRef('users/images/' + uid 
 export const coilsStorageRef = (uid: string) => imagesRef('coils/images' + uid + '.jpg');
 export const photosStorageRef = (uid: string) => imagesRef('gears/images/' + uid + '.jpg');
 
-let userLoaded: boolean = false;
+let userLoaded = false;
 
 export function getCurrentUser(): Promise<FirebaseUser | undefined> {
   return new Promise<FirebaseUser | undefined>((resolve, reject) => {

@@ -1,9 +1,8 @@
 import { User } from '@vapetool/types';
 import { DataSnapshot, onValue, update } from 'firebase/database'
 import { User as FirebaseUser } from 'firebase/auth'
-import { userRef } from '../utils/firebase';
+import { userRef , auth } from '../utils/firebase';
 
-import { auth } from '../utils/firebase';
 import { uploadAvatar } from '../services/storage';
 import { notification } from 'antd';
 import useRouter from '../utils/useRouter';

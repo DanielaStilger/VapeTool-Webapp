@@ -137,7 +137,7 @@ export const redirectBack = () => {
 
 export const userPermissionToAuthority = (
   permission: UserPermission = UserPermission.ONLINE_USER,
-  isPro: boolean = false,
+  isPro = false,
 ): UserAuthorities[] => {
   const userRoles = [UserAuthorities.USER];
   if (isPro) {

@@ -1,10 +1,9 @@
 import React from 'react';
-import { useLinkClickHandler, useLocation } from 'react-router-dom';
+import { useLinkClickHandler, useLocation , Outlet } from 'react-router-dom';
 import logo from "../../assets/logo.svg"
 import { Navbar, Dropdown, Avatar, Footer } from 'flowbite-react';
 import { LogoutOutlined, UnlockOutlined, UserOutlined } from '@ant-design/icons';
 import { FormattedMessage } from 'react-intl';
-import { Outlet } from "react-router-dom";
 
 function AppNavLink(props: {
     href: string;

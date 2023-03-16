@@ -5,11 +5,10 @@ import FlavorTable from '../../components/FlavorTable';
 import NewFlavorModal from '../../components/NewFlavorModal';
 import VgPgRatioView from '../..//components/VgPgRatioView';
 import { CalculatorOutlined, PlusOutlined } from '@ant-design/icons';
-import { Author } from '@vapetool/types';
+import { Author , User as DatabaseUser } from '@vapetool/types';
 import SaveModal from '../../components/SaveModal';
 import { saveLiquid } from '../../services/items';
 import { LiquidModelState, useLiquidModel } from '../../models/liquid';
-import { User as DatabaseUser } from '@vapetool/types'
 import { PageContainer } from '@ant-design/pro-layout';
 import Banner from '../../components/Banner';
 import useStyles from './style';

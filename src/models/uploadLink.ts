@@ -1,8 +1,7 @@
-import { User as DatabaseUser } from '@vapetool/types'
+import { User as DatabaseUser , Author } from '@vapetool/types'
 import { useState } from 'react';
 import { message } from 'antd';
 import { createLink } from '@/services/items';
-import { Author } from '@vapetool/types';
 import useRouter from '@/utils/useRouter';
 
 export const useUploadLinkModel = () => {

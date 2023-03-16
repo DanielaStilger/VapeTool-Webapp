@@ -1,12 +1,9 @@
-import { useState } from 'react';
-import { Settings as LayoutSettings } from '@ant-design/pro-layout';
-import defaultSettings from '../../config/defaultSettings';
-
+import { useState } from 'react'
 
 export const useSettings = () => {
-    const [settings, setSettings] = useState<LayoutSettings>(defaultSettings);
+  const [settings, setSettings] = useState()
 
-    return {
-        settings, setSettings
-    };
+  return {
+    settings, setSettings
+  }
 }

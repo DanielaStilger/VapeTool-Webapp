@@ -1,9 +1,8 @@
-import { Photo as FirebasePhoto } from '@vapetool/types';
+import { Photo as FirebasePhoto , User } from '@vapetool/types';
 import { DataSnapshot, DatabaseReference, query, orderByChild, equalTo, get, onValue } from 'firebase/database';
 import { coilsRef, likesRef, linksRef, liquidsRef, photosRef, postsRef, userRef } from '../utils/firebase';
 import { getImageUrl, ImageType } from '../services/storage';
 import { Coil, ItemName, Link, Liquid, Photo, Post } from '../types';
-import { User } from '@vapetool/types';
 
 export async function getUser(userId: string): Promise<User> {
   return new Promise((resolve, reject) => {

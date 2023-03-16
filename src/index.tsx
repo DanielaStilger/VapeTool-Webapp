@@ -4,8 +4,7 @@ import { AuthProvider, useAuth } from './context/FirebaseAuthContext';
 // import FirebaseAuth from './pages/login';
 // import UserWizard from './pages/user/wizard';
 import { FC } from 'react';
-import { Routes, Route, BrowserRouter } from "react-router-dom";
-import {
+import { Routes, Route, BrowserRouter ,
     createBrowserRouter,
     RouterProvider,
 } from "react-router-dom";
