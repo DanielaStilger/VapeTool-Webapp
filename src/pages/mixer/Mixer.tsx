@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import PageHeaderWrapper from '@ant-design/pro-layout';
 import { Button, Card, Col, Form, Row, Table, Typography } from 'antd';
 import ButtonGroup from 'antd/es/button/button-group';
 import { FormattedMessage } from 'react-intl';
@@ -104,7 +103,6 @@ const Mixer: React.FC = () => {
     },
   };
   return (
-    <PageHeaderWrapper>
       <Card>
         <Row justify="center" gutter={32}>
           <div style={{ marginBottom: '2%' }}>
@@ -204,7 +202,6 @@ const Mixer: React.FC = () => {
           </Col>
         </Row>
       </Card>
-    </PageHeaderWrapper>
   );
 };
 
