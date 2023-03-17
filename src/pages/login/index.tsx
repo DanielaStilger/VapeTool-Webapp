@@ -11,7 +11,7 @@ const Login = () => {
       <Button onClick={() => signInWithPopup(auth, new GoogleAuthProvider())} icon={<GoogleOutlined />} block style={{ marginBottom: 10 }}>
         Sign in with Google
       </Button>
-      <Button onClick={() => signInWithRedirect(auth, new GoogleAuthProvider())} icon={<FacebookOutlined />} block style={{ marginBottom: 10 }}>
+      <Button onClick={() => signInWithPopup(auth, new FacebookAuthProvider())} icon={<FacebookOutlined />} block style={{ marginBottom: 10 }}>
         Sign in with Facebook
       </Button>
     </Card>
