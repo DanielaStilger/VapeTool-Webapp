@@ -28,7 +28,7 @@ export const IS_NOT_PRODUCTION = !IS_PRODUCTION
 export const getPageQuery = () => parseParams(window.location.href.split('?')[1])
 export const getPageFragment = () => parseParams(window.location.href.split('#')[1])
 
-export function unitFormatter (decimals: number, unit?: string): (value: number | string | undefined) => string {
+export function unitFormatter(decimals: number, unit?: string): (value: number | string | undefined) => string {
   return (value: number | string | undefined) => {
     if (!value || value === '') {
       return ''
@@ -42,7 +42,7 @@ export function unitFormatter (decimals: number, unit?: string): (value: number 
   }
 }
 
-export function unitParser (
+export function unitParser(
   decimals: number,
   unit: string,
   negativeAllowed?: boolean
@@ -150,7 +150,7 @@ export const userPermissionToAuthority = (
   }
 }
 
-export function storeAuthority (authority: string | string[]) {
+export function storeAuthority(authority: string | string[]) {
   const proAuthority = typeof authority === 'string' ? [authority] : authority
   return localStorage.setItem('antd-pro-authority', JSON.stringify(proAuthority))
 }
