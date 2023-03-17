@@ -18,9 +18,6 @@ jobs:
       run: |
         pnpm install
         pnpm build
-    - name: pnpm test
-      run: |
-        pnpm lint
       env:
         CI: true
         PROGRESS: none

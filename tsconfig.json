@@ -32,8 +32,6 @@
     "__test__",
     "typings",
     "jest.config.js",
-    "tsconfig.node.json",
-    "vite.config.ts"
   ],
   "exclude": ["node_modules", "build", "dist", "scripts", "webpack", "jest"]
 }
