@@ -9,7 +9,11 @@ import UploadLink from '@/components/UploadLink'
 
 const Upload: React.FC = () => {
   const { currentTab, setTab } = useUploadModel()
-  const onTabChange = (key: string) => setTab(Tab[key])
+  const onTabChange = (key: string) => {
+    if (key == Tab.LINK || key == Tab.PHOTO || key == Tab.POST) {
+      setTab(key)
+    }
+  }
 
   return (
     <Row>

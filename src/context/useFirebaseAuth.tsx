@@ -39,12 +39,12 @@ export default function useFirebaseAuth (): FirebaseAuth {
   }
 
   const _signOut = async () =>
-    await signOut(auth()).then(clear)
+    await signOut(auth).then(clear)
 
   const toAuthor = (user: DatabaseUser) => new Author(user.uid, user.display_name)
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth(), authStateChanged)
+    const unsubscribe = onAuthStateChanged(auth, authStateChanged)
     return () => { userInDbUnsubscriber?.(); unsubscribe() }
   }, [])
 

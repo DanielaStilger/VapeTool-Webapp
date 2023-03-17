@@ -19,14 +19,14 @@ const firebaseProdConfig = {
 }
 
 const firebaseDevConfig = {
-  apiKey: 'AIzaSyAmf_Tmb5VnPwH3niIX9Q2QPJOrCNgTEto',
-  authDomain: 'dev-vapetool.firebaseapp.com',
-  databaseURL: 'https://dev-vapetool.firebaseio.com',
-  projectId: 'dev-vapetool',
-  storageBucket: 'dev-vapetool.appspot.com',
-  messagingSenderId: '1053309639962',
-  appId: '1:1053309639962:web:a7469df6baf07ff86ee0a3'
-}
+  apiKey: "AIzaSyAmf_Tmb5VnPwH3niIX9Q2QPJOrCNgTEto",
+  authDomain: "dev-vapetool.firebaseapp.com",
+  databaseURL: "https://dev-vapetool.firebaseio.com",
+  projectId: "dev-vapetool",
+  storageBucket: "dev-vapetool.appspot.com",
+  messagingSenderId: "1053309639962",
+  appId: "1:1053309639962:web:a7469df6baf07ff86ee0a3"
+};
 
 // firebaseConfig.databaseURL = 'ws://localhost:5555';
 
@@ -42,25 +42,17 @@ const prodStorage = getStorage(prodApp)
 const prodAuth: Auth = getAuth(prodApp)
 const prodFunctions = getFunctions(prodApp)
 
-export function functions () {
-  return IS_PRODUCTION ? prodFunctions : devFunctions
-}
+export const functions = IS_PRODUCTION ? prodFunctions : devFunctions
 
-export function remoteConfig (): RemoteConfig {
-  return IS_PRODUCTION ? getRemoteConfig(prodApp) : getRemoteConfig(devApp)
-}
+export const remoteConfig = IS_PRODUCTION ? getRemoteConfig(prodApp) : getRemoteConfig(devApp)
 
-export function database (): Database {
-  return IS_PRODUCTION ? prodDb : devDb
-}
+export const database = IS_PRODUCTION ? prodDb : devDb
 
-export function storage (): FirebaseStorage {
-  return IS_PRODUCTION ? prodStorage : devStorage
-}
+export const storage = IS_PRODUCTION ? prodStorage : devStorage
 
 export const auth = IS_PRODUCTION ? prodAuth : devAuth
 
-const dbRef = (path: string) => ref(database(), path)
+const dbRef = (path: string) => ref(database, path)
 
 export const batteriesRef = ref(prodDb, 'batteries')
 export const postsRef = dbRef('posts')
@@ -179,7 +171,7 @@ export const reportsRef = (item: ItemName): ((uid: string) => DatabaseReference)
   }
 }
 
-const imagesRef = (path: string) => storageRef(storage(), path)
+const imagesRef = (path: string) => storageRef(storage, path)
 export const batteriesStorageRef = (uid: string) => storageRef(prodStorage, 'batteries/images/' + uid + '.jpg')
 export const usersStorageRef = (uid: string) => imagesRef('users/images/' + uid + '.jpg')
 export const coilsStorageRef = (uid: string) => imagesRef('coils/images' + uid + '.jpg')

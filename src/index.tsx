@@ -1,8 +1,7 @@
 import React from 'react'
 import NavigationDrawer from './components/NavigationDrawer'
 import { AuthProvider, useAuth } from './context/FirebaseAuthContext'
-// import FirebaseAuth from './pages/login';
-// import UserWizard from './pages/user/wizard';
+import UserWizard from './pages/user/wizard';
 import { FC } from 'react'
 import {
   Routes, Route, BrowserRouter,
@@ -34,23 +33,25 @@ import Converters from './pages/converters/Converters'
 import Batteries from './pages/batteries/Batteries'
 import BatteryLife from './pages/batterylife/BatteryLife'
 import Profile from './pages/user/profile'
-// import { PageLoading } from '@ant-design/pro-layout';
+import { PageLoading } from '@ant-design/pro-layout';
+import FirebaseAuth from './pages/login';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 // https://github.com/mongodb-university/realm-tutorial-web/blob/final/src/App.js
 // @ts-expect-error: Don't worry about children type
-// const RequireLoggedInUser = ({ children }) => {
-//     // Only render children if there is a logged in user.
-//     const auth = useAuth()
-//     return auth.firebaseUser ? children : <FirebaseAuth />;
-// };
-// // @ts-ignore: Don't worry about type here
-// const RequireCreatedUserInDatabase = ({ children }) => {
-//     // @ts-ignore: Don't worry about children type
-//     const auth = useAuth()
-//     console.log("auth", auth)
-//     return auth.dbUser ? auth.dbUser.setup ? children : <UserWizard /> : <PageLoading />;
-// };
+const RequireLoggedInUser = ({ children }) => {
+  // Only render children if there is a logged in user.
+  const auth = useAuth()
+  console.log("RequireLoggedInUser", auth)
+  return auth.firebaseUser ? children : <FirebaseAuth />;
+};
+// @ts-ignore: Don't worry about type here
+const RequireCreatedUserInDatabase = ({ children }) => {
+  // @ts-ignore: Don't worry about children type
+  const auth = useAuth()
+  console.log("RequireCreatedUserInDatabase", auth)
+  return auth.dbUser ? auth.dbUser.setup ? children : <UserWizard /> : <PageLoading />;
+};
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
@@ -64,23 +65,23 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
       <IntlProvider locale={navigator.language}>
 
         <BrowserRouter>
-          {/* <AuthProvider> */}
-          {/* <RequireLoggedInUser> */}
-          {/* <RequireCreatedUserInDatabase> */}
-          <Routes>
-            <Route path='/' element={<NavigationDrawer />}>
-              <Route index element={<Welcome />} />
-              <Route path='welcome' element={<Welcome />} />
-              <Route path='coil-calculator' element={<CoilCalculator />} />
-              <Route path='liquid-blender' element={<LiquidBlender />} />
-              <Route path='converters' element={<Converters />} />
-              <Route path='battery-life' element={<BatteryLife />} />
-              <Route path='mixer' element={<Mixer />} />
-              <Route path='ohm-law' element={<OhmLaw />} />
-              <Route path='*' element={<Oops />} />
-              {/*
+          <AuthProvider>
+            <RequireLoggedInUser>
+              <RequireCreatedUserInDatabase>
+                <Routes>
+                  <Route path='/' element={<NavigationDrawer />}>
+                    <Route index element={<Welcome />} />
+                    <Route path='welcome' element={<Welcome />} />
+                    <Route path='coil-calculator' element={<CoilCalculator />} />
+                    <Route path='liquid-blender' element={<LiquidBlender />} />
+                    <Route path='converters' element={<Converters />} />
+                    <Route path='battery-life' element={<BatteryLife />} />
+                    <Route path='mixer' element={<Mixer />} />
+                    <Route path='ohm-law' element={<OhmLaw />} />
+                    <Route path='*' element={<Oops />} />
+                    <Route path="/cloud" element={<Cloud />} />
+                    {/*
                                 <Route path="batteries" element={<Batteries />} />
-                                <Route path="/cloud" element={<Cloud />} />
                                 <Route path="/payment" element={<Payment />} />
                                 <Route path="/payment-success" element={<SuccessPayment />} />
                                 <Route path="/payment-cancel" element={<CancelPayment />} />
@@ -90,11 +91,11 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                                 <Route path="/user/profile" element={<Profile />} />
                                 <Route path="/user/profile/:id" element={<Profile />} />
                                 */}
-            </Route>
-          </Routes>
-          {/* </RequireCreatedUserInDatabase> */}
-          {/* </RequireLoggedInUser> */}
-          {/* </AuthProvider> */}
+                  </Route>
+                </Routes>
+              </RequireCreatedUserInDatabase>
+            </RequireLoggedInUser>
+          </AuthProvider>
         </BrowserRouter>
       </IntlProvider>
     </ConfigProvider>

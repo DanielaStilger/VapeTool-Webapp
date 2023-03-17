@@ -1,83 +1,24 @@
-import React, { useContext, useState, useEffect } from 'react'
-import { auth } from '@/utils/firebase'
-import {
-  GoogleAuthProvider,
-  signInWithPopup,
-  GithubAuthProvider
-} from 'firebase/auth'
+import { User, Author } from '@vapetool/types';
+import { createContext, useContext } from 'react'
+import useFirebaseAuth, { FirebaseAuth } from './useFirebaseAuth';
 
-interface IAuthProviderProps {
-  children: JSX.Element
+// https://usehooks.com/useAuth/
+const authUserContext = createContext<FirebaseAuth>({
+  firebaseUser: null,
+  dbUser: null,
+  toAuthor: function (user: User): Author {
+    throw new Error('Function not implemented.');
+  },
+  signOut: function (): Promise<void> {
+    throw new Error('Function not implemented.');
+  }
+});
+
+// @ts-ignore: Don't worry about type here
+export function AuthProvider({ children }) {
+  const auth = useFirebaseAuth();
+  // @ts-ignore: Don't worry about type here
+  return <authUserContext.Provider value={auth}>{children}</authUserContext.Provider>;
 }
 
-const AuthContext = React.createContext({})
-
-export function useAuth (): any {
-  return useContext(AuthContext)
-}
-
-export function AuthProvider ({ children }: IAuthProviderProps): JSX.Element {
-  const [currentUser, setCurrentUser] = useState<any>()
-  const [loading, setLoading] = useState(true)
-
-  async function signup (email: string, password: string): Promise<any> {
-    return auth.createUserWithEmailAndPassword(email, password)
-  }
-
-  async function googleSignin (): Promise<any> {
-    const provider = new GoogleAuthProvider()
-    return await signInWithPopup(auth, provider)
-  }
-
-  async function githubSignin (): Promise<any> {
-    const provider = new GithubAuthProvider()
-    return await signInWithPopup(auth, provider)
-  }
-
-  async function login (email: string, password: string): Promise<any> {
-    return auth.signInWithEmailAndPassword(email, password)
-  }
-
-  async function logout (): Promise<any> {
-    return await auth.signOut()
-  }
-
-  async function resetPassword (email: string): Promise<any> {
-    return auth.sendPasswordResetEmail(email)
-  }
-
-  async function updateEmail (email: string): Promise<any> {
-    return currentUser.updateEmail(email)
-  }
-
-  async function updatePassword (password: string): Promise<any> {
-    return currentUser.updatePassword(password)
-  }
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setCurrentUser(user)
-      setLoading(false)
-    })
-
-    return unsubscribe
-  }, [])
-
-  const value = {
-    currentUser,
-    login,
-    signup,
-    googleSignin,
-    githubSignin,
-    logout,
-    resetPassword,
-    updateEmail,
-    updatePassword
-  }
-
-  return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
-  )
-}
+export const useAuth = (): FirebaseAuth => useContext(authUserContext);

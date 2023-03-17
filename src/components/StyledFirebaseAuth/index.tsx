@@ -1,9 +1,8 @@
-// https://github.com/firebase/firebaseui-web-react/pull/173
 import { useEffect, useRef, useState } from 'react'
 import { onAuthStateChanged } from 'firebase/auth'
 import 'firebaseui/dist/firebaseui.css'
 import { auth } from 'firebaseui'
-import React from 'react'
+// https://github.com/firebase/firebaseui-web-react/pull/173
 
 interface Props {
   // The Firebase UI Web UI Config object.

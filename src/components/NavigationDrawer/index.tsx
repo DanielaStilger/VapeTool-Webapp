@@ -4,8 +4,13 @@ import logo from '../../assets/logo.svg'
 import { Navbar, Dropdown, Avatar, Footer } from 'flowbite-react'
 import { LogoutOutlined, UnlockOutlined, UserOutlined } from '@ant-design/icons'
 import { FormattedMessage } from 'react-intl'
+import FirebaseImage from '../StorageAvatar'
+import { ImageType } from '@/services/storage'
+import { useAuth } from '@/context/FirebaseAuthContext'
+import { PageLoading } from '@ant-design/pro-layout'
+import { sign } from 'crypto'
 
-function AppNavLink (props: {
+function AppNavLink(props: {
   href: string
   text: string
 }) {
@@ -21,8 +26,9 @@ function AppNavLink (props: {
   )
 }
 
-// @ts-expect-error
 const NavigationDrawer = () => {
+  const { dbUser, firebaseUser, signOut } = useAuth()
+  if (!dbUser || !firebaseUser) return <PageLoading />
   return (
     <>
       <Navbar
@@ -46,14 +52,19 @@ const NavigationDrawer = () => {
           <Dropdown
             arrowIcon={false}
             inline
-            label={<Avatar alt='User settings' img='https://flowbite.com/docs/images/people/profile-picture-5.jpg' rounded />}
+            label={<FirebaseImage
+              size="small"
+              type={ImageType.USER}
+              id={firebaseUser.uid}
+              alt="avatar"
+            />}
           >
             <Dropdown.Header>
               <span className='block text-sm'>
-                Bonnie Green
+                {dbUser.display_name}
               </span>
               <span className='block truncate text-sm font-medium'>
-                name@flowbite.com
+                {dbUser.email}
               </span>
             </Dropdown.Header>
             <Dropdown.Item>
@@ -65,7 +76,7 @@ const NavigationDrawer = () => {
               <FormattedMessage id='menu.account.unlock-pro' defaultMessage='unlock pro' />
             </Dropdown.Item>
             <Dropdown.Divider />
-            <Dropdown.Item>
+            <Dropdown.Item onClick={signOut}>
               <LogoutOutlined />
               <FormattedMessage id='menu.account.logout' defaultMessage='logout' />
             </Dropdown.Item>
