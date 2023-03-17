@@ -1,6 +1,6 @@
-import { Battery as FirebaseBattery } from '@vapetool/types';
+import { Battery as FirebaseBattery } from '@vapetool/types'
 
 export default interface Battery extends FirebaseBattery {
-  url: string;
-  id: string;
+  url: string
+  id: string
 }

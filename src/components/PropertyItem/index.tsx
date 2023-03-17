@@ -1,47 +1,47 @@
-import React, { useState } from 'react';
-import { Button, InputNumber, Tag } from 'antd';
-import { FormattedMessage } from 'react-intl';
-import classNames from 'classnames';
-import useStyles from './style';
-import { useAuth } from '@/context/FirebaseAuthContext';
-import { isUserPro } from '@/utils/utils';
+import React, { useState } from 'react'
+import { Button, InputNumber, Tag } from 'antd'
+import { FormattedMessage } from 'react-intl'
+import classNames from 'classnames'
+import useStyles from './style'
+import { useAuth } from '@/context/FirebaseAuthContext'
+import { isUserPro } from '@/utils/utils'
 
 interface PropertyItemProps {
-  property: string;
-  value: React.ReactNode;
-  unit: string;
-  proOnly?: boolean;
-  editable?: boolean;
-  onChangeValue?: (newValue?: number | string) => void;
+  property: string
+  value: React.ReactNode
+  unit: string
+  proOnly?: boolean
+  editable?: boolean
+  onChangeValue?: (newValue?: number | string) => void
 }
 
 const PropertyItem = (props: PropertyItemProps) => {
-  const {dbUser} = useAuth()
-  const { styles } = useStyles();
+  const { dbUser } = useAuth()
+  const { styles } = useStyles()
   const isPro = isUserPro(dbUser?.subscription)
-  const { property, value, unit, proOnly, editable, onChangeValue } = props;
-  const displayProOnlyTag = proOnly && !isPro;
+  const { property, value, unit, proOnly, editable, onChangeValue } = props
+  const displayProOnlyTag = proOnly && !isPro
 
-  const [editValue, setEditValue] = useState<number | undefined>();
-  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState<number | undefined>()
+  const [isEditing, setIsEditing] = useState(false)
 
   const enableEditing = () => {
     if (editable) {
       if (!isEditing) {
-        const number = Number(value);
-        setEditValue(Number.isFinite(number) ? number : 0);
-        setIsEditing(true);
+        const number = Number(value)
+        setEditValue(Number.isFinite(number) ? number : 0)
+        setIsEditing(true)
       }
     }
-  };
+  }
 
   const onConfirm = () => {
-    setIsEditing(false);
+    setIsEditing(false)
 
     if (onChangeValue !== undefined) {
-      onChangeValue(editValue);
+      onChangeValue(editValue)
     }
-  };
+  }
 
   return (
     <div className={styles.property}>
@@ -51,9 +51,9 @@ const PropertyItem = (props: PropertyItemProps) => {
       <div
         className={classNames(styles.value, displayProOnlyTag ? styles.proOnly : '', isEditing ? styles.isEditing : '')}
       >
-        {displayProOnlyTag && <Tag color="blue">Pro only</Tag>}
+        {displayProOnlyTag && <Tag color='blue'>Pro only</Tag>}
         {!displayProOnlyTag && value === undefined && (
-          <FormattedMessage id="coilCalculator.calculationRequired" />
+          <FormattedMessage id='coilCalculator.calculationRequired' />
         )}
         {!displayProOnlyTag && value !== undefined && (
           <>
@@ -65,8 +65,7 @@ const PropertyItem = (props: PropertyItemProps) => {
                 value={editValue}
                 onChange={(val) =>
                   (Number.isFinite(val) && setEditValue(Number(val))) ||
-                  (val === undefined && setEditValue(val))
-                }
+                  (val === undefined && setEditValue(val))}
               />
             )}
 
@@ -90,7 +89,7 @@ const PropertyItem = (props: PropertyItemProps) => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default PropertyItem;
+export default PropertyItem

@@ -1,40 +1,40 @@
-import { User as DatabaseUser , Author } from '@vapetool/types'
-import { useState } from 'react';
-import { message } from 'antd';
-import { createLink } from '@/services/items';
-import useRouter from '@/utils/useRouter';
+import { User as DatabaseUser, Author } from '@vapetool/types'
+import { useState } from 'react'
+import { message } from 'antd'
+import { createLink } from '@/services/items'
+import useRouter from '@/utils/useRouter'
 
 export const useUploadLinkModel = () => {
-  const [url, setUrl] = useState('');
-  const [text, setText] = useState('');
+  const [url, setUrl] = useState('')
+  const [text, setText] = useState('')
   const reset = () => {
-    setUrl('');
-    setText('');
-  };
+    setUrl('')
+    setText('')
+  }
   const submitLink = async (user: DatabaseUser) => {
     const author: Author = {
       uid: user.uid,
-      displayName: user.display_name,
-    };
+      displayName: user.display_name
+    }
     if (!url.startsWith('http')) {
-      setUrl(`https://${url}`);
+      setUrl(`https://${url}`)
     }
     try {
-      createLink(text, url, author);
-      message.success('Sucessfully published link');
-      reset();
+      createLink(text, url, author)
+      message.success('Sucessfully published link')
+      reset()
       useRouter().replace('/cloud')
     } catch (e) {
-      if (e instanceof Error){
-        message.error(e.message);
+      if (e instanceof Error) {
+        message.error(e.message)
       }
     }
-  };
+  }
   return {
     url,
     setUrl,
     text,
     setText,
-    submitLink,
-  };
+    submitLink
+  }
 }

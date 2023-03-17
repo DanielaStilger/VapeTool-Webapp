@@ -61,5 +61,5 @@ export default {
 
   'misc.validation.required': 'Please input {name}!',
 
-  'misc.copyrights': '2019 Created with ❤️ for Vapers',
-};
+  'misc.copyrights': '2019 Created with ❤️ for Vapers'
+}

@@ -1,10 +1,8 @@
 # Vape Tool Webapp
 
-![Demo](docs/cloud.jpg) This project uses Vite, antd, Flowbite-react (Tailwindcss).
+![Demo](docs/cloud.jpg) This project uses pnpm, Vite, antd, Flowbite-react (Tailwindcss), standardjs and firebase.
 
-## Environment Prepare
-
-Install `node_modules`:
+## Install
 
 ```bash
 pnpm install
@@ -16,12 +14,8 @@ pnpm install
 pnpm dev
 ```
 
-## VS Environment
+## Linter & Formatter
+We use only [JavaScript Standard Style](https://standardjs.com)
 
-Please add those lines to your `settings.json`:
-
-```json
-  "prettier.configPath": ".prettierrc.cjs",
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.formatOnSave": true,
-```
+```bash
+pnpm lint

@@ -15,5 +15,5 @@ export default {
   'coilCalculator.properties.power': 'Power',
   'coilCalculator.properties.heat': 'Heat',
   'coilCalculator.properties.surface': 'Surface',
-  'coilCalculator.properties.totalLength': 'Total length',
-};
+  'coilCalculator.properties.totalLength': 'Total length'
+}

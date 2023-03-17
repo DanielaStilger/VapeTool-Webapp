@@ -4,11 +4,11 @@ import {
   photosStorageRef,
   usersStorageRef,
   storage,
-  remoteConfig,
-} from '../utils/firebase';
+  remoteConfig
+} from '../utils/firebase'
 
-import { StorageReference, getDownloadURL, uploadBytes, ref } from 'firebase/storage';
-import { getString } from 'firebase/remote-config';
+import { StorageReference, getDownloadURL, uploadBytes, ref } from 'firebase/storage'
+import { getString } from 'firebase/remote-config'
 
 export enum ImageType {
   USER = 'user',
@@ -18,83 +18,83 @@ export enum ImageType {
   BANNER = 'banner',
 }
 
-export function getBatteryUrl(uid: string): Promise<string | undefined> {
-  return getImageUrl(ImageType.BATTERY, uid);
+export async function getBatteryUrl (uid: string): Promise<string | undefined> {
+  return await getImageUrl(ImageType.BATTERY, uid)
 }
 
-export function getPhotoUrl(uid: string): Promise<string | undefined> {
-  return getImageUrl(ImageType.PHOTO, uid);
+export async function getPhotoUrl (uid: string): Promise<string | undefined> {
+  return await getImageUrl(ImageType.PHOTO, uid)
 }
 
-export function getAvatarUrl(uid: string): Promise<string | undefined> {
-  return getImageUrl(ImageType.USER, uid);
+export async function getAvatarUrl (uid: string): Promise<string | undefined> {
+  return await getImageUrl(ImageType.USER, uid)
 }
 
-export function getCoilUrl(uid: string): Promise<string | undefined> {
-  return getImageUrl(ImageType.COIL, uid);
+export async function getCoilUrl (uid: string): Promise<string | undefined> {
+  return await getImageUrl(ImageType.COIL, uid)
 }
 
-export function getBannerUrl(bannerProperties: BannerProperties): Promise<string | undefined> {
-  return getImageUrl(ImageType.BANNER, bannerProperties.imageGs);
+export async function getBannerUrl (bannerProperties: BannerProperties): Promise<string | undefined> {
+  return await getImageUrl(ImageType.BANNER, bannerProperties.imageGs)
 }
 
-export function getImageUrl(type: ImageType, uid: string): Promise<string | undefined> {
+export async function getImageUrl (type: ImageType, uid: string): Promise<string | undefined> {
   switch (type) {
     case ImageType.PHOTO:
-      return getDownloadUrl(photosStorageRef(uid));
+      return await getDownloadUrl(photosStorageRef(uid))
     case ImageType.COIL:
-      return getDownloadUrl(coilsStorageRef(uid));
+      return await getDownloadUrl(coilsStorageRef(uid))
     case ImageType.USER:
-      return getDownloadUrl(usersStorageRef(uid));
+      return await getDownloadUrl(usersStorageRef(uid))
     case ImageType.BATTERY:
-      return getDownloadUrl(batteriesStorageRef(uid));
+      return await getDownloadUrl(batteriesStorageRef(uid))
     case ImageType.BANNER:
-      return getDownloadUrlByUri(uid);
+      return await getDownloadUrlByUri(uid)
     default:
-      throw Error('Unsupported type');
+      throw Error('Unsupported type')
   }
 }
 
-function getDownloadUrl(
-  storageRef: StorageReference,
+async function getDownloadUrl (
+  storageRef: StorageReference
 ): Promise<string | undefined> {
-  return new Promise((resolve) => {
+  return await new Promise((resolve) => {
     getDownloadURL(storageRef)
       .then((url) => {
-        resolve(url);
+        resolve(url)
       })
       .catch(() => {
-        resolve(undefined);
-      });
-  });
+        resolve(undefined)
+      })
+  })
 }
 
-function getDownloadUrlByUri(uri: string): Promise<string | undefined> {
-  return new Promise((resolve) => {
+async function getDownloadUrlByUri (uri: string): Promise<string | undefined> {
+  return await new Promise((resolve) => {
     getDownloadURL(ref(storage(), uri))
       .then((url) => {
-        resolve(url);
+        resolve(url)
       })
       .catch(() => {
-        resolve(undefined);
-      });
-  });
+        resolve(undefined)
+      })
+  })
 }
 
-export async function uploadPhoto(imageBlob: Blob | File, uid: string) {
-  return uploadBytes(photosStorageRef(uid), imageBlob);
+export async function uploadPhoto (imageBlob: Blob | File, uid: string) {
+  return await uploadBytes(photosStorageRef(uid), imageBlob)
 }
 
-export async function uploadAvatar(imageBlob: Blob | File, uid: string) {
-  return uploadBytes(usersStorageRef(uid), imageBlob);
+export async function uploadAvatar (imageBlob: Blob | File, uid: string) {
+  return await uploadBytes(usersStorageRef(uid), imageBlob)
 }
 
 export interface BannerProperties {
-  name: string;
-  linkUrl: string;
-  imageGs: string;
+  name: string
+  linkUrl: string
+  imageGs: string
 }
 
-export async function getAdImageProperties(parameterKey: string): Promise<BannerProperties> {
-  return JSON.parse(getString(remoteConfig(), parameterKey)) as BannerProperties;
+export async function getAdImageProperties (parameterKey: string): Promise<BannerProperties> {
+  return JSON.parse(getString(remoteConfig(), parameterKey)) as BannerProperties
 }

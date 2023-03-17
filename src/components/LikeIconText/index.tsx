@@ -1,26 +1,27 @@
-import React from 'react';
-import { LikeFilled, LikeOutlined } from '@ant-design/icons';
-import useStyles from './style';
+import React from 'react'
+import { LikeFilled, LikeOutlined } from '@ant-design/icons'
+import useStyles from './style'
 
 export const LikeIconText = ({
   text,
   onClick,
-  likedByMe,
+  likedByMe
 }: {
-  text: string;
-  onClick: any;
-  likedByMe?: boolean;
+  text: string
+  onClick: any
+  likedByMe?: boolean
 }) => {
-  const { styles } = useStyles();
+  const { styles } = useStyles()
   return (
     <span onClick={onClick}>
-      {likedByMe ? (
-        <LikeFilled className={likedByMe ? styles.liked : ''} style={{ marginRight: 8 }} />
-      ) : (
-        <LikeOutlined className={likedByMe ? styles.liked : ''} style={{ marginRight: 8 }} />
-      )}
+      {likedByMe
+        ? (
+          <LikeFilled className={likedByMe ? styles.liked : ''} style={{ marginRight: 8 }} />
+          )
+        : (
+          <LikeOutlined className={likedByMe ? styles.liked : ''} style={{ marginRight: 8 }} />
+          )}
       {text}
     </span>
-  );
-
-} 
+  )
+}

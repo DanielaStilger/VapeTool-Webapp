@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { Avatar } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
-import { getImageUrl, ImageType } from '../../services/storage';
+import React, { useEffect, useState } from 'react'
+import { Avatar } from 'antd'
+import { UserOutlined } from '@ant-design/icons'
+import { getImageUrl, ImageType } from '../../services/storage'
 
 interface FirebaseImageProps {
-  type: ImageType;
-  id: string;
-  style?: any;
-  size?: number | 'small' | 'large' | 'default';
-  shape?: 'circle' | 'square';
-  className?: any;
-  alt?: string;
+  type: ImageType
+  id: string
+  style?: any
+  size?: number | 'small' | 'large' | 'default'
+  shape?: 'circle' | 'square'
+  className?: any
+  alt?: string
 }
 
 const FirebaseImage: React.FC<FirebaseImageProps> = ({
@@ -20,12 +20,12 @@ const FirebaseImage: React.FC<FirebaseImageProps> = ({
   shape,
   className,
   alt,
-  id,
+  id
 }: FirebaseImageProps) => {
-  const [src, setSrc] = useState<string | undefined>(undefined);
+  const [src, setSrc] = useState<string | undefined>(undefined)
   useEffect(() => {
-    getImageUrl(type, id).then((imageUrl) => setSrc(imageUrl));
-  }, [id, type]);
+    getImageUrl(type, id).then((imageUrl) => setSrc(imageUrl))
+  }, [id, type])
 
   return (
     <Avatar
@@ -37,7 +37,7 @@ const FirebaseImage: React.FC<FirebaseImageProps> = ({
       shape={shape}
       className={className}
     />
-  );
-};
+  )
+}
 
-export default FirebaseImage;
+export default FirebaseImage

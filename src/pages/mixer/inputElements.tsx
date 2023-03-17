@@ -1,26 +1,26 @@
-import React from 'react';
-import { InputNumber, Col } from 'antd';
-import { useIntl, FormattedMessage } from 'react-intl';
-import FormItem from 'antd/lib/form/FormItem';
-import VgPgRatioView from '@/components/VgPgRatioView';
-import { MixableType } from '@vapetool/types';
+import React from 'react'
+import { InputNumber, Col } from 'antd'
+import { useIntl, FormattedMessage } from 'react-intl'
+import FormItem from 'antd/lib/form/FormItem'
+import VgPgRatioView from '@/components/VgPgRatioView'
+import { MixableType } from '@vapetool/types'
 
-export default function InputElements(props: any) {
+export default function InputElements (props: any) {
   return (
     <>
       <FormItem
         name={`amount-${props.side}`}
-        label={<FormattedMessage id="liquid.amount" defaultMessage="Amount [ml]" />}
+        label={<FormattedMessage id='liquid.amount' defaultMessage='Amount [ml]' />}
         rules={[
           {
             required: true,
-            message: 'Please input value!',
-          },
+            message: 'Please input value!'
+          }
         ]}
       >
         <InputNumber
           value={props.mixData.amount}
-          size="large"
+          size='large'
           step={1}
           min={0.5}
           precision={2}
@@ -28,12 +28,12 @@ export default function InputElements(props: any) {
           onChange={(amount) => {
             props.onValueChange({
               ...props.mixData,
-              amount,
-            });
+              amount
+            })
           }}
           placeholder={useIntl().formatMessage({
             id: 'liquid.amount',
-            defaultMessage: 'Amount [ml]',
+            defaultMessage: 'Amount [ml]'
           })}
         />
       </FormItem>
@@ -41,17 +41,17 @@ export default function InputElements(props: any) {
       {props.mixData.type !== MixableType.PREMIX && (
         <FormItem
           name={`strength-${props.side}`}
-          label={<FormattedMessage id="mixer.strength" defaultMessage="Strength [mg/ml]" />}
+          label={<FormattedMessage id='mixer.strength' defaultMessage='Strength [mg/ml]' />}
           rules={[
             {
               required: props.mixData.type !== MixableType.PREMIX,
-              message: 'Please input value!',
-            },
+              message: 'Please input value!'
+            }
           ]}
         >
           <InputNumber
             value={props.mixData.strength}
-            size="large"
+            size='large'
             step={0.5}
             min={0}
             precision={2}
@@ -59,10 +59,10 @@ export default function InputElements(props: any) {
             onChange={(strength) => {
               props.onValueChange({
                 ...props.mixData,
-                strength,
-              });
+                strength
+              })
             }}
-            placeholder="Strength"
+            placeholder='Strength'
           />
         </FormItem>
       )}
@@ -71,8 +71,8 @@ export default function InputElements(props: any) {
           onRatioChange={(newValue) => {
             props.onValueChange({
               ...props.mixData,
-              ratio: 100 - newValue,
-            });
+              ratio: 100 - newValue
+            })
           }}
           ratio={props.mixData.ratio}
         />
@@ -80,11 +80,11 @@ export default function InputElements(props: any) {
       {props.mixData.type === MixableType.LIQUID && (
         <FormItem
           name={`flavorPercentage-${props.side}`}
-          label={<FormattedMessage id="mixer.flavorPercentage" defaultMessage="Flavor [%]" />}
+          label={<FormattedMessage id='mixer.flavorPercentage' defaultMessage='Flavor [%]' />}
         >
           <InputNumber
             value={props.mixData.flavorsPercentage}
-            size="large"
+            size='large'
             step={0.1}
             min={0}
             precision={2}
@@ -92,20 +92,20 @@ export default function InputElements(props: any) {
             onChange={(newValue) => {
               props.onValueChange({
                 ...props.mixData,
-                flavorPercentage: newValue,
-              });
+                flavorPercentage: newValue
+              })
             }}
-            placeholder="Flavor [%]"
+            placeholder='Flavor [%]'
           />
         </FormItem>
       )}
       <FormItem
         name={`thinner-${props.side}`}
-        label={<FormattedMessage id="liquid.thinner" defaultMessage="Thinner [%]" />}
+        label={<FormattedMessage id='liquid.thinner' defaultMessage='Thinner [%]' />}
       >
         <InputNumber
           value={props.mixData.thinner}
-          size="large"
+          size='large'
           step={0.1}
           min={0}
           precision={2}
@@ -113,15 +113,15 @@ export default function InputElements(props: any) {
           onChange={(newValue) => {
             props.onValueChange({
               ...props.mixData,
-              thinner: newValue,
-            });
+              thinner: newValue
+            })
           }}
           placeholder={useIntl().formatMessage({
             id: 'liquid.thinner',
-            defaultMessage: 'Thinner [%]',
+            defaultMessage: 'Thinner [%]'
           })}
         />
       </FormItem>
     </>
-  );
+  )
 }

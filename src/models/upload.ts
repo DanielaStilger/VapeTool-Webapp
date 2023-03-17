@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from 'react'
 
 export enum Tab {
   PHOTO = 'photo',
@@ -6,10 +6,10 @@ export enum Tab {
   LINK = 'link',
 }
 export const useUploadModel = () => {
-  const [currentTab, setCurrentTab] = useState<Tab>(Tab.PHOTO);
+  const [currentTab, setCurrentTab] = useState<Tab>(Tab.PHOTO)
 
   return {
     setTab: setCurrentTab,
-    currentTab,
-  };
+    currentTab
+  }
 }

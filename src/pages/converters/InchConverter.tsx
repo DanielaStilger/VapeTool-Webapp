@@ -1,9 +1,9 @@
-import React from 'react';
-import { Card, Col, InputNumber, Row } from 'antd';
-import { useIntl, FormattedMessage } from 'react-intl';
-import { LineOutlined, PauseOutlined, SwapOutlined } from '@ant-design/icons';
-import useStyles from './style';
-import { useInchMmModel } from '@/models/inchMm';
+import React from 'react'
+import { Card, Col, InputNumber, Row } from 'antd'
+import { useIntl, FormattedMessage } from 'react-intl'
+import { LineOutlined, PauseOutlined, SwapOutlined } from '@ant-design/icons'
+import useStyles from './style'
+import { useInchMmModel } from '@/models/inchMm'
 
 const InchConverter: React.FC = () => {
   const {
@@ -14,20 +14,20 @@ const InchConverter: React.FC = () => {
     nominator,
     setNominator,
     denominator,
-    setDenominator,
-  } = useInchMmModel();
-  const { styles } = useStyles();
+    setDenominator
+  } = useInchMmModel()
+  const { styles } = useStyles()
 
   return (
     <Card
-      title={<FormattedMessage id="converters.titles.inchToMm" defaultMessage="Inches to mm" />}
+      title={<FormattedMessage id='converters.titles.inchToMm' defaultMessage='Inches to mm' />}
     >
-      <Row justify="space-between">
+      <Row justify='space-between'>
         <Col xs={10} lg={24} xl={10} style={{ textAlign: 'center' }}>
           <div className={styles.fraction}>
             <InputNumber
-              size="large"
-              type="number"
+              size='large'
+              type='number'
               min={1}
               max={10}
               step={1}
@@ -40,8 +40,8 @@ const InchConverter: React.FC = () => {
             <LineOutlined className={styles.line} />
 
             <InputNumber
-              size="large"
-              type="number"
+              size='large'
+              type='number'
               min={1}
               max={100}
               step={1}
@@ -60,11 +60,11 @@ const InchConverter: React.FC = () => {
         <Col xs={10} lg={24} xl={10} className={styles.inchesInput} style={{ textAlign: 'center' }}>
           <label>
             [
-            <FormattedMessage id="misc.units.inch" defaultMessage="inch" />
+            <FormattedMessage id='misc.units.inch' defaultMessage='inch' />
             ]
             <InputNumber
-              size="large"
-              type="number"
+              size='large'
+              type='number'
               min={0}
               max={100000}
               step={0.01}
@@ -73,7 +73,7 @@ const InchConverter: React.FC = () => {
               onChange={value => setInch(Number(value))}
               placeholder={useIntl().formatMessage({
                 id: 'misc.units.inch',
-                defaultMessage: 'inch',
+                defaultMessage: 'inch'
               })}
               className={styles.input}
             />
@@ -87,11 +87,11 @@ const InchConverter: React.FC = () => {
         <Col xs={24} style={{ textAlign: 'center', paddingTop: 40 }}>
           <label>
             [
-            <FormattedMessage id="misc.units.mm" defaultMessage="mm" />
+            <FormattedMessage id='misc.units.mm' defaultMessage='mm' />
             ]
             <InputNumber
-              size="large"
-              type="number"
+              size='large'
+              type='number'
               min={0}
               max={100000}
               step={0.01}
@@ -105,7 +105,7 @@ const InchConverter: React.FC = () => {
         </Col>
       </Row>
     </Card>
-  );
-};
+  )
+}
 
-export default InchConverter;
+export default InchConverter

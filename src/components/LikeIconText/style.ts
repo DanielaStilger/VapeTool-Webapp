@@ -1,5 +1,5 @@
-import { createStyles } from 'antd-style';
+import { createStyles } from 'antd-style'
 
 export default createStyles(({ token }) => ({
-    liked: { color: token.colorPrimary },
-}));
+  liked: { color: token.colorPrimary }
+}))

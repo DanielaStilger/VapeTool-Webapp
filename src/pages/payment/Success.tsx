@@ -1,25 +1,25 @@
-import React from 'react';
-import { Button, Result } from 'antd';
-import { getPageQuery } from '@/utils/utils';
-import useRouter from '@/utils/useRouter';
+import React from 'react'
+import { Button, Result } from 'antd'
+import { getPageQuery } from '@/utils/utils'
+import useRouter from '@/utils/useRouter'
 
 const SuccessPayment: React.FC = () => {
-  const goBack = () => useRouter().replace('/user/profile');
+  const goBack = () => useRouter().replace('/user/profile')
   // TODO this is stripe way, handle also paypal, and maybe coinbase, not sure
-  const params = getPageQuery();
-  const sessionId = params.session_id;
+  const params = getPageQuery()
+  const sessionId = params.session_id
   return (
     <Result
-      status="success"
-      title="Successfully Purchased Vape Tool Pro"
+      status='success'
+      title='Successfully Purchased Vape Tool Pro'
       subTitle={`Order number: ${sessionId}`}
       extra={[
-        <Button type="primary" key="account" onClick={goBack}>
+        <Button type='primary' key='account' onClick={goBack}>
           Go to your account page
-        </Button>,
+        </Button>
       ]}
     />
-  );
-};
+  )
+}
 
-export default SuccessPayment;
+export default SuccessPayment

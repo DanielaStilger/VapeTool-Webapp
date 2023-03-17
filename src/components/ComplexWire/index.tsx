@@ -1,27 +1,27 @@
-import * as React from 'react';
-import { Button, Card, InputNumber, Select, Tag } from 'antd';
-import { Coil, isComplex, Wire, wireGenerator, WireStyle, WireType } from '@vapetool/types';
-import SingleWire from '@/components/SingleWire';
-import { FormattedMessage } from 'react-intl';
-import { Path } from '@/models/coil';
-import ImageWebp from '../ImageWebp';
-import types from './coilTypes';
-import { useAuth } from '@/context/FirebaseAuthContext';
-import { isUserPro } from '@/utils/utils';
+import * as React from 'react'
+import { Button, Card, InputNumber, Select, Tag } from 'antd'
+import { Coil, isComplex, Wire, wireGenerator, WireStyle, WireType } from '@vapetool/types'
+import SingleWire from '@/components/SingleWire'
+import { FormattedMessage } from 'react-intl'
+import { Path } from '@/models/coil'
+import ImageWebp from '../ImageWebp'
+import types from './coilTypes'
+import { useAuth } from '@/context/FirebaseAuthContext'
+import { isUserPro } from '@/utils/utils'
 
-const { Option } = Select;
+const { Option } = Select
 
 // eslint-disable-next-line eslint-comments/disable-enable-pair
 /* eslint global-require: 0 react/no-array-index-key: 0 */
 
 export interface WireComponentProps {
-  complexWire: Coil | Wire;
-  path: Path[];
-  onSetWireType: (type: number, path: Path[]) => void;
-  onSetInnerDiameter: (diameter: number) => void;
-  onAddWire: (path: Path[], wire: Wire) => void;
-  onSetWire: (path: Path[], wire: Wire) => void;
-  onDeleteWire: (path: Path[]) => void;
+  complexWire: Coil | Wire
+  path: Path[]
+  onSetWireType: (type: number, path: Path[]) => void
+  onSetInnerDiameter: (diameter: number) => void
+  onAddWire: (path: Path[], wire: Wire) => void
+  onSetWire: (path: Path[], wire: Wire) => void
+  onDeleteWire: (path: Path[]) => void
 }
 
 const ComplexWire: React.FC<WireComponentProps> = ({
@@ -31,21 +31,21 @@ const ComplexWire: React.FC<WireComponentProps> = ({
   onSetInnerDiameter,
   onAddWire,
   onSetWire,
-  onDeleteWire,
+  onDeleteWire
 }) => {
   const auth = useAuth()
   const isPro = isUserPro(auth.dbUser?.subscription)
-  const handleTypeChange = (key: string) => key && onSetWireType(WireType[key], path);
-  const onPitchChange = (value: string | number | undefined| null) =>
-    value && Number.isFinite(value) && onSetInnerDiameter(Number(value));
-  const onAddWireClick = () => onAddWire(path, wireGenerator.normalWire());
+  const handleTypeChange = (key: string) => key && onSetWireType(WireType[key], path)
+  const onPitchChange = (value: string | number | undefined | null) =>
+    value && Number.isFinite(value) && onSetInnerDiameter(Number(value))
+  const onAddWireClick = () => onAddWire(path, wireGenerator.normalWire())
 
-  const imageSize = 35;
+  const imageSize = 35
 
   return (
     <Card type={path.length === 0 ? undefined : 'inner'}>
       <Select
-        size="large"
+        size='large'
         value={WireType[complexWire.type]}
         style={{ width: '100%', maxWidth: 400 }}
         onChange={handleTypeChange}
@@ -61,7 +61,7 @@ const ComplexWire: React.FC<WireComponentProps> = ({
               <ImageWebp style={{ width: imageSize, paddingRight: 10 }} webp={type.src} />
               {type.name.replace(/_/g, ' ')}
               {type.proOnly && !isPro && (
-                <Tag color="blue" style={{ marginLeft: 16 }}>
+                <Tag color='blue' style={{ marginLeft: 16 }}>
                   Pro
                 </Tag>
               )}
@@ -72,7 +72,7 @@ const ComplexWire: React.FC<WireComponentProps> = ({
       {complexWire.pitch > 0 && (
         <div style={{ margin: 10 }}>
           <label>
-            <FormattedMessage id="coilCalculator.inputs.pitch" />
+            <FormattedMessage id='coilCalculator.inputs.pitch' />
             <InputNumber
               min={0.0}
               step={0.1}
@@ -85,28 +85,30 @@ const ComplexWire: React.FC<WireComponentProps> = ({
       )}
 
       {complexWire.cores.map((wire: Wire, index: number) => {
-        const childPath = path.slice();
-        childPath.push({ style: WireStyle.CORE, index });
-        return isComplex(wire) ? (
-          <ComplexWire
-            key={index}
-            path={childPath}
-            complexWire={wire}
-            onSetWireType={onSetWireType}
-            onSetInnerDiameter={onPitchChange}
-            onAddWire={onAddWireClick}
-            onSetWire={onSetWire}
-            onDeleteWire={onDeleteWire}
-          />
-        ) : (
-          <SingleWire
-            key={index}
-            path={childPath}
-            wire={wire}
-            onSetWire={onSetWire}
-            onDeleteWire={onDeleteWire}
-          />
-        );
+        const childPath = path.slice()
+        childPath.push({ style: WireStyle.CORE, index })
+        return isComplex(wire)
+          ? (
+            <ComplexWire
+              key={index}
+              path={childPath}
+              complexWire={wire}
+              onSetWireType={onSetWireType}
+              onSetInnerDiameter={onPitchChange}
+              onAddWire={onAddWireClick}
+              onSetWire={onSetWire}
+              onDeleteWire={onDeleteWire}
+            />
+            )
+          : (
+            <SingleWire
+              key={index}
+              path={childPath}
+              wire={wire}
+              onSetWire={onSetWire}
+              onDeleteWire={onDeleteWire}
+            />
+            )
       })}
 
       <Button style={{ width: '100%', maxWidth: 400 }} onClick={onAddWireClick}>
@@ -114,32 +116,34 @@ const ComplexWire: React.FC<WireComponentProps> = ({
       </Button>
 
       {complexWire.outers.map((wire: Wire, index: number) => {
-        const childPath = path.slice();
-        childPath.push({ style: WireStyle.OUTER, index });
+        const childPath = path.slice()
+        childPath.push({ style: WireStyle.OUTER, index })
 
-        return isComplex(wire) ? (
-          <ComplexWire
-            key={index}
-            path={childPath}
-            complexWire={wire}
-            onSetWireType={onSetWireType}
-            onSetInnerDiameter={onPitchChange}
-            onAddWire={onAddWireClick}
-            onSetWire={onSetWire}
-            onDeleteWire={onDeleteWire}
-          />
-        ) : (
-          <SingleWire
-            key={index}
-            path={childPath}
-            wire={wire}
-            onSetWire={onSetWire}
-            onDeleteWire={onDeleteWire}
-          />
-        );
+        return isComplex(wire)
+          ? (
+            <ComplexWire
+              key={index}
+              path={childPath}
+              complexWire={wire}
+              onSetWireType={onSetWireType}
+              onSetInnerDiameter={onPitchChange}
+              onAddWire={onAddWireClick}
+              onSetWire={onSetWire}
+              onDeleteWire={onDeleteWire}
+            />
+            )
+          : (
+            <SingleWire
+              key={index}
+              path={childPath}
+              wire={wire}
+              onSetWire={onSetWire}
+              onDeleteWire={onDeleteWire}
+            />
+            )
       })}
     </Card>
-  );
-};
+  )
+}
 
-export default ComplexWire;
+export default ComplexWire

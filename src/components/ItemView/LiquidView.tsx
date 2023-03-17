@@ -1,15 +1,15 @@
-import React from 'react';
-import { FormattedMessage } from 'react-intl';
-import { Card, Descriptions, Typography } from 'antd';
-import { ItemName, Liquid } from '@/types';
-import { Actions } from './ItemView';
-import { usePreviewModel } from '@/models/preview';
-import useStyles from './style';
+import React from 'react'
+import { FormattedMessage } from 'react-intl'
+import { Card, Descriptions, Typography } from 'antd'
+import { ItemName, Liquid } from '@/types'
+import { Actions } from './ItemView'
+import { usePreviewModel } from '@/models/preview'
+import useStyles from './style'
 
-export default function LiquidView({ item }: { item: Liquid }) {
-  const { setSelectedItem, unselectItem } = usePreviewModel();
-  const onSelectItem = () => setSelectedItem(item);
-  const { styles } = useStyles();
+export default function LiquidView ({ item }: { item: Liquid }) {
+  const { setSelectedItem, unselectItem } = usePreviewModel()
+  const onSelectItem = () => setSelectedItem(item)
+  const { styles } = useStyles()
 
   return (
     <>
@@ -28,21 +28,21 @@ export default function LiquidView({ item }: { item: Liquid }) {
         />
 
         <Descriptions>
-          <Descriptions.Item label={<FormattedMessage id="liquid.vg/pg" defaultMessage="VG/PG" />}>
+          <Descriptions.Item label={<FormattedMessage id='liquid.vg/pg' defaultMessage='VG/PG' />}>
             {100 - item.targetRatio}/{item.targetRatio}
           </Descriptions.Item>
           <Descriptions.Item
             label={
               <FormattedMessage
-                id="liquid.nicotineStrength"
-                defaultMessage="Nicotine strength [mg/ml]"
+                id='liquid.nicotineStrength'
+                defaultMessage='Nicotine strength [mg/ml]'
               />
             }
           >
             {item.targetStrength}mg/ml
           </Descriptions.Item>
           <Descriptions.Item
-            label={<FormattedMessage id="liquid.amount" defaultMessage="Amount [ml]" />}
+            label={<FormattedMessage id='liquid.amount' defaultMessage='Amount [ml]' />}
           >
             {item.amount}ml
           </Descriptions.Item>
@@ -54,5 +54,5 @@ export default function LiquidView({ item }: { item: Liquid }) {
         />
       </Card>
     </>
-  );
+  )
 }
