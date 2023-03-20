@@ -2,6 +2,9 @@
 
 ![Demo](docs/cloud.jpg) This project uses pnpm, Vite, antd, Flowbite-react (Tailwindcss), standardjs and firebase.
 
+The project is currently in development. You can follow the progress here: https://github.com/orgs/vape-tool/projects/5
+
+
 ## Install
 
 ```bash
