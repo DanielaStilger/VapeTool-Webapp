@@ -1,40 +1,37 @@
 {
   "compilerOptions": {
-    "outDir": "build/dist",
-    "module": "esnext",
-    "target": "esnext",
-    "lib": ["esnext", "dom"],
-    "sourceMap": true,
-    "baseUrl": ".",
-    "jsx": "react",
-    "allowSyntheticDefaultImports": true,
-    "moduleResolution": "node",
-    "forceConsistentCasingInFileNames": true,
-    "noImplicitReturns": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "noUnusedLocals": true,
-    "allowJs": true,
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "allowJs": false,
     "skipLibCheck": true,
-    "experimentalDecorators": true,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,
     "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
     "paths": {
-      "@/*": ["./src/*"],
-      "@@/*": ["./src/.umi/*"]
+      "@/*": ["./src/*"]
     }
   },
-  "include": [
-    "mock/**/*",
-    "src/**/*",
-    "tests/**/*",
-    "test/**/*",
-    "__test__/**/*",
-    "typings/**/*",
-    "config/**/*",
-    ".eslintrc.js",
-    ".stylelintrc.js",
-    ".prettierrc.js",
-    "jest.config.js",
-    "mock/*"
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
   ],
-  "exclude": ["node_modules", "build", "dist", "scripts", "src/.umi/*", "webpack", "jest"]
+
+  "include": [
+    "src",
+    "tests",
+    "test",
+    "__test__",
+    "typings",
+    "jest.config.js",
+  ],
+  "exclude": ["node_modules", "build", "dist", "scripts", "webpack", "jest"]
 }

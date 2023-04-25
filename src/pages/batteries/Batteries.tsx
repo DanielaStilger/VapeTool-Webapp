@@ -1,24 +1,24 @@
-import React from 'react';
-import { useModel } from 'umi';
-import { List, Row, Col } from 'antd';
-import { id } from '@vapetool/types';
-import BatteryView from '@/components/BatteryView';
-import BatteryPreviewDrawer from '@/components/BatteryPreviewDrawer';
-import styles from '@/components/ItemView/styles.less';
-import { Battery } from '@/types';
-import { PageContainer } from '@ant-design/pro-layout';
-import Banner from '@/components/Banner';
+import React from 'react'
+import { List, Row, Col } from 'antd'
+import { id } from '@vapetool/types'
+import BatteryView from '@/components/BatteryView'
+import BatteryPreviewDrawer from '@/components/BatteryPreviewDrawer'
+import useStyles from '@/components/ItemView/style'
+import { Battery } from '@/types'
+import { PageContainer } from '@ant-design/pro-layout'
+import Banner from '@/components/Banner'
+import { useBatteriesModel } from '@/models/batteries'
 
 const Batteries = () => {
-  const { setSelectedBattery, batteries } = useModel('batteries');
-
-  const onBatteryClick = (battery: Battery) => setSelectedBattery(battery);
+  const { setSelectedBattery, batteries } = useBatteriesModel()
+  const { styles } = useStyles()
+  const onBatteryClick = (battery: Battery) => setSelectedBattery(battery)
 
   return (
     <PageContainer>
-      <Row justify="center" gutter={32}>
+      <Row justify='center' gutter={32}>
         <div style={{ marginBottom: '2%' }}>
-          <Banner providerName="batteries_database_ad_provider" />
+          <Banner providerName='batteries_database_ad_provider' />
         </div>
         <Col xs={24} sm={20} md={16}>
           <List<Battery>
@@ -38,7 +38,7 @@ const Batteries = () => {
         </Col>
       </Row>
     </PageContainer>
-  );
-};
+  )
+}
 
-export default Batteries;
+export default Batteries

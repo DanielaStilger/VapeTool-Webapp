@@ -1,29 +1,31 @@
-import React from 'react';
-import { Card, Col, InputNumber, Row } from 'antd';
-import { FormattedMessage, useModel, useIntl } from 'umi';
-import { SwapOutlined } from '@ant-design/icons';
-import styles from './converters.less';
+import React from 'react'
+import { Card, Col, InputNumber, Row } from 'antd'
+import { FormattedMessage, useIntl } from 'react-intl'
+import { SwapOutlined } from '@ant-design/icons'
+import useStyles from './style'
+import { useAwgMmModel } from '@/models/awgMm'
 
 const AwgConverter: React.FC = () => {
-  const { awg, setAwg, mm, setMm } = useModel('awgMm');
+  const { awg, setAwg, mm, setMm } = useAwgMmModel()
+  const { styles } = useStyles()
 
-  const onChangeAwg = setAwg;
-  const onChangeMm = setMm;
+  const onChangeAwg = setAwg
+  const onChangeMm = setMm
 
   return (
-    <Card title={<FormattedMessage id="converters.titles.awgToMm" defaultMessage="AWG to mm" />}>
-      <Row justify="space-between">
+    <Card title={<FormattedMessage id='converters.titles.awgToMm' defaultMessage='AWG to mm' />}>
+      <Row justify='space-between'>
         <Col xs={10} lg={24} xl={10} style={{ textAlign: 'center' }}>
           <label>
-            <FormattedMessage id="misc.units.awg" defaultMessage="AWG" />
+            <FormattedMessage id='misc.units.awg' defaultMessage='AWG' />
             <InputNumber
-              size="large"
-              type="number"
+              size='large'
+              type='number'
               min={0}
               max={100}
               value={awg}
               precision={0}
-              onChange={onChangeAwg}
+              onChange={value => onChangeAwg(Number(value))}
               placeholder={useIntl().formatMessage({ id: 'misc.units.awg', defaultMessage: 'AWG' })}
               className={styles.input}
             />
@@ -37,17 +39,17 @@ const AwgConverter: React.FC = () => {
         <Col xs={10} lg={24} xl={10} style={{ textAlign: 'center' }}>
           <label>
             [
-            <FormattedMessage id="misc.units.mm" defaultMessage="mm" />
+            <FormattedMessage id='misc.units.mm' defaultMessage='mm' />
             ]
             <InputNumber
-              size="large"
-              type="number"
+              size='large'
+              type='number'
               min={0}
               max={100000}
               step={0.01}
               value={mm}
               precision={3}
-              onChange={onChangeMm}
+              onChange={value => onChangeMm(Number(value))}
               placeholder={useIntl().formatMessage({ id: 'misc.units.mm', defaultMessage: 'mm' })}
               className={styles.input}
             />
@@ -55,7 +57,7 @@ const AwgConverter: React.FC = () => {
         </Col>
       </Row>
     </Card>
-  );
-};
+  )
+}
 
-export default AwgConverter;
+export default AwgConverter

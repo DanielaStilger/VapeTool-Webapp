@@ -2,232 +2,231 @@ import {
   Author,
   Comment,
   OnlineStatus,
+  User,
   Photo as FirebasePhoto,
   Post as FirebasePost,
   Link as FirebaseLink,
   Liquid as FirebaseLiquid,
-  Coil as FirebaseCoil,
-} from '@vapetool/types';
-import { Item, ItemName, Photo, Liquid, Coil, Post, Link } from '@/types';
+  Coil as FirebaseCoil
+} from '@vapetool/types'
+import { Item, ItemName, Photo, Liquid, Coil, Post, Link } from '../types'
 import {
   coilsRef,
-  database,
+  commentsRef,
+  itemRef,
+  likesRef,
   linksRef,
   liquidsRef,
   photosRef,
   postsRef,
-  ServerValue,
-} from '@/utils/firebase';
-import { CurrentUser } from '@/app';
-import { getPhotoUrl, uploadPhoto } from '@/services/storage';
+  reportsRef
+} from '../utils/firebase'
+import { getPhotoUrl, uploadPhoto } from '../services/storage'
+import { serverTimestamp, DataSnapshot, DatabaseReference, Query, query, orderByChild, equalTo, limitToLast, onValue, get, startAt, endAt, push, set, remove, runTransaction, child } from 'firebase/database'
 
-type FirebaseContent = 'gear' | 'post' | 'link';
-
-export function subscribePhotos(
+export function subscribePhotos (
   onValueChange: (items: Photo[]) => void,
-  userId?: string,
+  userId?: string
 ): () => void {
   return subscribeItems<Photo>(
     ItemName.PHOTO,
     photosRef,
-    (snap: firebase.database.DataSnapshot, photo: Photo) =>
-      getPhotoUrl(snap.key || photo.uid).then((url) => {
-        if (!url) throw new Error('Url is not defined');
+    async (snap: DataSnapshot, photo: Photo) =>
+      await getPhotoUrl(snap.key || photo.uid).then((url) => {
+        if (!url) throw new Error('Url is not defined')
         return {
           ...photo,
           // backwards compatibility
           creationTime: photo.creationTime || photo.timestamp,
           lastTimeModified: photo.lastTimeModified || photo.timestamp,
           url,
-          $type: ItemName.PHOTO,
-        };
+          $type: ItemName.PHOTO
+        }
       }),
     onValueChange,
-    userId,
-  );
+    userId
+  )
 }
 
-export function subscribeLinks(
+export function subscribeLinks (
   onValueChange: (items: Link[]) => void,
-  userId?: string,
+  userId?: string
 ): () => void {
-  return subscribeItems<Link>(ItemName.LINK, linksRef, null, onValueChange, userId);
+  return subscribeItems<Link>(ItemName.LINK, linksRef, null, onValueChange, userId)
 }
 
-export function subscribePosts(
+export function subscribePosts (
   onValueChange: (items: Post[]) => void,
-  userId?: string,
+  userId?: string
 ): () => void {
-  return subscribeItems<Post>(ItemName.POST, postsRef, null, onValueChange, userId);
+  return subscribeItems<Post>(ItemName.POST, postsRef, null, onValueChange, userId)
 }
 
-export function subscribeCoils(
+export function subscribeCoils (
   onValueChange: (items: Coil[]) => void,
-  userId?: string,
+  userId?: string
 ): () => void {
-  return subscribeItems<Coil>(ItemName.COIL, coilsRef, null, onValueChange, userId);
+  return subscribeItems<Coil>(ItemName.COIL, coilsRef, null, onValueChange, userId)
 }
 
-export function subscribeLiquids(
+export function subscribeLiquids (
   onValueChange: (items: Liquid[]) => void,
-  userId?: string,
+  userId?: string
 ): () => void {
-  return subscribeItems<Liquid>(ItemName.LIQUID, liquidsRef, null, onValueChange, userId);
+  return subscribeItems<Liquid>(ItemName.LIQUID, liquidsRef, null, onValueChange, userId)
 }
 
-export function subscribeItems<T extends Item>(
+export function subscribeItems<T extends Item> (
   itemsName: ItemName,
-  ref: firebase.database.Reference,
-  transformation: ((snap: firebase.database.DataSnapshot, item: any) => Promise<T>) | null,
+  ref: DatabaseReference,
+  transformation: ((snap: DataSnapshot, item: any) => Promise<T>) | null,
   onValueChange: (items: T[]) => void,
-  userId?: string,
+  userId?: string
 ): () => void {
-  let query: firebase.database.Query;
+  let q: Query
   if (userId) {
-    query = ref.orderByChild('author/uid').equalTo(userId);
+    q = query(ref, orderByChild(ref.parent + '/author/uid'), equalTo(userId))
   } else {
-    query = ref.orderByChild('status').equalTo(OnlineStatus.ONLINE_PUBLIC).limitToLast(100);
+    q = query(ref, orderByChild('status'), equalTo(OnlineStatus.ONLINE_PUBLIC), limitToLast(100))
   }
 
-  const listener = query.on('value', async (snapshot: firebase.database.DataSnapshot) => {
-    const promises: Promise<T>[] = new Array<Promise<T>>();
+  const unsubscribe = onValue(q, async (snapshot: DataSnapshot) => {
+    const promises: Array<Promise<T>> = new Array<Promise<T>>()
     snapshot.forEach((snap) => {
-      const dbObject = snap.val();
+      const dbObject = snap.val()
       if (!dbObject || Object.entries(dbObject).length === 0 || !dbObject.author) {
         // beauty of weak typed database, strange things can show up here :D
-        console.error(`REMOVE EMPTY POST: ${snap.key}`);
-        return;
+        console.error(`REMOVE EMPTY POST: ${snap.key}`)
+        return
       }
-      let item: Promise<T>;
-      if (transformation) {
-        item = transformation(snap, dbObject);
+      let item: Promise<T>
+      if (transformation != null) {
+        item = transformation(snap, dbObject)
       } else {
         item = Promise.resolve({
           ...dbObject,
-          $type: itemsName,
-        });
+          $type: itemsName
+        })
       }
-      promises.push(item);
-    });
+      promises.push(item)
+    })
 
-    const items = await Promise.all(promises);
-    onValueChange(items);
-  });
+    const items = await Promise.all(promises)
+    onValueChange(items)
+  })
 
-  return () => query.off('value', listener);
+  return unsubscribe
 }
 
 // TODO determine if will be used
-export function getPhotos(from: number, to: number): Promise<FirebasePhoto[]> {
-  return new Promise<FirebasePhoto[]>((resolve, reject) => {
-    photosRef
-      .startAt(from)
-      .endAt(to)
-      .once('value')
+export async function getPhotos (from: number, to: number): Promise<FirebasePhoto[]> {
+  return await new Promise<FirebasePhoto[]>((resolve, reject) => {
+    get(query(photosRef, startAt(from), endAt(to)))
       .then((snapshots) => {
-        const firebasePhotos = new Array<FirebasePhoto>();
-        snapshots.forEach((snapshot: firebase.database.DataSnapshot) => {
-          const firebasePhoto = snapshot.val();
+        const firebasePhotos = new Array<FirebasePhoto>()
+        snapshots.forEach((snapshot: DataSnapshot) => {
+          const firebasePhoto = snapshot.val()
           if (firebasePhoto && Object.entries(firebasePhoto).length !== 0) {
-            firebasePhotos.push(firebasePhoto);
+            firebasePhotos.push(firebasePhoto)
           }
-        });
-        resolve(firebasePhotos);
+        })
+        resolve(firebasePhotos)
       })
       .catch((e) => {
-        reject(e);
-      });
-  });
+        reject(e)
+      })
+  })
 }
 
-export async function createPost(title: string, text: string, author: Author): Promise<string> {
+export async function createPost (title: string, text: string, author: Author): Promise<string> {
   if (!author || !author.uid || !author.displayName) {
-    throw new Error('Author can not be null');
+    throw new Error('Author can not be null')
   }
   if (!title) {
-    throw new Error('Title can not be empty');
+    throw new Error('Title can not be empty')
   }
 
-  const newObjectUid = await postsRef.push();
-  const uid = newObjectUid.key;
-
-  if (uid == null) {
-    throw new Error('Could not push new post to db');
+  const newObjectUid = await push(postsRef)
+  if (newObjectUid?.key == null) {
+    throw new Error('Could not push new post to database')
   }
+  const uid = newObjectUid.key
+
   const newObject: FirebasePost = {
     uid,
     author,
     title,
     text,
     status: OnlineStatus.ONLINE_PUBLIC,
-    creationTime: ServerValue.TIMESTAMP,
-    lastTimeModified: ServerValue.TIMESTAMP,
-  };
+    creationTime: serverTimestamp,
+    lastTimeModified: serverTimestamp
+  }
+  await set(newObjectUid, newObject)
 
-  await postsRef.child(uid).set(newObject);
-  return uid;
+  return uid
 }
 
-export async function createLink(title: string, url: string, author: Author): Promise<string> {
+export async function createLink (title: string, url: string, author: Author): Promise<string> {
   if (!author || !author.uid || !author.displayName) {
-    throw new Error('Author can not be null');
+    throw new Error('Author can not be null')
   }
   if (!title) {
-    throw new Error('Title can not be empty');
+    throw new Error('Title can not be empty')
   }
   if (!url) {
-    throw new Error('Url can not be empty');
+    throw new Error('Url can not be empty')
   }
-  const expression = /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)?/gi;
-  if (!url.match(expression)) {
-    throw new Error('Invalid url');
+  const expression = /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)?/gi
+  if (url.match(expression) == null) {
+    throw new Error('Invalid url')
   }
 
-  const newObjectUid = await linksRef.push();
-  const uid = newObjectUid.key;
+  const newObjectUid = await push(linksRef)
+  const uid = newObjectUid.key
 
   if (!uid) {
-    throw new Error('Could not push new link to db');
+    throw new Error('Could not push new link to db')
   }
-  const link: FirebaseLink = {
+  const newObject: FirebaseLink = {
     uid,
     title,
     url,
     author,
-    creationTime: ServerValue.TIMESTAMP,
-    lastTimeModified: ServerValue.TIMESTAMP,
-    status: OnlineStatus.ONLINE_PUBLIC,
-  };
+    creationTime: serverTimestamp,
+    lastTimeModified: serverTimestamp,
+    status: OnlineStatus.ONLINE_PUBLIC
+  }
 
-  await linksRef.child(uid).set(link);
-  return uid;
+  await set(newObjectUid, newObject)
+
+  return uid
 }
 
-export async function createPhoto(
+export async function createPhoto (
   // every argument shouldn't be undefined, but i prefer handling exceptions there
   imageBlob: Blob | File | undefined,
   description: string,
   author: Author,
   width: number | undefined,
-  height: number | undefined,
+  height: number | undefined
 ): Promise<string> {
   if (!author || !author.uid || !author.displayName) {
-    throw new Error('Author can not be null');
+    throw new Error('Author can not be null')
   }
   if (!description) {
-    throw new Error('Description can not be empty');
+    throw new Error('Description can not be empty')
   }
-  if (!imageBlob) {
-    throw new Error('Image can not be empty');
+  if (imageBlob == null) {
+    throw new Error('Image can not be empty')
   }
   if (!width || !height) {
-    throw new Error('Width and height can not be null');
+    throw new Error('Width and height can not be null')
   }
-  const newObjectUid = await photosRef.push();
-  const uid = newObjectUid.key;
+  const newObjectUid = await push(photosRef)
+  const uid = newObjectUid.key
 
   if (uid == null) {
-    throw new Error('Could not push new cloud to db');
+    throw new Error('Could not push new cloud to db')
   }
   try {
     const newObject: FirebasePhoto = {
@@ -235,38 +234,38 @@ export async function createPhoto(
       author,
       description,
       status: OnlineStatus.ONLINE_PUBLIC,
-      creationTime: ServerValue.TIMESTAMP,
-      lastTimeModified: ServerValue.TIMESTAMP,
-      timestamp: ServerValue.TIMESTAMP,
+      creationTime: serverTimestamp,
+      lastTimeModified: serverTimestamp,
+      timestamp: serverTimestamp,
       width,
       height,
-      reports: 0,
-    };
+      reports: 0
+    }
 
     // It must be published to storage prior to database because db will trigger
     // update listener before storage is completed
-    await uploadPhoto(imageBlob, uid);
-    await photosRef.child(uid).set(newObject);
-    return uid;
+    await uploadPhoto(imageBlob, uid)
+    await set(newObjectUid, newObject)
+    return uid
   } catch (e) {
-    photosRef.child(uid).remove();
-    throw e;
+    remove(newObjectUid)
+    throw e
   }
 }
 
-export async function saveLiquid(
+export async function saveLiquid (
   liquid: Omit<FirebaseLiquid, 'name' | 'description'>,
   author: Author,
   name: string,
-  description: string,
+  description: string
 ) {
-  const newObjectUid = await liquidsRef.push();
-  const uid = newObjectUid.key;
-  if (uid == null) {
-    throw new Error('Could not push new liquid to db');
-  }
   if (!author) {
-    throw new Error('Author can not be null');
+    throw new Error('Author can not be null')
+  }
+  const newObjectUid = await push(liquidsRef)
+  const uid = newObjectUid.key
+  if (uid == null) {
+    throw new Error('Could not push new liquid to db')
   }
   try {
     const newObject: FirebaseLiquid = {
@@ -274,8 +273,8 @@ export async function saveLiquid(
       author,
       name,
       description,
-      creationTime: ServerValue.TIMESTAMP,
-      lastTimeModified: ServerValue.TIMESTAMP,
+      creationTime: serverTimestamp,
+      lastTimeModified: serverTimestamp,
       status: OnlineStatus.ONLINE_PUBLIC,
       baseStrength: liquid.baseStrength,
       baseRatio: liquid.baseRatio,
@@ -284,29 +283,27 @@ export async function saveLiquid(
       targetRatio: liquid.targetRatio,
       amount: liquid.amount,
       rating: liquid.rating,
-      flavors: liquid.flavors,
-    };
-    console.log('saving liquid', newObject);
-    await liquidsRef.child(uid).set(newObject);
-    return uid;
+      flavors: liquid.flavors
+    }
+    await set(newObjectUid, newObject)
+    return uid
   } catch (e) {
-    liquidsRef.child(uid).remove();
-    throw e;
+    throw e
   }
 }
-export async function saveCoil(
+export async function saveCoil (
   coil: Omit<FirebaseCoil, 'name' | 'description'>,
   author: Author,
   name: string,
-  description: string,
+  description: string
 ) {
-  const newObjectUid = await coilsRef.push();
-  const uid = newObjectUid.key;
+  const newObjectUid = await push(coilsRef)
+  const uid = newObjectUid.key
   if (uid == null) {
-    throw new Error('Could not push new coil to db');
+    throw new Error('Could not push new coil to db')
   }
   if (!author) {
-    throw new Error('Author can not be null');
+    throw new Error('Author can not be null')
   }
   try {
     const newObject: FirebaseCoil = {
@@ -314,8 +311,8 @@ export async function saveCoil(
       author,
       name,
       description,
-      creationTime: ServerValue.TIMESTAMP,
-      lastTimeModified: ServerValue.TIMESTAMP,
+      creationTime: serverTimestamp,
+      lastTimeModified: serverTimestamp,
       status: OnlineStatus.ONLINE_PUBLIC,
       type: coil.type,
       setup: coil.setup,
@@ -328,112 +325,104 @@ export async function saveCoil(
       widthDiameter: coil.widthDiameter,
       totalLength: coil.totalLength,
       cores: coil.cores,
-      outers: coil.outers,
-    };
-    console.log('saving coil', newObject);
-
-    // It must be published to storage prior to database because db will trigger
-    // update listener before storage is completed
-    // await uploadPhoto(imageBlob, uid);
-    await coilsRef.child(uid).set(newObject);
-    return uid;
+      outers: coil.outers
+    }
+    // TODO what about coil image?
+    await set(newObjectUid, newObject)
+    return uid
   } catch (e) {
-    coilsRef.child(uid).remove();
-    throw e;
+    throw e
   }
 }
 
-export function likePhoto(itemId: string, userId: string) {
-  return like('gear', itemId, userId);
+export async function likePhoto (itemId: string, userId: string) {
+  return await like(ItemName.PHOTO, itemId, userId)
 }
 
-export function likePost(itemId: string, userId: string) {
-  return like('post', itemId, userId);
+export async function likePost (itemId: string, userId: string) {
+  return await like(ItemName.POST, itemId, userId)
 }
 
-export function likeLink(itemId: string, userId: string) {
-  return like('link', itemId, userId);
+export async function likeLink (itemId: string, userId: string) {
+  return await like(ItemName.LINK, itemId, userId)
 }
 
-function like(what: FirebaseContent, id: string, userId: string) {
-  return database()
-    .ref(`${what}-likes`)
-    .child(id)
-    .child(userId)
-    .transaction((isLiked) => {
-      if (isLiked) {
-        return null;
-      }
-      return ServerValue.TIMESTAMP;
-    });
+async function like (what: ItemName, id: string, userId: string) {
+  return await runTransaction(child(likesRef(what)(id), userId), (isLiked) => {
+    if (isLiked) {
+      return null
+    }
+    return serverTimestamp
+  })
 }
 
-export function reportPhoto(postId: string, userId: string): Promise<any> {
-  return report('gear', postId, userId);
+export async function reportPhoto (postId: string, userId: string): Promise<any> {
+  return await report(ItemName.PHOTO, postId, userId)
 }
 
-export function reportPost(postId: string, userId: string): Promise<any> {
-  return report('post', postId, userId);
+export async function reportPost (postId: string, userId: string): Promise<any> {
+  return await report(ItemName.POST, postId, userId)
 }
 
-export function reportLink(linkId: string, userId: string): Promise<any> {
-  return report('link', linkId, userId);
+export async function reportLink (linkId: string, userId: string): Promise<any> {
+  return await report(ItemName.LINK, linkId, userId)
 }
 
-function report(what: FirebaseContent, id: string, userId: string): Promise<any> {
-  return database().ref(`${what}-reports`).child(id).child(userId).set(ServerValue.TIMESTAMP);
+async function report (what: ItemName, id: string, userId: string): Promise<any> {
+  return await set(reportsRef(what)(id), serverTimestamp)
 }
 
-export function deletePhoto(postId: string): Promise<any> {
-  return deleteItem('gear', postId);
+export async function deletePhoto (postId: string) {
+  return await deleteItem(ItemName.PHOTO, postId)
 }
 
-export function deletePost(postId: string): Promise<any> {
-  return deleteItem('post', postId);
+export async function deletePost (postId: string) {
+  return await deleteItem(ItemName.POST, postId)
 }
 
-export function deleteLink(linkId: string): Promise<any> {
-  return deleteItem('link', linkId);
+export async function deleteLink (linkId: string) {
+  return await deleteItem(ItemName.LINK, linkId)
 }
 
-function deleteItem(what: FirebaseContent, id: string): Promise<any> {
-  return database().ref(`${what}s`).child(id).remove();
+async function deleteItem (what: ItemName, id: string) {
+  return await remove(itemRef(what)(id))
 }
 
-export function commentPhoto(id: string, content: string, { uid, name }: CurrentUser) {
-  return commentItem('gear', id, content, { uid, name } as CurrentUser);
+export function commentPhoto (id: string, content: string, user: User) {
+  return commentItem(ItemName.PHOTO, id, content, user)
 }
 
-export function commentPost(id: string, content: string, { uid, name }: CurrentUser) {
-  return commentItem('post', id, content, { uid, name } as CurrentUser);
+export function commentPost (id: string, content: string, user: User) {
+  return commentItem(ItemName.POST, id, content, user)
 }
 
-export function commentLink(id: string, content: string, { uid, name }: CurrentUser) {
-  return commentItem('link', id, content, { uid, name } as CurrentUser);
+export function commentLink (id: string, content: string, user: User) {
+  return commentItem(ItemName.LINK, id, content, user)
 }
 
-function commentItem(
-  what: FirebaseContent,
+function commentItem (
+  what: ItemName,
   id: string,
   content: string,
-  { uid, name }: CurrentUser,
+  user: User
 ) {
-  const comment = new Comment(new Author(uid, name), content, ServerValue.TIMESTAMP);
-  return database().ref(`${what}-comments`).child(id).push().set(comment);
+  const comment = new Comment(new Author(user.uid, user.display_name), content, serverTimestamp)
+  return push(commentsRef(what)(id), comment)
 }
 
-export function deletePhotoComment(postId: string, commentId: string) {
-  return deleteItemComment('gear', postId, commentId);
+export async function deletePhotoComment (postId: string, commentId: string) {
+  return await deleteItemComment(ItemName.POST, postId, commentId)
 }
 
-export function deletePostComment(postId: string, commentId: string) {
-  return deleteItemComment('post', postId, commentId);
+export async function deletePostComment (postId: string, commentId: string) {
+  return await deleteItemComment(ItemName.POST, postId, commentId)
 }
 
-export function deleteLinkComment(linkId: string, commentId: string) {
-  return deleteItemComment('link', linkId, commentId);
+export async function deleteLinkComment (linkId: string, commentId: string) {
+  return await deleteItemComment(ItemName.LINK, linkId, commentId)
 }
 
-function deleteItemComment(what: FirebaseContent, id: string, commentId: string) {
-  return database().ref(`${what}-comments`).child(id).child(commentId).set(null);
+async function deleteItemComment (what: ItemName, id: string, commentId: string): Promise<void> {
+  const commentRef = child(commentsRef(what)(id), commentId)
+  return await remove(commentRef)
 }

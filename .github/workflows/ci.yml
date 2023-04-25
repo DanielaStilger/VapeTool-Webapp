@@ -7,18 +7,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: '14.x'
-      - run: echo ${{github.ref}}
-      - run: npm install
-      - run: yarn run tsc
-      - run: yarn run build
-      - run: yarn run lint
-        env:
-          CI: true
-          PROGRESS: none
-          NODE_ENV: test
-          NODE_OPTIONS: --max_old_space_size=4096
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }} on ${{ matrix.os }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Install pnpm
+      run: npm add -g pnpm
+    - name: pnpm install and build
+      run: |
+        pnpm install
+        pnpm build
+      env:
+        CI: true
+        PROGRESS: none
+        NODE_ENV: test
+        NODE_OPTIONS: --max_old_space_size=4096
+

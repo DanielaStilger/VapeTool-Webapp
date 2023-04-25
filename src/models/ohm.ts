@@ -1,129 +1,129 @@
-import { useState } from 'react';
-import { verifyCurrentUser } from '@/services';
+import { isLoggedInOrShowNotification } from '@/services/user'
+import { useState } from 'react'
 
-type Inputs = 'voltage' | 'resistance' | 'current' | 'power';
+type Inputs = 'voltage' | 'resistance' | 'current' | 'power'
 
-export default () => {
-  const [voltage, setVoltage] = useState<number | undefined>(undefined);
-  const [resistance, setResistance] = useState<number | undefined>(undefined);
-  const [current, setCurrent] = useState<number | undefined>(undefined);
-  const [power, setPower] = useState<number | undefined>(undefined);
-  const [latestEdit, setLatestEdit] = useState<Inputs | undefined>(undefined);
-  const [lastEdit, setLastEdit] = useState<Inputs | undefined>(undefined);
+export const useOhmModel = () => {
+  const [voltage, setVoltage] = useState<number | undefined>(undefined)
+  const [resistance, setResistance] = useState<number | undefined>(undefined)
+  const [current, setCurrent] = useState<number | undefined>(undefined)
+  const [power, setPower] = useState<number | undefined>(undefined)
+  const [latestEdit, setLatestEdit] = useState<Inputs | undefined>(undefined)
+  const [lastEdit, setLastEdit] = useState<Inputs | undefined>(undefined)
 
-  const onVoltageChange = (volts: number | string | undefined) => {
-    if (!volts) return;
-    setVoltage(Number(volts));
-    setLatestEdit(lastEdit !== 'voltage' ? lastEdit : latestEdit);
-    setLastEdit('voltage');
-  };
-  const onResistanceChange = (ohms: number | string | undefined) => {
-    if (!ohms) return;
-    setResistance(Number(ohms));
-    setLatestEdit(lastEdit !== 'resistance' ? lastEdit : latestEdit);
-    setLastEdit('resistance');
-  };
-  const onCurrentChange = (amps: number | string | undefined) => {
-    if (!amps) return;
-    setCurrent(Number(amps));
-    setLatestEdit(lastEdit !== 'current' ? lastEdit : latestEdit);
-    setLastEdit('current');
-  };
-  const onPowerChange = (watts: number | string | undefined) => {
-    if (!watts) return;
-    setPower(Number(watts));
-    setLatestEdit(lastEdit !== 'power' ? lastEdit : latestEdit);
-    setLastEdit('power');
-  };
+  const onVoltageChange = (volts: number | string | undefined | null) => {
+    if (!volts) return
+    setVoltage(Number(volts))
+    setLatestEdit(lastEdit !== 'voltage' ? lastEdit : latestEdit)
+    setLastEdit('voltage')
+  }
+  const onResistanceChange = (ohms: number | string | undefined | null) => {
+    if (!ohms) return
+    setResistance(Number(ohms))
+    setLatestEdit(lastEdit !== 'resistance' ? lastEdit : latestEdit)
+    setLastEdit('resistance')
+  }
+  const onCurrentChange = (amps: number | string | undefined | null) => {
+    if (!amps) return
+    setCurrent(Number(amps))
+    setLatestEdit(lastEdit !== 'current' ? lastEdit : latestEdit)
+    setLastEdit('current')
+  }
+  const onPowerChange = (watts: number | string | undefined | null) => {
+    if (!watts) return
+    setPower(Number(watts))
+    setLatestEdit(lastEdit !== 'power' ? lastEdit : latestEdit)
+    setLastEdit('power')
+  }
 
   const clear = () => {
-    setVoltage(undefined);
-    setResistance(undefined);
-    setCurrent(undefined);
-    setPower(undefined);
-  };
+    setVoltage(undefined)
+    setResistance(undefined)
+    setCurrent(undefined)
+    setPower(undefined)
+  }
   const calculate = () => {
-    if (!verifyCurrentUser()) return;
-    const last = lastEdit;
-    const latest = latestEdit;
-    const factors = [last, latest];
+    if (!isLoggedInOrShowNotification()) return
+    const last = lastEdit
+    const latest = latestEdit
+    const factors = [last, latest]
     if (last && latest) {
-      let lastValue;
+      let lastValue
       switch (lastEdit) {
         case 'voltage':
-          lastValue = voltage;
-          break;
+          lastValue = voltage
+          break
         case 'current':
-          lastValue = current;
-          break;
+          lastValue = current
+          break
         case 'power':
-          lastValue = power;
-          break;
+          lastValue = power
+          break
         case 'resistance':
-          lastValue = resistance;
-          break;
+          lastValue = resistance
+          break
         default:
-          throw new Error('Could not retreive lastValue');
+          throw new Error('Could not retreive lastValue')
       }
 
-      let latestValue;
+      let latestValue
       switch (latestEdit) {
         case 'voltage':
-          latestValue = voltage;
-          break;
+          latestValue = voltage
+          break
         case 'current':
-          latestValue = current;
-          break;
+          latestValue = current
+          break
         case 'power':
-          latestValue = power;
-          break;
+          latestValue = power
+          break
         case 'resistance':
-          latestValue = resistance;
-          break;
+          latestValue = resistance
+          break
         default:
-          throw new Error('Could not retreive latest');
+          throw new Error('Could not retreive latest')
       }
 
       if (lastValue !== undefined && latestValue !== undefined) {
         if (factors.includes('voltage') && factors.includes('resistance')) {
           const [volts, ohms] =
-            last === 'voltage' ? [lastValue, latestValue] : [latestValue, lastValue];
-          setCurrent(volts / ohms);
-          setPower(volts ** 2 / ohms);
+            last === 'voltage' ? [lastValue, latestValue] : [latestValue, lastValue]
+          setCurrent(volts / ohms)
+          setPower(volts ** 2 / ohms)
         }
         if (factors.includes('voltage') && factors.includes('current')) {
           const [volts, amps] =
-            last === 'voltage' ? [lastValue, latestValue] : [latestValue, lastValue];
-          setResistance(volts / amps);
-          setPower(volts * amps);
+            last === 'voltage' ? [lastValue, latestValue] : [latestValue, lastValue]
+          setResistance(volts / amps)
+          setPower(volts * amps)
         }
         if (factors.includes('voltage') && factors.includes('power')) {
           const [volts, watts] =
-            last === 'voltage' ? [lastValue, latestValue] : [latestValue, lastValue];
-          setResistance(volts ** 2 / watts);
-          setCurrent(watts * volts);
+            last === 'voltage' ? [lastValue, latestValue] : [latestValue, lastValue]
+          setResistance(volts ** 2 / watts)
+          setCurrent(watts * volts)
         }
         if (factors.includes('current') && factors.includes('resistance')) {
           const [amps, ohms] =
-            last === 'current' ? [lastValue, latestValue] : [latestValue, lastValue];
-          setVoltage(ohms * amps);
-          setPower(amps ** 2 * ohms);
+            last === 'current' ? [lastValue, latestValue] : [latestValue, lastValue]
+          setVoltage(ohms * amps)
+          setPower(amps ** 2 * ohms)
         }
         if (factors.includes('power') && factors.includes('resistance')) {
           const [watts, ohms] =
-            last === 'power' ? [lastValue, latestValue] : [latestValue, lastValue];
-          setVoltage(Math.sqrt(watts * ohms));
-          setCurrent(Math.sqrt(watts / ohms));
+            last === 'power' ? [lastValue, latestValue] : [latestValue, lastValue]
+          setVoltage(Math.sqrt(watts * ohms))
+          setCurrent(Math.sqrt(watts / ohms))
         }
         if (factors.includes('power') && factors.includes('current')) {
           const [watts, amps] =
-            last === 'power' ? [lastValue, latestValue] : [latestValue, lastValue];
-          setVoltage(watts / amps);
-          setResistance(watts / amps ** 2);
+            last === 'power' ? [lastValue, latestValue] : [latestValue, lastValue]
+          setVoltage(watts / amps)
+          setResistance(watts / amps ** 2)
         }
       }
     }
-  };
+  }
 
   return {
     voltage,
@@ -137,6 +137,6 @@ export default () => {
     onCurrentChange,
     onPowerChange,
     clear,
-    calculate,
-  };
-};
+    calculate
+  }
+}

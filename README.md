@@ -1,57 +1,24 @@
 # Vape Tool Webapp
 
-![Demo](docs/cloud.jpg) This project is initialized with [Ant Design Pro](https://pro.ant.design). Follow is the quick guide for how to use.
+![Demo](docs/cloud.jpg) This project uses pnpm, Vite, antd, Flowbite-react (Tailwindcss), standardjs and firebase.
 
-## Environment Prepare
+The project is currently in development. You can follow the progress here: https://github.com/orgs/vape-tool/projects/5
 
-Install `node_modules`:
 
-```bash
-npm install
-```
-
-or
+## Install
 
 ```bash
-yarn
+pnpm install
 ```
 
-## Provided Scripts
-
-Ant Design Pro provides some useful script to help you quick start and build with web project, code style check and test.
-
-Scripts provided in `package.json`. It's safe to modify or add additional script:
-
-### Start project
+## Develop
 
 ```bash
-npm start
+pnpm dev
 ```
 
-### Build project
+## Linter & Formatter
+We use only [JavaScript Standard Style](https://standardjs.com)
 
 ```bash
-npm run build
-```
-
-### Check code style
-
-```bash
-npm run lint
-```
-
-You can also use script to auto fix some lint error:
-
-```bash
-npm run lint:fix
-```
-
-### Test code
-
-```bash
-npm test
-```
-
-## More
-
-You can view full document on our [official website](https://pro.ant.design). And welcome any feedback in our [github](https://github.com/ant-design/ant-design-pro).
+pnpm lint

@@ -65,5 +65,5 @@ export default {
   'menu.account.trigger': 'Trigger Error',
   'menu.account.logout': 'Logout',
   'menu.vapeToolOnAndroid': 'Vape Tool on Android',
-  'menu.privacyPolicy': 'Privacy Policy',
-};
+  'menu.privacyPolicy': 'Privacy Policy'
+}

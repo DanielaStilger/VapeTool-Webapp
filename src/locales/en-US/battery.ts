@@ -18,5 +18,5 @@ export default {
   'battery.actions.addNewAffiliate': 'Add new affiliate',
   'battery.actions.editAffiliates': 'Edit affiliates',
   'battery.actions.readReview': 'Read review',
-  'battery.actions.buyOn': 'Buy on {key}',
-};
+  'battery.actions.buyOn': 'Buy on {key}'
+}

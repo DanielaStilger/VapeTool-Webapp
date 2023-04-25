@@ -1,48 +1,44 @@
-import { Tag, Space, Typography } from 'antd';
-import React from 'react';
-import { useModel, SelectLang } from 'umi';
-import { logoutFirebaseWithRedirect } from '@/services/user';
-import { IS_NOT_PRODUCTION } from '@/utils/utils';
-import Avatar from './AvatarDropdown';
-import styles from './index.less';
+import { Tag, Space, Typography } from 'antd'
+import React from 'react'
+// import { SelectLang } from 'react-intl';
+import { logoutFirebase } from '@/services/user'
+import { IS_NOT_PRODUCTION } from '@/utils/utils'
+import Avatar from './AvatarDropdown'
+import useStyles from './style'
+import { useAuth } from '@/context/FirebaseAuthContext'
+import { useSettings } from '@/models/useSettings'
 
-export type SiderTheme = 'light' | 'dark';
-
-const ENVTagColor = {
-  dev: 'orange',
-  test: 'green',
-  pre: '#87d068',
-};
+export type SiderTheme = 'light' | 'dark'
 
 const GlobalHeaderRight: React.FC<{}> = () => {
-  const { initialState } = useModel('@@initialState');
+  const { firebaseUser } = useAuth()
+  const { styles } = useStyles()
+  const { settings: { navTheme, layout } } = useSettings() // TODO: implement useSettings()
 
-  if (!initialState || !initialState.settings) {
-    return null;
-  }
+  let className = styles.right
 
-  const { navTheme, layout } = initialState.settings;
-  let className = styles.right;
-
-  if ((navTheme === 'dark' && layout === 'top') || layout === 'mix') {
-    className = `${styles.right}  ${styles.dark}`;
+  if ((navTheme === 'realDark' && layout === 'top') || layout === 'mix') {
+    className = `${styles.right}  ${styles.dark}`
   }
   return (
     <Space className={className}>
-      {!initialState.firebaseUser?.isAnonymous ? (
-        <Avatar />
-      ) : (
-        <a onClick={() => logoutFirebaseWithRedirect()}>
-          <Typography style={{ color: 'white' }}>Log in</Typography>
-        </a>
-      )}
+      {firebaseUser
+        ? (
+          <Avatar />
+          )
+        : (
+          <a onClick={logoutFirebase}>
+            <Typography style={{ color: 'white' }}>Log in</Typography>
+          </a>
+          )}
       {IS_NOT_PRODUCTION && (
         <span>
-          <Tag color={ENVTagColor[REACT_APP_ENV]}>{REACT_APP_ENV}</Tag>
+          <Tag>{REACT_APP_ENV}</Tag>
         </span>
       )}
-      <SelectLang className={styles.action} />
+      {/* TODO: add i18n */}
+      {/* <SelectLang className={styles.action} /> */}
     </Space>
-  );
-};
-export default GlobalHeaderRight;
+  )
+}
+export default GlobalHeaderRight

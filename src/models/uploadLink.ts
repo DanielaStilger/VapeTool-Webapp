@@ -1,39 +1,40 @@
-import { history } from 'umi';
-import { CurrentUser } from '@/app';
-import { useState } from 'react';
-import { message } from 'antd';
-import { createLink } from '@/services/items';
-import { Author } from '@vapetool/types';
+import { User as DatabaseUser, Author } from '@vapetool/types'
+import { useState } from 'react'
+import { message } from 'antd'
+import { createLink } from '@/services/items'
+import useRouter from '@/utils/useRouter'
 
-export default function UploadLink() {
-  const [url, setUrl] = useState('');
-  const [text, setText] = useState('');
+export const useUploadLinkModel = () => {
+  const [url, setUrl] = useState('')
+  const [text, setText] = useState('')
   const reset = () => {
-    setUrl('');
-    setText('');
-  };
-  const submitLink = async (currentUser: CurrentUser) => {
+    setUrl('')
+    setText('')
+  }
+  const submitLink = async (user: DatabaseUser) => {
     const author: Author = {
-      uid: currentUser.uid,
-      displayName: currentUser.display_name,
-    };
+      uid: user.uid,
+      displayName: user.display_name
+    }
     if (!url.startsWith('http')) {
-      setUrl(`https://${url}`);
+      setUrl(`https://${url}`)
     }
     try {
-      createLink(text, url, author);
-      message.success('Sucessfully published link');
-      reset();
-      history.replace({ pathname: '/cloud' });
+      createLink(text, url, author)
+      message.success('Sucessfully published link')
+      reset()
+      useRouter().replace('/cloud')
     } catch (e) {
-      message.error(e.message);
+      if (e instanceof Error) {
+        message.error(e.message)
+      }
     }
-  };
+  }
   return {
     url,
     setUrl,
     text,
     setText,
-    submitLink,
-  };
+    submitLink
+  }
 }

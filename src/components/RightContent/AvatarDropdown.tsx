@@ -1,105 +1,91 @@
-import React, { useCallback } from 'react';
-import { LogoutOutlined, UserOutlined, UnlockOutlined } from '@ant-design/icons';
-import { Menu, message, Spin } from 'antd';
-import { history, useModel, FormattedMessage } from 'umi';
-import { ImageType } from '@/services/storage';
-import { getPaymentUrl, getUserLoginUrl, getUserProfileUrl } from '@/places/user.places';
-import { logoutFirebase } from '@/services/user';
-import HeaderDropdown from '../HeaderDropdown';
-import styles from './index.less';
-import FirebaseImage from '../StorageAvatar';
-
-/**
- * 退出登录，并且将当前的 url 保存
- */
-const loginOut = () => {
-  if (window.location.pathname !== getUserLoginUrl()) {
-    history.replace(getUserLoginUrl());
-  }
-};
-
-const loading = (
-  <span className={`${styles.action} ${styles.account}`}>
-    <Spin
-      size="small"
-      style={{
-        marginLeft: 8,
-        marginRight: 8,
-      }}
-    />
-  </span>
-);
+import React, { useCallback } from 'react'
+import { LogoutOutlined, UserOutlined, UnlockOutlined } from '@ant-design/icons'
+import { Dropdown, Menu, message, Spin } from 'antd'
+import { FormattedMessage } from 'react-intl'
+import { ImageType } from '@/services/storage'
+import { getPaymentUrl, getUserProfileUrl } from '@/places/user.places'
+import { logoutFirebase } from '@/services/user'
+import useStyles from './style'
+import FirebaseImage from '../StorageAvatar'
+import useRouter from '@/utils/useRouter'
+import { useAuth } from '@/context/FirebaseAuthContext'
 
 const AvatarDropdown: React.FC = () => {
-  const { initialState, setInitialState } = useModel('@@initialState');
+  const { styles } = useStyles()
+  const router = useRouter()
+  const { firebaseUser, dbUser } = useAuth()
+
+  const loading = (
+    <span className={`${styles.action}`}>
+      <Spin
+        size='small'
+        style={{
+          marginLeft: 8,
+          marginRight: 8
+        }}
+      />
+    </span>
+  )
 
   const onMenuClick = useCallback(async (event: any) => {
-    const { key } = event;
+    const { key } = event
     if (key === 'logout') {
-      await logoutFirebase();
-      setInitialState({ ...initialState, currentUser: undefined, firebaseUser: undefined });
-      loginOut();
-      return;
+      logoutFirebase()
+      return
     }
     if (key === 'profile') {
-      if (!initialState?.firebaseUser?.uid) {
-        message.error("Couldn't retreive current user");
-        return;
+      if (!firebaseUser?.uid) {
+        message.error("Couldn't retreive current user")
+        return
       }
-      history.push(getUserProfileUrl(initialState.firebaseUser.uid));
-      return;
+      router.push(getUserProfileUrl(firebaseUser.uid))
+      return
     }
     if (key === 'unlockPro') {
-      history.replace(getPaymentUrl());
+      router.replace(getPaymentUrl())
     }
-  }, []);
+  }, [])
 
-  if (!initialState) {
-    return loading;
-  }
-
-  const { currentUser } = initialState;
-
-  if (!currentUser || !currentUser.name) {
-    return loading;
+  if (!dbUser || !dbUser?.display_name) {
+    return loading
   }
   // TODO show unlockPro only when !isPro(currentUser) is false
   const menuHeaderDropdown = (
     <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
-      {currentUser && (
-        <Menu.Item key="profile">
+      {dbUser && (
+        <Menu.Item key='profile'>
           <UserOutlined />
-          <FormattedMessage id="menu.account.center" defaultMessage="account center" />
+          <FormattedMessage id='menu.account.center' defaultMessage='account center' />
         </Menu.Item>
       )}
-      {currentUser && (
-        <Menu.Item key="unlockPro">
+      {dbUser && (
+        <Menu.Item key='unlockPro'>
           <UnlockOutlined />
-          <FormattedMessage id="menu.account.unlock-pro" defaultMessage="unlock pro" />
+          <FormattedMessage id='menu.account.unlock-pro' defaultMessage='unlock pro' />
         </Menu.Item>
       )}
-      {currentUser && <Menu.Divider />}
-      <Menu.Item key="logout">
+      {dbUser && <Menu.Divider />}
+      <Menu.Item key='logout'>
         <LogoutOutlined />
-        <FormattedMessage id="menu.account.logout" defaultMessage="logout" />
+        <FormattedMessage id='menu.account.logout' defaultMessage='logout' />
       </Menu.Item>
     </Menu>
-  );
+  )
 
   return (
-    <HeaderDropdown overlay={menuHeaderDropdown}>
-      <span className={`${styles.action} ${styles.account}`}>
+    <Dropdown>
+      <span className={`${styles.action}`}>
         <FirebaseImage
-          size="small"
+          size='small'
           type={ImageType.USER}
-          id={currentUser.uid}
+          id={dbUser.uid}
           className={styles.avatar}
-          alt="avatar"
+          alt='avatar'
         />
-        <span className={`${styles.name} anticon`}>{currentUser.name}</span>
+        <span className={`${styles.name} anticon`}>{dbUser.display_name}</span>
       </span>
-    </HeaderDropdown>
-  );
-};
+    </Dropdown>
+  )
+}
 
-export default AvatarDropdown;
+export default AvatarDropdown

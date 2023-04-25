@@ -1,6 +1,5 @@
 declare module 'slash2';
 declare module '*.css';
-declare module '*.less';
 declare module '*.scss';
 declare module '*.sass';
 declare module '*.svg';
@@ -11,25 +10,24 @@ declare module '*.gif';
 declare module '*.bmp';
 declare module '*.tiff';
 declare module '*.webp';
-declare module 'omit.js';
 
 // google analytics interface
 interface GAFieldsObject {
-  eventCategory: string;
-  eventAction: string;
-  eventLabel?: string;
-  eventValue?: number;
-  nonInteraction?: boolean;
+  eventCategory: string
+  eventAction: string
+  eventLabel?: string
+  eventValue?: number
+  nonInteraction?: boolean
 }
 interface Window {
   ga: (
     command: 'send',
     hitType: 'event' | 'pageview',
     fieldsObject: GAFieldsObject | string,
-  ) => void;
-  reloadAuthorized: () => void;
+  ) => void
+  reloadAuthorized: () => void
 }
 
-declare let ga: Function;
+declare let ga: Function
 
-declare const REACT_APP_ENV: 'test' | 'dev' | 'pre' | 'prod';
+declare const REACT_APP_ENV: 'test' | 'dev' | 'pre' | 'prod'

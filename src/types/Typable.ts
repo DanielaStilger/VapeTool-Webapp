@@ -1,3 +1,3 @@
 export default interface Typable {
-  readonly $type: string;
+  readonly $type: string
 }

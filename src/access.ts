@@ -1,19 +1,12 @@
-import { UserPermission } from '@vapetool/types';
-import firebase from 'firebase';
-import { CurrentUser } from './app';
+import { UserPermission, User } from '@vapetool/types'
+import { User as FirebaseUser } from 'firebase/auth'
 
-export const canRemove = (authorId: string, currentUser?: CurrentUser) =>
-  currentUser &&
-  (authorId === currentUser.uid || currentUser.permission >= UserPermission.ONLINE_MODERATOR);
+export const canRemove = (authorId: string, user: User | null) =>
+  (user != null) &&
+  (authorId === user.uid || user.permission >= UserPermission.ONLINE_MODERATOR)
 
-// src/access.ts
-export default function access(initialState: {
-  currentUser?: CurrentUser | undefined;
-  firebaseUser?: firebase.User;
-}) {
-  const { currentUser, firebaseUser } = initialState || {};
-  return {
-    canAdmin: currentUser && currentUser.permission === UserPermission.ONLINE_ADMIN,
-    isNotAnonymous: firebaseUser ? !firebaseUser.isAnonymous : false,
-  };
-}
+export const canAdmin = (user?: User) =>
+  (user != null) && user.permission === UserPermission.ONLINE_ADMIN
+
+export const isNotAnonymous = (firebaseUser: FirebaseUser) =>
+  firebaseUser ? !firebaseUser.isAnonymous : false

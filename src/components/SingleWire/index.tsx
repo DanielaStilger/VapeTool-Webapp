@@ -1,24 +1,24 @@
-import * as React from 'react';
-import { Button, Card, Col, Row, Select, Typography } from 'antd';
-import { FormattedMessage } from 'umi';
+import * as React from 'react'
+import { Button, Card, Col, Row, Select, Typography } from 'antd'
+import { FormattedMessage } from 'react-intl'
 
-import { Material, Materials, Wire, WireKind, WireStyle } from '@vapetool/types';
-import { getResistancePerMeter } from '@/utils/math';
-import { Path } from '@/models/coil';
-import WireDiameter from '@/components/WireDiameter';
-import RoundIcon from '@/assets/RoundIcon';
-import DiameterIcon from '@/assets/DiameterIcon';
-import CoreIcon from '@/assets/CoreIcon';
-import OuterIcon from '@/assets/OuterIcon';
-import { CloseOutlined, MinusOutlined } from '@ant-design/icons';
+import { Material, Materials, Wire, WireKind, WireStyle } from '@vapetool/types'
+import { getResistancePerMeter } from '@/utils/math'
+import { Path } from '@/models/coil'
+import WireDiameter from '@/components/WireDiameter'
+import RoundIcon from '@/assets/RoundIcon'
+import DiameterIcon from '@/assets/DiameterIcon'
+import CoreIcon from '@/assets/CoreIcon'
+import OuterIcon from '@/assets/OuterIcon'
+import { CloseOutlined, MinusOutlined } from '@ant-design/icons'
 
-const { Option } = Select;
+const { Option } = Select
 
 export interface WireComponentProps {
-  wire: Wire;
-  path: Path[];
-  onSetWire: (path: Path[], wire: Wire) => void;
-  onDeleteWire: (path: Path[]) => void;
+  wire: Wire
+  path: Path[]
+  onSetWire: (path: Path[], wire: Wire) => void
+  onDeleteWire: (path: Path[]) => void
 }
 
 const materials: Material[] = [
@@ -49,29 +49,29 @@ const materials: Material[] = [
   Materials.TUNGSTEN,
   Materials.INVAR_NILO_PERNIFER_36,
   Materials.SILVER,
-  Materials.ALUCHROME,
-].sort((a, b) => Number(a.id) - Number(b.id));
+  Materials.ALUCHROME
+].sort((a, b) => Number(a.id) - Number(b.id))
 
 const SingleWire: React.FC<WireComponentProps> = (props) => {
-  const { wire, path, onSetWire, onDeleteWire } = props;
+  const { wire, path, onSetWire, onDeleteWire } = props
 
   const handleMaterialChange = (materialId: string): void => {
-    const material = materials.find(({ id }) => id === materialId);
+    const material = materials.find(({ id }) => id === materialId)
     if (material !== undefined) {
-      wire.material = material;
-      onSetWire(path, wire);
+      wire.material = material
+      onSetWire(path, wire)
     }
-  };
-  const onDeleteClick = () => onDeleteWire(path);
+  }
+  const onDeleteClick = () => onDeleteWire(path)
   // dispatchDeleteWire(dispatch, path);
   const onChangeKindClick = () => {
-    wire.kind = wire.kind === WireKind.ROUND ? WireKind.RIBBON : WireKind.ROUND;
-    onSetWire(path, wire);
-  };
+    wire.kind = wire.kind === WireKind.ROUND ? WireKind.RIBBON : WireKind.ROUND
+    onSetWire(path, wire)
+  }
 
   return (
     <Card
-      type="inner"
+      type='inner'
       title={
         <Row>
           {wire.style === WireStyle.CORE ? <CoreIcon /> : <OuterIcon />}
@@ -81,11 +81,13 @@ const SingleWire: React.FC<WireComponentProps> = (props) => {
       extra={
         <Row gutter={8}>
           <Col>
-            {wire.kind === WireKind.ROUND ? (
-              <RoundIcon onClick={onChangeKindClick} />
-            ) : (
-              <MinusOutlined onClick={onChangeKindClick} />
-            )}
+            {wire.kind === WireKind.ROUND
+              ? (
+                <RoundIcon onClick={onChangeKindClick} />
+                )
+              : (
+                <MinusOutlined onClick={onChangeKindClick} />
+                )}
           </Col>
           <Col>
             <CloseOutlined onClick={onDeleteClick} />
@@ -109,7 +111,7 @@ const SingleWire: React.FC<WireComponentProps> = (props) => {
 
       <label>
         <DiameterIcon style={{ color: 'primary', marginRight: 4 }} />
-        <FormattedMessage id="coilCalculator.inputs.diameterOfWire" />
+        <FormattedMessage id='coilCalculator.inputs.diameterOfWire' />
       </label>
       <WireDiameter path={path} wire={wire} onSetWire={onSetWire} onDeleteWire={onDeleteWire} />
 
@@ -120,7 +122,7 @@ const SingleWire: React.FC<WireComponentProps> = (props) => {
           : 'Wire length: calculation required'}
       </Typography.Text>
     </Card>
-  );
-};
+  )
+}
 
-export default SingleWire;
+export default SingleWire

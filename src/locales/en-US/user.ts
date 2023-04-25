@@ -33,5 +33,5 @@ export default {
   'user.actions.reply': 'Reply',
   'user.actions.publishPost': 'Publish post',
   'user.actions.editProfile': 'Edit profile',
-  'user.actions.cancelSubscription': 'Cancel subscription',
-};
+  'user.actions.cancelSubscription': 'Cancel subscription'
+}

@@ -1,16 +1,16 @@
-import { useState } from 'react';
-import { Item } from '@/types';
+import { useState } from 'react'
+import { Item } from '@/types'
 
-export default () => {
-  const [selectedItem, setSelectedItem] = useState<Item | undefined>(undefined);
+export const usePreviewModel = () => {
+  const [selectedItem, setSelectedItem] = useState<Item | undefined>(undefined)
 
   const unselectItem = () => {
-    setSelectedItem(undefined);
-  };
+    setSelectedItem(undefined)
+  }
 
   return {
     selectedItem,
     setSelectedItem,
-    unselectItem,
-  };
-};
+    unselectItem
+  }
+}

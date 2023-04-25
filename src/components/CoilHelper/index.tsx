@@ -1,46 +1,40 @@
-import React from 'react';
-import { Carousel, Modal, Button } from 'antd';
-import ImageWebp from '../ImageWebp';
-import innerDiameterJpg from '../../assets/innerCoilDiameter.jpg';
-import coilLegsLengthJpg from '../../assets/coilLegsLength.jpg';
-import coilWrapsJpg from '../../assets/coilWraps.jpg';
-import innerDiameterWebp from '../../assets/innerCoilDiameter.webp';
-import coilLengsLengthWebp from '../../assets/coilLegsLength.webp';
-import coilWrapsWebp from '../../assets/coilWraps.webp';
+import React, { useState } from 'react'
+import { Carousel, Modal, Button } from 'antd'
+import ImageWebp from '../ImageWebp'
+import innerDiameterJpg from '../../assets/innerCoilDiameter.jpg'
+import coilLegsLengthJpg from '../../assets/coilLegsLength.jpg'
+import coilWrapsJpg from '../../assets/coilWraps.jpg'
+import innerDiameterWebp from '../../assets/innerCoilDiameter.webp'
+import coilLengsLengthWebp from '../../assets/coilLegsLength.webp'
+import coilWrapsWebp from '../../assets/coilWraps.webp'
+import { CarouselRef } from 'antd/lib/carousel'
 
-export default function CoilHelper(props: any) {
+export default function CoilHelper (props: any) {
+  const [slider, setSlider] = useState<CarouselRef | null>()
   return (
     <Modal
       style={{ top: 20 }}
-      title="Help"
+      title='Help'
       visible={props.helpModalVisible}
       onCancel={() => props.setHelpModalVisible(false)}
       footer={[
         <Button
-          key="back"
-          type="primary"
-          onClick={() =>
-            props.slider
-              ? props.slider.prev()
-              : console.error('Please restart page, something went wrong')
-          }
+          key='back'
+          type='primary'
+          onClick={slider?.prev}
         >
           Previous
         </Button>,
         <Button
-          key="next"
-          type="primary"
-          onClick={() =>
-            props.slider
-              ? props.slider.next()
-              : console.error('Please restart page, something went wrong')
-          }
+          key='next'
+          type='primary'
+          onClick={slider?.next}
         >
           Next
-        </Button>,
+        </Button>
       ]}
-      // onOk={this.handleOk}
-      // onCancel={this.handleCancel}
+    // onOk={this.handleOk}
+    // onCancel={this.handleCancel}
     >
       <Carousel
         dots={false}
@@ -49,7 +43,7 @@ export default function CoilHelper(props: any) {
         draggable
         swipeToSlide
         touchMove
-        ref={(c) => props.setSlider(c)}
+        ref={setSlider}
       >
         <div>
           <div style={{ height: '14em' }}>
@@ -60,9 +54,9 @@ export default function CoilHelper(props: any) {
             png={innerDiameterJpg}
             webp={innerDiameterWebp}
             style={{
-              width: '100%',
+              width: '100%'
             }}
-            alt="Ohm Law formulas"
+            alt='Ohm Law formulas'
           />
         </div>
         <div>
@@ -77,9 +71,9 @@ export default function CoilHelper(props: any) {
             png={coilLegsLengthJpg}
             webp={coilLengsLengthWebp}
             style={{
-              width: '100%',
+              width: '100%'
             }}
-            alt="Ohm Law formulas"
+            alt='Ohm Law formulas'
           />
         </div>
         <div>
@@ -95,12 +89,12 @@ export default function CoilHelper(props: any) {
             png={coilWrapsJpg}
             webp={coilWrapsWebp}
             style={{
-              width: '100%',
+              width: '100%'
             }}
-            alt="Ohm Law formulas"
+            alt='Ohm Law formulas'
           />
         </div>
       </Carousel>
     </Modal>
-  );
+  )
 }

@@ -1,26 +1,30 @@
-import { Col, Row, Tabs } from 'antd';
-import React from 'react';
-import { FormattedMessage, useModel } from 'umi';
-import UploadPost from '@/components/UploadPost';
-import UploadPhoto from '@/pages/cloud/UploadPhoto';
-import { Tab } from '@/models/upload';
-import { PictureOutlined, LinkOutlined, FormOutlined } from '@ant-design/icons';
-import UploadLink from '@/components/UploadLink';
+import { Col, Row, Tabs } from 'antd'
+import React from 'react'
+import { FormattedMessage } from 'react-intl'
+import UploadPost from '@/components/UploadPost'
+import UploadPhoto from '@/pages/cloud/UploadPhoto'
+import { Tab, useUploadModel } from '@/models/upload'
+import { PictureOutlined, LinkOutlined, FormOutlined } from '@ant-design/icons'
+import UploadLink from '@/components/UploadLink'
 
 const Upload: React.FC = () => {
-  const { currentTab, setTab } = useModel('upload');
-  const onTabChange = (key: string) => setTab(Tab[key]);
+  const { currentTab, setTab } = useUploadModel()
+  const onTabChange = (key: string) => {
+    if (key == Tab.LINK || key == Tab.PHOTO || key == Tab.POST) {
+      setTab(key)
+    }
+  }
 
   return (
     <Row>
       <Col xs={0} md={4} lg={6} xl={8} />
       <Col xs={24} md={16} lg={14} xl={10}>
-        <Tabs onChange={onTabChange} type="card" activeKey={currentTab}>
+        <Tabs onChange={onTabChange} type='card' activeKey={currentTab}>
           <Tabs.TabPane
             tab={
               <span>
                 <PictureOutlined />
-                <FormattedMessage id="user.photo" defaultMessage="Photo" />
+                <FormattedMessage id='user.photo' defaultMessage='Photo' />
               </span>
             }
             key={Tab.PHOTO}
@@ -31,7 +35,7 @@ const Upload: React.FC = () => {
             tab={
               <span>
                 <FormOutlined />
-                <FormattedMessage id="user.post" defaultMessage="Post" />
+                <FormattedMessage id='user.post' defaultMessage='Post' />
               </span>
             }
             key={Tab.POST}
@@ -42,7 +46,7 @@ const Upload: React.FC = () => {
             tab={
               <span>
                 <LinkOutlined />
-                <FormattedMessage id="user.link" defaultMessage="Link" />
+                <FormattedMessage id='user.link' defaultMessage='Link' />
               </span>
             }
             key={Tab.LINK}
@@ -53,7 +57,7 @@ const Upload: React.FC = () => {
       </Col>
       <Col xs={0} md={4} lg={6} xl={8} />
     </Row>
-  );
-};
+  )
+}
 
-export default Upload;
+export default Upload

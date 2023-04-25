@@ -1,17 +1,18 @@
-import { Card, List, Typography } from 'antd';
-import React from 'react';
-import styles from '@/components/ItemView/styles.less';
-import { Battery } from '@/types';
-import { FormattedMessage } from 'umi';
+import { Card, List, Typography } from 'antd'
+import React from 'react'
+import useStyles from '../ItemView/style'
+import { Battery } from '@/types'
+import { FormattedMessage } from 'react-intl'
 
 interface BatteryViewProps {
-  onBatteryClick: (battery: Battery) => void;
-  battery: Battery;
-  height: number;
-  width?: number;
+  onBatteryClick: (battery: Battery) => void
+  battery: Battery
+  height: number
+  width?: number
 }
 
 const BatteryView: React.FC<BatteryViewProps> = ({ battery, height, width, onBatteryClick }) => {
+  const { styles } = useStyles()
   return (
     <List.Item style={{ height, width }}>
       <Card
@@ -38,9 +39,9 @@ const BatteryView: React.FC<BatteryViewProps> = ({ battery, height, width, onBat
               <li>
                 <Typography.Text>
                   {battery.capacity}{' '}
-                  <FormattedMessage id="misc.units.milliAmpHours" defaultMessage="mAh" />
+                  <FormattedMessage id='misc.units.milliAmpHours' defaultMessage='mAh' />
                   {battery.stableCurrent}{' '}
-                  <FormattedMessage id="misc.units.short.amp" defaultMessage="A" />
+                  <FormattedMessage id='misc.units.short.amp' defaultMessage='A' />
                 </Typography.Text>
               </li>
             </ul>
@@ -48,7 +49,7 @@ const BatteryView: React.FC<BatteryViewProps> = ({ battery, height, width, onBat
         />
       </Card>
     </List.Item>
-  );
-};
+  )
+}
 
-export default BatteryView;
+export default BatteryView
