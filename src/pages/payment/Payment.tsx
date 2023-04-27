@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react'
 import { Button, Card, Col, message, Radio, Row, Spin, Tag, Typography } from 'antd'
 import { RadioChangeEvent } from 'antd/lib/radio'
 import { CheckCircleFilled } from '@ant-design/icons'
-import { stripePromise } from '@/utils/stripe'
-import { createStripeManageLink, createStripePayment } from '@/utils/firebase'
+import { payments } from '@/utils/firebase'
+import { getProducts } from "@stripe/firestore-stripe-payments";
 import { verifyCurrentUserWithRedirect } from '@/services'
 import { IS_PRODUCTION, IS_NOT_PRODUCTION } from '@/utils/utils'
+import { getFirestore, getDocs, getDoc, collection } from "firebase/firestore";
 import useStyles from './style'
-import { useAuth } from '@/context/FirebaseAuthContext'
+import { useAuth } from '../../context/FirebaseAuthContext'
+import { firestore } from '../../utils/firebase'
 
 const stripeLogo = require('@/assets/stripe.png')
 const paypalLogo = require('@/assets/paypal.png')
@@ -53,6 +55,30 @@ const Payment: React.FC = () => {
     verifyCurrentUserWithRedirect()
   })
 
+  useEffect(() => {
+
+    getDocs(collection(firestore, 'products'))
+      .then(function (querySnapshot) {
+        querySnapshot.forEach(async function (doc) {
+          console.log(doc.id, ' => ', doc.data());
+          const priceSnap = await doc.ref.collection('prices').get();
+          priceSnap.docs.forEach((doc) => {
+            console.log(doc.id, ' => ', doc.data());
+          });
+        });
+      });
+
+    getProducts(payments, {
+      includePrices: true,
+      activeOnly: true,
+    }).then((products) => {
+      for (const product of products) {
+        console.log(product)
+      }
+    });
+  },[])
+
+
   const onChange = (e: RadioChangeEvent) => setType(e?.target?.value || SubscriptionPlan.ANNUALLY)
 
   const getPaypalHref = () => {
@@ -67,38 +93,39 @@ const Payment: React.FC = () => {
     return `https://commerce.coinbase.com/checkout/${code}`
   }
 
-  const handleStripeClick = async () => {
-    const stripe = await stripePromise
-    if (!auth.dbUser?.email) {
-      console.error('userEmail is undefined')
-      message.error('You need to be logged in')
-    } else if (stripe != null) {
-      setProcessingPayment(true)
+  // const handleStripeClick = async () => {
+  //   const stripe = await stripePromise
+  //   if (!auth.dbUser?.email) {
+  //     console.error('userEmail is undefined')
+  //     message.error('You need to be logged in')
+  //   } else if (stripe != null) {
+  //     setProcessingPayment(true)
 
-      try {
-        if (type === SubscriptionPlan.LIFETIME) {
-          const id = await createStripePayment(
-            stripeCodes[type][IS_PRODUCTION ? 0 : 1],
-            `${window.location.origin}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-            `${window.location.origin}/payment/cancel`
-          )
-          await stripe.redirectToCheckout({
-            sessionId: id
-          })
-        } else {
-          const link = await createStripeManageLink(`${window.location.origin}/user/profile`)
-          window.location.href = link
-        }
-      } catch (err) {
-        if (err instanceof Error) {
-          console.error(err)
-          message.error(err.message)
-        }
-      }
+  //     try {
+  //       if (type === SubscriptionPlan.LIFETIME) {
+  //         const id = await createStripePayment(
+  //           stripeCodes[type][IS_PRODUCTION ? 0 : 1],
+  //           `${window.location.origin}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+  //           `${window.location.origin}/payment/cancel`
+  //         )
+  //         await stripe.redirectToCheckout({
+  //           sessionId: id
+  //         })
+  //       } else {
+  //         const link = await createStripeManageLink(`${window.location.origin}/user/profile`)
+  //         window.location.href = link
+  //       }
+  //     } catch (err) {
+  //       if (err instanceof Error) {
+  //         console.error(err)
+  //         message.error(err.message)
+  //       }
+  //     }
 
-      setProcessingPayment(false)
-    }
-  }
+  //     setProcessingPayment(false)
+  //   }
+  // }
+
 
   return (
     <Row gutter={[16, 16]} justify='center'>
@@ -179,7 +206,9 @@ const Payment: React.FC = () => {
               </Typography.Title>
               <Row justify='center' gutter={[12, 12]} style={{ marginBottom: 24 }}>
                 <Col xs={24} lg={8} style={{ minWidth: 150 }}>
-                  <div className={styles.paymentMethod} onClick={handleStripeClick}>
+                  <div className={styles.paymentMethod} 
+                  // onClick={handleStripeClick}
+                  >
                     <span className={styles.methodName}>Credit Card</span>
                     <span className={styles.poweredBy}>powered by</span>
                     <img src={stripeLogo} alt='Stripe' />

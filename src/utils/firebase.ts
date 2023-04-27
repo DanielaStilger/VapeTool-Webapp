@@ -1,7 +1,8 @@
 import { initializeApp } from 'firebase/app'
 import { getDatabase, ref, child, DatabaseReference } from 'firebase/database'
+import { getFirestore, getDocs, getDoc } from "firebase/firestore";
 import { getStorage, ref as storageRef } from 'firebase/storage'
-import { getAuth, Auth, onAuthStateChanged, User as FirebaseUser } from 'firebase/auth'
+import { getAuth, onAuthStateChanged, User as FirebaseUser } from 'firebase/auth'
 import { getFunctions, httpsCallable } from 'firebase/functions'
 import { getRemoteConfig } from 'firebase/remote-config'
 import { Mixable, Coil, MixResult, Liquid, Result, Properties } from '@vapetool/types'
@@ -31,26 +32,23 @@ const firebaseDevConfig = {
 // firebaseConfig.databaseURL = 'ws://localhost:5555';
 
 const devApp = initializeApp(firebaseDevConfig)
-const devDb = getDatabase(devApp)
-const devStorage = getStorage(devApp)
-const devAuth: Auth = getAuth(devApp)
-const devFunctions = getFunctions(devApp)
-
 const prodApp = initializeApp(firebaseProdConfig, 'prod')
+
+console.log('IS_PRODUCTION', IS_PRODUCTION)
+
+export const app = IS_PRODUCTION ? prodApp : devApp
+console.log('app', app)
+
+export const functions = getFunctions(app)
+export const remoteConfig = getRemoteConfig(app)
+export const storage = getStorage(app)
+export const auth = getAuth(app)
+export const database = getDatabase(app)
+export const firestore = getFirestore(app)
+console.log('database', database)
+
 const prodDb = getDatabase(prodApp)
 const prodStorage = getStorage(prodApp)
-const prodAuth: Auth = getAuth(prodApp)
-const prodFunctions = getFunctions(prodApp)
-
-export const functions = IS_PRODUCTION ? prodFunctions : devFunctions
-
-export const remoteConfig = IS_PRODUCTION ? getRemoteConfig(prodApp) : getRemoteConfig(devApp)
-
-export const database = IS_PRODUCTION ? prodDb : devDb
-
-export const storage = IS_PRODUCTION ? prodStorage : devStorage
-
-export const auth = IS_PRODUCTION ? prodAuth : devAuth
 
 const dbRef = (path: string) => ref(database, path)
 

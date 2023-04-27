@@ -5,7 +5,6 @@ import BatteryView from '@/components/BatteryView'
 import BatteryPreviewDrawer from '@/components/BatteryPreviewDrawer'
 import useStyles from '@/components/ItemView/style'
 import { Battery } from '@/types'
-import { PageContainer } from '@ant-design/pro-layout'
 import Banner from '@/components/Banner'
 import { useBatteriesModel } from '@/models/batteries'
 
@@ -15,7 +14,7 @@ const Batteries = () => {
   const onBatteryClick = (battery: Battery) => setSelectedBattery(battery)
 
   return (
-    <PageContainer>
+    <React.Fragment>
       <Row justify='center' gutter={32}>
         <div style={{ marginBottom: '2%' }}>
           <Banner providerName='batteries_database_ad_provider' />
@@ -37,7 +36,7 @@ const Batteries = () => {
           <BatteryPreviewDrawer />
         </Col>
       </Row>
-    </PageContainer>
+    </React.Fragment>
   )
 }
 

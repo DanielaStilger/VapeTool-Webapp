@@ -5,7 +5,7 @@
 This project uses 
 - **pnpm** for package manager;
 - **Vite** for build system;
-- **antd** and **Flowbite-react (Tailwindcss)** for UI componenets ([why?](https://github.com/vape-tool/VapeTool-Webapp/issues/135));
+- **antd** and **[Flowbite-react](https://flowbite-react.com) ([Tailwindcss](https://tailwindcss.com))** for UI componenets ([why?](https://github.com/vape-tool/VapeTool-Webapp/issues/135));
 - **standardjs** for style guide, liner and formtter;
 - **Firebase** for Backend-as-a-service.
 
