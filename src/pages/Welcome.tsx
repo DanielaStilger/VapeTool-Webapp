@@ -1,9 +1,8 @@
 import React from 'react'
-import { PageContainer } from '@ant-design/pro-layout'
 import { Card, Typography } from 'antd'
 
 export default () => (
-  <PageContainer>
+  <React.Fragment>
     <Card>
       <Typography.Title level={4}>
         <span role='img' aria-label='icon'>
@@ -34,5 +33,5 @@ export default () => (
         </Typography.Paragraph>
       </Typography>
     </Card>
-  </PageContainer>
+  </React.Fragment>
 )

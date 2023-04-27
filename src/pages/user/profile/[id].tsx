@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Col, Row, Typography } from 'antd'
 import { FormattedMessage } from 'react-intl'
-import { GridContent } from '@ant-design/pro-layout'
 import { CameraOutlined, LinkOutlined, MessageOutlined } from '@ant-design/icons'
 import UserCard from '@/pages/user/profile/components/UserCard'
 import { ItemName } from '@/types'
@@ -56,7 +55,7 @@ const Profile: React.FC = () => {
   const activeClass = (type: ItemName): string => (tabKey === type ? styles.active : '')
 
   return (
-    <GridContent>
+    <div className="grid grid-cols-4 gap-4">
       <Row justify='space-around'>
         <Col xs={24} md={24} xl={20} xxl={11}>
           <UserCard
@@ -122,7 +121,7 @@ const Profile: React.FC = () => {
           </div>
         </Col>
       </Row>
-    </GridContent>
+    </div>
   )
 }
 

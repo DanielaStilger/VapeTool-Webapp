@@ -7,8 +7,8 @@ import { FormattedMessage } from 'react-intl'
 import FirebaseImage from '../StorageAvatar'
 import { ImageType } from '@/services/storage'
 import { useAuth } from '@/context/FirebaseAuthContext'
-import { PageLoading } from '@ant-design/pro-layout'
 import { sign } from 'crypto'
+import PageLoading from '../PageLoading'
 
 function AppNavLink(props: {
   href: string

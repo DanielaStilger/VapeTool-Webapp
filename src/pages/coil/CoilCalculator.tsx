@@ -11,7 +11,6 @@ import { saveCoil } from '@/services/items'
 import SaveModal from '@/components/SaveModal'
 import { sendRequest } from '@/services/coil'
 import { Path, useCoilModel } from '@/models/coil'
-import { PageContainer } from '@ant-design/pro-layout'
 import Banner from '@/components/Banner'
 import useStyles from './style'
 import { useAuth } from '@/context/FirebaseAuthContext'
@@ -218,7 +217,7 @@ const CoilCalculator: React.FC = () => {
   )
 
   return (
-    <PageContainer>
+    <React.Fragment>
       <Row justify='center' gutter={32}>
         <div style={{ marginBottom: '2%' }}>
           <Banner providerName='coil_calculator_ad_provider' />
@@ -235,7 +234,7 @@ const CoilCalculator: React.FC = () => {
           </Row>
         </Col>
       </Row>
-    </PageContainer>
+    </React.Fragment>
   )
 }
 

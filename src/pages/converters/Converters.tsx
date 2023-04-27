@@ -3,11 +3,10 @@ import AwgConverter from '@/pages/converters/AwgConverter'
 import InchConverter from '@/pages/converters/InchConverter'
 import TempConverter from '@/pages/converters/TempConverter'
 import { Col, Row } from 'antd'
-import { PageContainer } from '@ant-design/pro-layout'
 import Banner from '@/components/Banner'
 
 const Converters: React.FC = () => (
-  <PageContainer>
+  <React.Fragment>
     <Row justify='center' gutter={32}>
       <div style={{ marginBottom: '2%' }}>
         <Banner providerName='converters_ad_provider' />
@@ -28,7 +27,7 @@ const Converters: React.FC = () => (
         </Row>
       </Col>
     </Row>
-  </PageContainer>
+  </React.Fragment>
 )
 
 export default Converters

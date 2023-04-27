@@ -10,7 +10,6 @@ import LinkView from '../../components/ItemView/LinkView'
 import { subscribeLinks, subscribePhotos, subscribePosts } from '../../services/items'
 
 import { PlusOutlined } from '@ant-design/icons'
-import { PageContainer } from '@ant-design/pro-layout'
 import { useCloudModel } from '../../models/cloud'
 import useRouter from '../../utils/useRouter'
 import { useAuth } from '../../context/FirebaseAuthContext'
@@ -34,7 +33,7 @@ const Cloud: React.FC = () => {
     (a, b) => Number(b.creationTime) - Number(a.creationTime)
   )
   return (
-    <PageContainer>
+    <React.Fragment>
       <List<Photo | Post | Link>
         className={styles.coverCardList}
         style={{ maxWidth: 614, margin: '0 auto' }}
@@ -66,7 +65,7 @@ const Cloud: React.FC = () => {
           />
         </Affix>
       )}
-    </PageContainer>
+    </React.Fragment>
   )
 }
 

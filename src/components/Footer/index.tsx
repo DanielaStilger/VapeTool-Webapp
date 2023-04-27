@@ -1,22 +1,21 @@
 import React from 'react'
 import { GithubOutlined } from '@ant-design/icons'
-import { DefaultFooter } from '@ant-design/pro-layout'
-import { Typography } from 'antd'
+import { Footer } from 'flowbite-react'
 
 export default () => (
-  <DefaultFooter
-    copyright={new Date(Date.now()).getFullYear().toString()}
-    links={[
-      {
-        key: 'github',
-        title: (
-          <Typography.Text type='secondary'>
-            Check our Github <GithubOutlined />
-          </Typography.Text>
-        ),
-        href: 'https://github.com/vape-tool/VapeTool-Webapp',
-        blankTarget: true
-      }
-    ]}
+  <Footer container={true}>
+  <Footer.Copyright
+    href="#"
+    by="Vape Tool"
+    year={new Date(Date.now()).getFullYear()}
   />
+  <Footer.LinkGroup>
+    <Footer.Link href="https://github.com/vape-tool/VapeTool-Webapp">
+      Github <GithubOutlined />
+    </Footer.Link>
+    <Footer.Link href="#">
+      Privacy Policy
+    </Footer.Link>
+  </Footer.LinkGroup>
+</Footer>
 )

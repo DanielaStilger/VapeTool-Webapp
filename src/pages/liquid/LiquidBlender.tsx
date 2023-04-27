@@ -9,7 +9,6 @@ import { Author, User as DatabaseUser } from '@vapetool/types'
 import SaveModal from '../../components/SaveModal'
 import { saveLiquid } from '../../services/items'
 import { LiquidModelState, useLiquidModel } from '../../models/liquid'
-import { PageContainer } from '@ant-design/pro-layout'
 import Banner from '../../components/Banner'
 import useStyles from './style'
 import LiquidResultsChart from './LiquidResultsChart'
@@ -96,7 +95,7 @@ const LiquidBlender = () => {
   const responsivenessCollections = { xs: 24, xl: 16 }
 
   return (
-    <PageContainer>
+    <React.Fragment>
       <Row justify='center' gutter={32}>
         <div style={{ marginBottom: '2%' }}>
           <Banner providerName='liquid_blender_top_ad_provider' />
@@ -304,7 +303,7 @@ const LiquidBlender = () => {
           <Banner providerName='liquid_blender_bottom_ad_provider' />
         </div>
       </Row>
-    </PageContainer>
+    </React.Fragment>
   )
 }
 

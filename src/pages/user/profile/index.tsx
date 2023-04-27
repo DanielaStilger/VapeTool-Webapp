@@ -1,9 +1,9 @@
 import React from 'react'
 import { Typography } from 'antd'
 import { getUserProfileUrl } from '../../../places/user.places'
-import { PageLoading } from '@ant-design/pro-layout'
 import useRouter from '../../../utils/useRouter'
 import { useAuth } from '../../../context/FirebaseAuthContext'
+import PageLoading from '../../../components/PageLoading'
 
 const Profile: React.FC = () => {
   const auth = useAuth()
