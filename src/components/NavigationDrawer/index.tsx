@@ -7,8 +7,8 @@ import { FormattedMessage } from 'react-intl'
 import FirebaseImage from '../StorageAvatar'
 import { ImageType } from '@/services/storage'
 import { useAuth } from '@/context/FirebaseAuthContext'
-import { sign } from 'crypto'
 import PageLoading from '../PageLoading'
+import FirebaseAvatar from '../FirebaseAvatar'
 
 function AppNavLink(props: {
   href: string
@@ -28,6 +28,11 @@ function AppNavLink(props: {
 
 const NavigationDrawer = () => {
   const { dbUser, firebaseUser, signOut } = useAuth()
+  const gotoHome = useLinkClickHandler("/")
+  const gotoPayment = useLinkClickHandler("payment")
+  const gotoAccountPage = useLinkClickHandler("user")
+
+
   if (!dbUser || !firebaseUser) return <PageLoading />
   return (
     <>
@@ -35,7 +40,7 @@ const NavigationDrawer = () => {
         fluid
         rounded
       >
-        <span onClick={() => useLinkClickHandler('/')}>
+        <span onClick={gotoHome}>
           <Navbar.Brand>
             <img
               src={logo}
@@ -52,8 +57,8 @@ const NavigationDrawer = () => {
           <Dropdown
             arrowIcon={false}
             inline
-            label={<FirebaseImage
-              size="small"
+            label={<FirebaseAvatar
+              size="md"
               type={ImageType.USER}
               id={firebaseUser.uid}
               alt="avatar"
@@ -68,12 +73,16 @@ const NavigationDrawer = () => {
               </span>
             </Dropdown.Header>
             <Dropdown.Item>
-              <UserOutlined />
-              <FormattedMessage id='menu.account.center' defaultMessage='account center' />
+              <span onClick={gotoAccountPage}>
+                <UserOutlined/>
+                <FormattedMessage id='menu.account.center' defaultMessage='account center' />
+              </span>
             </Dropdown.Item>
             <Dropdown.Item>
-              <UnlockOutlined />
-              <FormattedMessage id='menu.account.unlock-pro' defaultMessage='unlock pro' />
+              <span onClick={gotoPayment}>
+                <UnlockOutlined />
+                <FormattedMessage id='menu.account.unlock-pro' defaultMessage='unlock pro' />
+              </span>
             </Dropdown.Item>
             <Dropdown.Divider />
             <Dropdown.Item onClick={signOut}>
