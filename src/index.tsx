@@ -2,11 +2,8 @@ import React from 'react'
 import NavigationDrawer from './components/NavigationDrawer'
 import { AuthProvider, useAuth } from './context/FirebaseAuthContext'
 import UserWizard from './pages/user/wizard';
-import { FC } from 'react'
 import {
   Routes, Route, BrowserRouter,
-  createBrowserRouter,
-  RouterProvider
 } from 'react-router-dom'
 
 import Welcome from './pages/Welcome'
@@ -27,6 +24,7 @@ import BatteryLife from './pages/batterylife/BatteryLife'
 import FirebaseAuth from './pages/login';
 import PageLoading from './components/PageLoading';
 import Profile from './pages/user/profile';
+import Payment from './pages/payment/Payment';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 // https://github.com/mongodb-university/realm-tutorial-web/blob/final/src/App.js
@@ -34,14 +32,12 @@ import Profile from './pages/user/profile';
 const RequireLoggedInUser = ({ children }) => {
   // Only render children if there is a logged in user.
   const auth = useAuth()
-  console.log("RequireLoggedInUser", auth)
   return auth.firebaseUser ? children : <FirebaseAuth />;
 };
 // @ts-ignore: Don't worry about type here
 const RequireCreatedUserInDatabase = ({ children }) => {
   // @ts-ignore: Don't worry about children type
   const auth = useAuth()
-  console.log("RequireCreatedUserInDatabase", auth)
   return auth.dbUser ? auth.dbUser.setup ? children : <UserWizard /> : <PageLoading />;
 };
 
@@ -70,9 +66,10 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                     <Route path='battery-life' element={<BatteryLife />} />
                     <Route path='mixer' element={<Mixer />} />
                     <Route path='ohm-law' element={<OhmLaw />} />
-                    <Route path='*' element={<Oops />} />
                     <Route path="/cloud" element={<Cloud />} />
                     <Route path="/profile" element={<Profile />} />
+                    <Route path="payment" element={<Payment />} />
+                    <Route path='*' element={<Oops />} />
                     {/*
                                 <Route path="batteries" element={<Batteries />} />
                                 <Route path="/payment" element={<Payment />} />
@@ -81,7 +78,6 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                                 <Route path="/upload" element={<Upload />} />
                                 <Route path="/upload-photo" element={<UploadPhoto />} />
                                 <Route path="/upload-post" element={<UploadPost />} />
-                                <Route path="/user/profile" element={<Profile />} />
                                 <Route path="/user/profile/:id" element={<Profile />} />
                                 */}
                   </Route>
