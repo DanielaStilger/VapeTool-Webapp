@@ -1,39 +1,24 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Card, Col, message, Radio, Row, Spin, Tag, Typography } from 'antd'
+import { Card, Col, Radio, Row, Spin, Tag, Typography } from 'antd'
+import { Button, Badge, Toast } from 'flowbite-react';
+import { HiOutlineArrowRight } from 'react-icons/hi';
 import { RadioChangeEvent } from 'antd/lib/radio'
 import { CheckCircleFilled } from '@ant-design/icons'
-import { payments } from '@/utils/firebase'
-import { getProducts } from "@stripe/firestore-stripe-payments";
-import { verifyCurrentUserWithRedirect } from '@/services'
-import { IS_PRODUCTION, IS_NOT_PRODUCTION } from '@/utils/utils'
-import { getFirestore, getDocs, getDoc, collection } from "firebase/firestore";
+import { DateTime } from "luxon";
 import useStyles from './style'
-import { useAuth } from '../../context/FirebaseAuthContext'
-import { firestore } from '../../utils/firebase'
-
-const stripeLogo = require('@/assets/stripe.png')
-const paypalLogo = require('@/assets/paypal.png')
-const coinbaseLogo = require('@/assets/coinbase.png')
+import toast, { Toaster } from "react-hot-toast";
+import { getProducts } from '@/firestore-stripe-payments/product'
+import { SessionCreateParams, createCheckoutSession } from '@/firestore-stripe-payments/session'
+import type { Price, Product } from '@/firestore-stripe-payments/product'
+import { currentCustomerPortalLink, payments } from "@/utils/stripe"
+import { Subscription, onCurrentUserSubscriptionUpdate } from '@/firestore-stripe-payments/subscription';
+import { useAuth } from '@/context/FirebaseAuthContext';
+import { isUserPro } from '@/utils/utils';
 
 export enum SubscriptionPlan {
   MONTHLY = 'MONTHLY',
   ANNUALLY = 'ANNUALLY',
   LIFETIME = 'LIFETIME',
-}
-
-// TODO: Move all the codes to some config (preferably provided from server or added in CI step)
-
-const paypalCodes = {
-  // first PRODUCTION, second DEVELOPMENT
-  [SubscriptionPlan.MONTHLY]: ['PAJTMA62ZSBRW', 'WABX9M3L32NJS'],
-  [SubscriptionPlan.ANNUALLY]: ['PVFRG3TU5V5CJ', 'LSCXT5VQJGLE8'],
-  [SubscriptionPlan.LIFETIME]: ['UBCLCJ384D2D4', '3FAV75HYMXJ5N']
-}
-
-const coinbaseCodes = {
-  [SubscriptionPlan.MONTHLY]: '896d1477-7851-42e6-8ce3-0e141e6057ef',
-  [SubscriptionPlan.ANNUALLY]: '5dbc5bd2-421c-4050-aab2-7231d2450675',
-  [SubscriptionPlan.LIFETIME]: '5e8d6403-71dc-4988-8b06-f21d8d296cb3'
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -43,89 +28,129 @@ const stripeCodes = {
   [SubscriptionPlan.ANNUALLY]: ['plan_Ha1E0tVa0Be7Zx', 'plan_GzHrBem88w5v0n'],
   [SubscriptionPlan.LIFETIME]: ['sku_Ha1EpVv51gdqrb', 'price_1Hmm69BXl6CSFDJe9ghbla4c']
 }
-
 const Payment: React.FC = () => {
-  const auth = useAuth()
   const [type, setType] = useState(SubscriptionPlan.ANNUALLY)
   const [step, setStep] = useState(0)
   const [processingPayment, setProcessingPayment] = useState(false)
   const { styles } = useStyles()
+  const { firebaseUser, dbUser } = useAuth()
+  const isPro = isUserPro(dbUser?.subscription)
+  const [products, setProducts] = useState<Product[]>([]);
+  const [yearlyPrice, setYearlyPrice] = useState<Price>();
+  const [monthlyPrice, setMonthlyPrice] = useState<Price>();
+  const [lifeTimePrice, setLifeTimePrice] = useState<Price>();
+  const [activeSubs, setActiveSubs] = useState<Subscription[]>([]);
+
+
+  // useEffect(() => {
+  //   verifyCurrentUserWithRedirect()
+  // })
 
   useEffect(() => {
-    verifyCurrentUserWithRedirect()
-  })
-
-  useEffect(() => {
-
-    getDocs(collection(firestore, 'products'))
-      .then(function (querySnapshot) {
-        querySnapshot.forEach(async function (doc) {
-          console.log(doc.id, ' => ', doc.data());
-          const priceSnap = await doc.ref.collection('prices').get();
-          priceSnap.docs.forEach((doc) => {
-            console.log(doc.id, ' => ', doc.data());
-          });
-        });
-      });
-
     getProducts(payments, {
       includePrices: true,
       activeOnly: true,
     }).then((products) => {
-      for (const product of products) {
-        console.log(product)
+      const vapeToolProProd = products.find((prod) => prod.name == "Vape Tool Pro")
+      if (!vapeToolProProd) { return }
+      for (const price of vapeToolProProd.prices) {
+        if (!price.interval) { //lifetime
+          setLifeTimePrice(price)
+        }
+        if (price.interval == "year") {
+          setYearlyPrice(price)
+        }
+        if (price.interval == "month") {
+          setMonthlyPrice(price)
+        }
       }
     });
-  },[])
 
+    // Subscribe meantime something might have changed.
+    onCurrentUserSubscriptionUpdate(
+      payments,
+      (snapshot) => {
+        const subs = snapshot.changes
+          .filter(change => change.type !== "removed")
+          .map(change => change.subscription)
+          .filter(subscription => subscription.status === "active")
+          .sort((a, b) => DateTime.fromHTTP(a.current_period_end).toMillis() - DateTime.fromHTTP(b.current_period_end).toMillis())
+          .reverse() // descending
+
+        setActiveSubs(subs)
+      }
+    );
+  }, [])
+
+  const processPayment = async () => {
+    try {
+      setStep(1);
+      let price: Price | undefined = undefined;
+      let params: SessionCreateParams | undefined = undefined
+      switch (type) {
+        case SubscriptionPlan.MONTHLY: {
+          if (!monthlyPrice) {
+            toast.error("Monthly subscription is not available at the moment. Please try again later.")
+            console.error("Monthly payment is not available at the moment. Please try again later.")
+            return;
+          } else {
+            params = { price: monthlyPrice.id, mode: "subscription" }
+          }
+          break;
+        }
+        case SubscriptionPlan.ANNUALLY: {
+          if (!yearlyPrice) {
+            toast.error("Annually subscription is not available at the moment. Please try again later.")
+            console.error("Annually payment is not available at the moment. Please try again later.")
+            return;
+          } else {
+            params = { price: yearlyPrice.id, mode: "subscription" }
+          }
+          break;
+        }
+        case SubscriptionPlan.LIFETIME: {
+          if (!lifeTimePrice) {
+            toast.error("Lifetime payment is not available at the moment. Please try again later.")
+            console.error("Lifetime payment is not available at the moment. Please try again later.")
+            return;
+          } else {
+            params = { price: lifeTimePrice.id, mode: "payment" }
+          }
+          break;
+        }
+        default: {
+          toast.error("Please select a price.")
+          console.error("Please select a price.")
+          return;
+        }
+      }
+      console.log({ params })
+
+      if (!params) {
+        return;
+      }
+
+      const session = await createCheckoutSession(payments, params);
+      // or open portal where user can chose what to subscribe to
+      // if life-time payment then create checkout.
+      window.location.assign(session.url);
+    } catch (e) {
+      console.error({ e })
+      setStep(0);
+    }
+  }
+
+  const manageSubscription = async () => {
+    try {
+      const url = currentCustomerPortalLink(dbUser?.email)
+      window.open(url, "_blank")
+    } catch (e) {
+      console.error({ e })
+      setStep(0);
+    }
+  }
 
   const onChange = (e: RadioChangeEvent) => setType(e?.target?.value || SubscriptionPlan.ANNUALLY)
-
-  const getPaypalHref = () => {
-    const code = paypalCodes[type][IS_PRODUCTION ? 0 : 1]
-    const sandBoxStr = IS_NOT_PRODUCTION ? 'sandbox.' : ''
-
-    return `https://www.${sandBoxStr}paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=${code}`
-  }
-
-  const getCoinbaseHref = () => {
-    const code = coinbaseCodes[type]
-    return `https://commerce.coinbase.com/checkout/${code}`
-  }
-
-  // const handleStripeClick = async () => {
-  //   const stripe = await stripePromise
-  //   if (!auth.dbUser?.email) {
-  //     console.error('userEmail is undefined')
-  //     message.error('You need to be logged in')
-  //   } else if (stripe != null) {
-  //     setProcessingPayment(true)
-
-  //     try {
-  //       if (type === SubscriptionPlan.LIFETIME) {
-  //         const id = await createStripePayment(
-  //           stripeCodes[type][IS_PRODUCTION ? 0 : 1],
-  //           `${window.location.origin}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-  //           `${window.location.origin}/payment/cancel`
-  //         )
-  //         await stripe.redirectToCheckout({
-  //           sessionId: id
-  //         })
-  //       } else {
-  //         const link = await createStripeManageLink(`${window.location.origin}/user/profile`)
-  //         window.location.href = link
-  //       }
-  //     } catch (err) {
-  //       if (err instanceof Error) {
-  //         console.error(err)
-  //         message.error(err.message)
-  //       }
-  //     }
-
-  //     setProcessingPayment(false)
-  //   }
-  // }
-
 
   return (
     <Row gutter={[16, 16]} justify='center'>
@@ -133,9 +158,7 @@ const Payment: React.FC = () => {
         <Card className={styles.benefitsCard} style={{ minHeight: 500 }}>
           <Typography.Title>Vape Tool Pro Benefits</Typography.Title>
           <ul>
-            <li>
-              Access to <b>15</b> coil types calculator
-            </li>
+            <li>Access to <b>15</b> coil types calculator</li>
             <li>Sweet Spot Finder</li>
             <li>Advanced Coil specs</li>
             <li>Batteries charts</li>
@@ -149,108 +172,87 @@ const Payment: React.FC = () => {
       </Col>
 
       <Col xs={24} md={12} style={{ maxWidth: 505 }}>
-        <Card className={styles.paymentCard} style={{ minHeight: 500 }}>
-          <Typography.Title>Vape Tool Pro</Typography.Title>
-          <Typography.Title level={4}>Choose you plan:</Typography.Title>
-          <Radio.Group onChange={onChange} value={type}>
-            <Radio
-              value={SubscriptionPlan.MONTHLY}
-              className={`${styles.paymentOption} ${type === SubscriptionPlan.MONTHLY ? styles.active : ''
-                }`}
-            >
-              <div className={styles.radioText}>
-                <Tag color='blue'>Just trying out</Tag>
-                <div>Monthly @ $0.99</div>
-              </div>
-            </Radio>
-            <Radio
-              value={SubscriptionPlan.ANNUALLY}
-              className={`${styles.paymentOption} ${type === SubscriptionPlan.ANNUALLY ? styles.active : ''
-                }`}
-            >
-              <div className={styles.radioText}>
-                <Tag color='green'>I&apos;m in</Tag>
-                <div>Annually @ $3.99</div>
-              </div>
-            </Radio>
-            <Radio
-              value={SubscriptionPlan.LIFETIME}
-              className={`${styles.paymentOption} ${type === SubscriptionPlan.LIFETIME ? styles.active : ''
-                }`}
-            >
-              <div className={styles.radioText}>
-                <Tag color='red'>
-                  I{' '}
-                  <span role='img' aria-label='love'>
-                    love{' '}
-                  </span>{' '}
-                  it ❤️
-                </Tag>
-                <div>Lifetime @ $6.99</div>
-              </div>
-            </Radio>
-          </Radio.Group>
-          <Button type='primary' onClick={() => setStep(1)} disabled={step > 0} block>
-            Continue
-          </Button>
-
-          {processingPayment && (
-            <div style={{ textAlign: 'center' }}>
-              <Spin size='large' style={{ marginLeft: 8, marginRight: 8 }} />
-            </div>
-          )}
-          {!processingPayment && step > 0 && (
-            <>
-              <Typography.Title level={4} style={{ marginTop: 24 }}>
-                Choose you payment method:
-              </Typography.Title>
-              <Row justify='center' gutter={[12, 12]} style={{ marginBottom: 24 }}>
-                <Col xs={24} lg={8} style={{ minWidth: 150 }}>
-                  <div className={styles.paymentMethod} 
-                  // onClick={handleStripeClick}
-                  >
-                    <span className={styles.methodName}>Credit Card</span>
-                    <span className={styles.poweredBy}>powered by</span>
-                    <img src={stripeLogo} alt='Stripe' />
-                  </div>
-                </Col>
-                <Col xs={24} lg={8} style={{ minWidth: 150 }}>
-                  <a target='_blank' rel='noreferrer noopener' href={getPaypalHref()}>
-                    <div className={`${styles.paymentMethod} ${styles.paypalMethod}`}>
-                      <img
-                        src={paypalLogo}
-                        className={styles.paypalLogo}
-                        title='Pay with PayPal'
-                        alt='PayPal'
-                      />
-                      <span className={styles.methodName}>checkout</span>
-                    </div>
-                  </a>
-                </Col>
-                <Col xs={24} lg={8} style={{ minWidth: 150 }}>
-                  <a target='_blank' rel='noreferrer noopener' href={getCoinbaseHref()}>
-                    <div className={styles.paymentMethod}>
-                      <span className={styles.methodName}>Cryptocurrencies</span>
-                      <span className={styles.poweredBy}>powered by</span>
-                      <img src={coinbaseLogo} alt='Coinbase' />
-                    </div>
-                  </a>
-                </Col>
-              </Row>
-            </>
-          )}
-
-          <Typography.Paragraph className={styles.accepted}>
-            Credit cards (powered by Stripe), PayPal, and all major cryptocurrencies accepted.
-          </Typography.Paragraph>
-          <Typography.Paragraph className={styles.return} strong>
-            <CheckCircleFilled style={{ marginRight: 4 }} />
-            Your purchase is fully refundable within 14 days.
-          </Typography.Paragraph>
-        </Card>
+        {isPro ? <Card>You are already a pro user</Card> : <></>}
+        {activeSubs.length > 0 ? CurrentSubscription(styles, activeSubs, manageSubscription) : SubscriptionView(styles, activeSubs, onChange, type, monthlyPrice, yearlyPrice, lifeTimePrice, processPayment, step, processingPayment)}
       </Col>
     </Row>
   )
 }
 
-export default Payment
+function CurrentSubscription(styles: { active: string; benefitsCard: string; paymentOption: string; radioText: string; paymentCard: string; accepted: string; return: string; methodName: string; paypalMethod: string; poweredBy: string; '& > img': string; paypalLogo: string; paymentMethod: string; }, activeSubs: Subscription[], manageSubscription: () => Promise<void>) {
+  return <Card className={styles.paymentCard} style={{ minHeight: 500 }}>
+    <Typography.Title>Your subscription</Typography.Title>
+    {activeSubs.map(sub => (
+      <div className="flex mt-4 space-x-3 md:mt-6 h-fit items-center gap-1 font-semibold" key={sub.id}>
+        {sub.current_period_end}
+        {sub.cancel_at_period_end ? <Badge color="warning">Cancelled</Badge> : <Badge color="success">Active</Badge>}
+      </div>
+    ))}
+    <Button onClick={manageSubscription}>Manage subscription</Button>
+  </Card>
+}
+
+
+function SubscriptionView(styles: { active: string; benefitsCard: string; paymentOption: string; radioText: string; paymentCard: string; accepted: string; return: string; methodName: string; paypalMethod: string; poweredBy: string; '& > img': string; paypalLogo: string; paymentMethod: string; }, activeSubs: Subscription[], onChange: (e: RadioChangeEvent) => void, type: SubscriptionPlan, monthlyPrice: Price | undefined, yearlyPrice: Price | undefined, lifeTimePrice: Price | undefined, processPayment: () => Promise<void>, step: number, processingPayment: boolean) {
+  return <Card className={styles.paymentCard} style={{ minHeight: 500 }}>
+    <Typography.Title>Vape Tool Pro</Typography.Title>
+    <Typography.Title level={4}>Choose you plan:</Typography.Title>
+
+
+    <Radio.Group onChange={onChange} value={type}>
+      <Radio
+        value={SubscriptionPlan.MONTHLY}
+        className={`${styles.paymentOption} ${type === SubscriptionPlan.MONTHLY ? styles.active : ''}`}
+      >
+
+        <div className={styles.radioText}>
+          <Tag color='blue'>Just trying out</Tag>
+          <div>Monthly @ ${(monthlyPrice?.unit_amount || 0) / 100}</div>
+        </div>
+      </Radio>
+      <Radio
+        value={SubscriptionPlan.ANNUALLY}
+        className={`${styles.paymentOption} ${type === SubscriptionPlan.ANNUALLY ? styles.active : ''}`}
+      >
+        <div className={styles.radioText}>
+          <Tag color='green'>I&apos;m in</Tag>
+          <div>Annually @ ${(yearlyPrice?.unit_amount || 0) / 100}</div>
+        </div>
+      </Radio>
+      <Radio
+        value={SubscriptionPlan.LIFETIME}
+        className={`${styles.paymentOption} ${type === SubscriptionPlan.LIFETIME ? styles.active : ''}`}
+      >
+        <div className={styles.radioText}>
+          <Tag color='red'>
+            I{' '}
+            <span role='img' aria-label='love'>
+              love{' '}
+            </span>{' '}
+            it ❤️
+          </Tag>
+          <div>Lifetime @ ${(lifeTimePrice?.unit_amount || 0) / 100}</div>
+        </div>
+      </Radio>
+    </Radio.Group>
+    <Button onClick={processPayment} disabled={step > 0}>
+      <p>
+        Continue
+      </p>
+      <HiOutlineArrowRight className="ml-2 h-5 w-5" />
+
+    </Button>
+
+    {processingPayment && (
+      <div style={{ textAlign: 'center' }}>
+        <Spin size='large' style={{ marginLeft: 8, marginRight: 8 }} />
+      </div>
+    )}
+    <Typography.Paragraph className={styles.return} strong>
+      <CheckCircleFilled style={{ marginRight: 4 }} />
+      Your purchase is fully refundable within 14 days.
+    </Typography.Paragraph>
+  </Card>;
+}
+
+export default Payment;
