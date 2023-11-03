@@ -39,8 +39,7 @@ jobs:
         run: pnpm install
       - name: Build
         run: pnpm build
-      env:
-        CI: true
-        PROGRESS: none
-        NODE_ENV: test
-
+    env:
+      CI: true
+      PROGRESS: none
+      NODE_ENV: test
