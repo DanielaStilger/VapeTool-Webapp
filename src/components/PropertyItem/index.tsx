@@ -4,7 +4,6 @@ import { FormattedMessage } from 'react-intl'
 import classNames from 'classnames'
 import useStyles from './style'
 import { useAuth } from '@/context/FirebaseAuthContext'
-import { isUserPro } from '@/utils/utils'
 
 interface PropertyItemProps {
   property: string
@@ -16,9 +15,9 @@ interface PropertyItemProps {
 }
 
 const PropertyItem = (props: PropertyItemProps) => {
-  const { dbUser } = useAuth()
+  const { isUserPro } = useAuth()
   const { styles } = useStyles()
-  const isPro = isUserPro(dbUser?.subscription)
+  const isPro = isUserPro()
   const { property, value, unit, proOnly, editable, onChangeValue } = props
   const displayProOnlyTag = proOnly && !isPro
 

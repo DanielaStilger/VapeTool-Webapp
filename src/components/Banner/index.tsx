@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { getAdImageProperties, BannerProperties, getBannerUrl } from '@/services/storage'
 import { useAuth } from '@/context/FirebaseAuthContext'
-import { isUserPro } from '@/utils/utils'
 
 export default (props: { providerName: string }) => {
-  const { firebaseUser, dbUser } = useAuth()
-  const isPro = isUserPro(dbUser?.subscription)
+  const { firebaseUser, dbUser, isUserPro } = useAuth()
+  const isPro = isUserPro()
 
   const [bannerProperties, setBannerProperties] = useState<BannerProperties>()
   const [bannerSrc, setBannerSrc] = useState<string | undefined>()

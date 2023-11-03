@@ -10,7 +10,7 @@ import {
 } from '@/services/userCenter'
 import { useState } from 'react'
 import useRouter from '@/utils/useRouter'
-import { isUserPro } from '@/utils/utils'
+import { useAuth } from '@/context/FirebaseAuthContext'
 
 export interface UserProfile {
   readonly uid: string
@@ -30,8 +30,9 @@ export const useProfileModel = () => {
   const [userLinks, setUserLinks] = useState<Link[] | undefined>()
   const [userCoils, setUserCoils] = useState<Coil[] | undefined>()
   const [userLiquids, setUserLiquids] = useState<Liquid[] | undefined>()
+  const { isUserPro } = useAuth()
 
-  async function fetchUserProfile (userId: string) {
+  async function fetchUserProfile(userId: string) {
     setLoadingProfile(true)
     console.log('fetching', userId)
     const user: User | undefined = await getUser(userId)
@@ -48,7 +49,7 @@ export const useProfileModel = () => {
     setProfile(newUser)
   }
 
-  async function fetchItems (what: ItemName) {
+  async function fetchItems(what: ItemName) {
     const uid = userProfile?.uid
     if (!uid) {
       return
@@ -81,9 +82,9 @@ export const useProfileModel = () => {
     }
   }
 
-  function setProfile (user: User) {
+  function setProfile(user: User) {
     const tags = []
-    const isPro = isUserPro(user.subscription)
+    const isPro = isUserPro()
     if (isPro) {
       tags.push({ key: 'pro', label: 'Pro' })
     }

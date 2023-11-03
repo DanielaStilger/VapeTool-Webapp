@@ -1,7 +1,6 @@
 import { UserPermission } from '@vapetool/types'
 import { UserAuthorities } from '../types/UserAuthorities'
 import useRouter from './useRouter'
-import moment from 'moment'
 import { parseParams } from './querystring'
 
 /* eslint no-useless-escape:0 import/prefer-default-export:0 */
@@ -14,13 +13,6 @@ export const isAntDesignPro = (): boolean => {
   return window.location.hostname === 'web.vapetool.app'
 }
 
-export const isUserPro = (userSubscription: Date | null | undefined): boolean => {
-  if (userSubscription != null) {
-    return userSubscription && moment(userSubscription).isAfter()
-  } else {
-    return false
-  }
-}
 
 export const IS_PRODUCTION = import.meta.env.PROD
 export const IS_NOT_PRODUCTION = !IS_PRODUCTION

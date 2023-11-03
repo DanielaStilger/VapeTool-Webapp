@@ -1,19 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import { Card, Col, Radio, Row, Spin, Tag, Typography } from 'antd'
-import { Button, Badge, Toast } from 'flowbite-react';
+import { Badge, Button } from 'flowbite-react';
 import { HiOutlineArrowRight } from 'react-icons/hi';
 import { RadioChangeEvent } from 'antd/lib/radio'
 import { CheckCircleFilled } from '@ant-design/icons'
-import { DateTime } from "luxon";
 import useStyles from './style'
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { getProducts } from '@/firestore-stripe-payments/product'
 import { SessionCreateParams, createCheckoutSession } from '@/firestore-stripe-payments/session'
 import type { Price, Product } from '@/firestore-stripe-payments/product'
 import { currentCustomerPortalLink, payments } from "@/utils/stripe"
-import { Subscription, onCurrentUserSubscriptionUpdate } from '@/firestore-stripe-payments/subscription';
 import { useAuth } from '@/context/FirebaseAuthContext';
-import { isUserPro } from '@/utils/utils';
+import dayjs from "dayjs";
 
 export enum SubscriptionPlan {
   MONTHLY = 'MONTHLY',
@@ -33,18 +31,13 @@ const Payment: React.FC = () => {
   const [step, setStep] = useState(0)
   const [processingPayment, setProcessingPayment] = useState(false)
   const { styles } = useStyles()
-  const { firebaseUser, dbUser } = useAuth()
-  const isPro = isUserPro(dbUser?.subscription)
-  const [products, setProducts] = useState<Product[]>([]);
+  const { dbUser, isUserPro, getStripeSubscription, isLifetimePro } = useAuth()
+  const isPro = isUserPro()
+  const isLifetime = isLifetimePro()
+  const stripeSubscription = getStripeSubscription()
   const [yearlyPrice, setYearlyPrice] = useState<Price>();
   const [monthlyPrice, setMonthlyPrice] = useState<Price>();
   const [lifeTimePrice, setLifeTimePrice] = useState<Price>();
-  const [activeSubs, setActiveSubs] = useState<Subscription[]>([]);
-
-
-  // useEffect(() => {
-  //   verifyCurrentUserWithRedirect()
-  // })
 
   useEffect(() => {
     getProducts(payments, {
@@ -65,21 +58,6 @@ const Payment: React.FC = () => {
         }
       }
     });
-
-    // Subscribe meantime something might have changed.
-    onCurrentUserSubscriptionUpdate(
-      payments,
-      (snapshot) => {
-        const subs = snapshot.changes
-          .filter(change => change.type !== "removed")
-          .map(change => change.subscription)
-          .filter(subscription => subscription.status === "active")
-          .sort((a, b) => DateTime.fromHTTP(a.current_period_end).toMillis() - DateTime.fromHTTP(b.current_period_end).toMillis())
-          .reverse() // descending
-
-        setActiveSubs(subs)
-      }
-    );
   }, [])
 
   const processPayment = async () => {
@@ -172,28 +150,23 @@ const Payment: React.FC = () => {
       </Col>
 
       <Col xs={24} md={12} style={{ maxWidth: 505 }}>
-        {isPro ? <Card>You are already a pro user</Card> : <></>}
-        {activeSubs.length > 0 ? CurrentSubscription(styles, activeSubs, manageSubscription) : SubscriptionView(styles, activeSubs, onChange, type, monthlyPrice, yearlyPrice, lifeTimePrice, processPayment, step, processingPayment)}
+        {isPro ? <Card>
+          {stripeSubscription && !isLifetime ? <div className="flex mt-4 space-x-3 md:mt-6 h-fit items-center gap-1 font-semibold">
+            You are already a pro user {`until ${stripeSubscription.until.toString()}`}
+            {stripeSubscription?.cancelAtEndPeriod ? <Badge color="warning">Cancelled</Badge> : <Badge color="success">Active</Badge>}
+          </div> : ""}
+          {isLifetime ? <Typography.Text>You are already a pro user</Typography.Text> : ""}
+          <Button onClick={manageSubscription}>Manage payments</Button>
+        </Card> :
+          SubscriptionView(styles, onChange, type, monthlyPrice, yearlyPrice, lifeTimePrice, processPayment, step, processingPayment)
+        }
       </Col>
+
     </Row>
   )
 }
 
-function CurrentSubscription(styles: { active: string; benefitsCard: string; paymentOption: string; radioText: string; paymentCard: string; accepted: string; return: string; methodName: string; paypalMethod: string; poweredBy: string; '& > img': string; paypalLogo: string; paymentMethod: string; }, activeSubs: Subscription[], manageSubscription: () => Promise<void>) {
-  return <Card className={styles.paymentCard} style={{ minHeight: 500 }}>
-    <Typography.Title>Your subscription</Typography.Title>
-    {activeSubs.map(sub => (
-      <div className="flex mt-4 space-x-3 md:mt-6 h-fit items-center gap-1 font-semibold" key={sub.id}>
-        {sub.current_period_end}
-        {sub.cancel_at_period_end ? <Badge color="warning">Cancelled</Badge> : <Badge color="success">Active</Badge>}
-      </div>
-    ))}
-    <Button onClick={manageSubscription}>Manage subscription</Button>
-  </Card>
-}
-
-
-function SubscriptionView(styles: { active: string; benefitsCard: string; paymentOption: string; radioText: string; paymentCard: string; accepted: string; return: string; methodName: string; paypalMethod: string; poweredBy: string; '& > img': string; paypalLogo: string; paymentMethod: string; }, activeSubs: Subscription[], onChange: (e: RadioChangeEvent) => void, type: SubscriptionPlan, monthlyPrice: Price | undefined, yearlyPrice: Price | undefined, lifeTimePrice: Price | undefined, processPayment: () => Promise<void>, step: number, processingPayment: boolean) {
+function SubscriptionView(styles: { active: string; benefitsCard: string; paymentOption: string; radioText: string; paymentCard: string; accepted: string; return: string; methodName: string; paypalMethod: string; poweredBy: string; '& > img': string; paypalLogo: string; paymentMethod: string; }, onChange: (e: RadioChangeEvent) => void, type: SubscriptionPlan, monthlyPrice: Price | undefined, yearlyPrice: Price | undefined, lifeTimePrice: Price | undefined, processPayment: () => Promise<void>, step: number, processingPayment: boolean) {
   return <Card className={styles.paymentCard} style={{ minHeight: 500 }}>
     <Typography.Title>Vape Tool Pro</Typography.Title>
     <Typography.Title level={4}>Choose you plan:</Typography.Title>

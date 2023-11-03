@@ -7,7 +7,6 @@ import { Path } from '@/models/coil'
 import ImageWebp from '../ImageWebp'
 import types from './coilTypes'
 import { useAuth } from '@/context/FirebaseAuthContext'
-import { isUserPro } from '@/utils/utils'
 
 const { Option } = Select
 
@@ -33,8 +32,8 @@ const ComplexWire: React.FC<WireComponentProps> = ({
   onSetWire,
   onDeleteWire
 }) => {
-  const auth = useAuth()
-  const isPro = isUserPro(auth.dbUser?.subscription)
+  const { isUserPro } = useAuth()
+  const isPro = isUserPro()
   const handleTypeChange = (key: string) => key && onSetWireType(WireType[key], path)
   const onPitchChange = (value: string | number | undefined | null) =>
     value && Number.isFinite(value) && onSetInnerDiameter(Number(value))
@@ -99,7 +98,7 @@ const ComplexWire: React.FC<WireComponentProps> = ({
               onSetWire={onSetWire}
               onDeleteWire={onDeleteWire}
             />
-            )
+          )
           : (
             <SingleWire
               key={index}
@@ -108,7 +107,7 @@ const ComplexWire: React.FC<WireComponentProps> = ({
               onSetWire={onSetWire}
               onDeleteWire={onDeleteWire}
             />
-            )
+          )
       })}
 
       <Button style={{ width: '100%', maxWidth: 400 }} onClick={onAddWireClick}>
@@ -131,7 +130,7 @@ const ComplexWire: React.FC<WireComponentProps> = ({
               onSetWire={onSetWire}
               onDeleteWire={onDeleteWire}
             />
-            )
+          )
           : (
             <SingleWire
               key={index}
@@ -140,7 +139,7 @@ const ComplexWire: React.FC<WireComponentProps> = ({
               onSetWire={onSetWire}
               onDeleteWire={onDeleteWire}
             />
-            )
+          )
       })}
     </Card>
   )

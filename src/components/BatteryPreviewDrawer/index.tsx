@@ -4,7 +4,6 @@ import { FormattedMessage } from 'react-intl'
 import { useBatteriesModel } from '@/models/batteries'
 import { useAuth } from '@/context/FirebaseAuthContext'
 import { useMedia } from '@/utils/useMedia'
-import { isUserPro } from '@/utils/utils'
 
 const pStyle = {
   fontSize: 16,
@@ -16,9 +15,9 @@ const pStyle = {
 
 const BatteryPreviewDrawer = () => {
   const { setSelectedBattery, selectedBattery, editBattery } = useBatteriesModel()
-  const auth = useAuth()
+  const { isUserPro } = useAuth()
 
-  const isPro = isUserPro(auth.dbUser?.subscription)
+  const isPro = isUserPro()
 
   const onClose = () => setSelectedBattery(undefined)
 

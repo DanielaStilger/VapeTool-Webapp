@@ -11,7 +11,7 @@ import { getUserTotalContentCount, getUserTotalLikesCount } from '@/services/use
 import { FormattedMessage } from 'react-intl'
 import useStyles from './style'
 import useRouter from '@/utils/useRouter'
-import { isUserPro } from '@/utils/utils'
+import { useAuth } from '@/context/FirebaseAuthContext'
 
 interface UserCardProps {
   isCurrentUser: boolean
@@ -27,6 +27,7 @@ const UserCard: React.FC<UserCardProps> = ({
   currentUser
 }) => {
   const { styles } = useStyles()
+  const { isUserPro } = useAuth()
   const [userContentCount, setUserContentCount] = useState<number | undefined>(undefined)
   const [userLikesCount, setUserLikesCount] = useState<number | undefined>(undefined)
   const userTags = ((profile?.tags) != null) || []
@@ -104,7 +105,7 @@ const UserCard: React.FC<UserCardProps> = ({
                 <FormattedMessage id='user.actions.editProfile' defaultMessage='Edit profile' />
               </Button>
 
-              {isUserPro(currentUser?.subscription) && ( // TODO: cluch together isCurrentUser with currentUser, don't make them separate
+              {isUserPro() && ( // TODO: cluch together isCurrentUser with currentUser, don't make them separate
                 <Button
                   type='default'
                   shape='round'
@@ -119,7 +120,7 @@ const UserCard: React.FC<UserCardProps> = ({
                   />
                 </Button>
               )}
-              {!isUserPro(currentUser?.subscription) && ( // TODO: cluch together isCurrentUser with currentUser, don't make them separate
+              {!isUserPro() && ( // TODO: cluch together isCurrentUser with currentUser, don't make them separate
                 <Button
                   type='default'
                   shape='round'
