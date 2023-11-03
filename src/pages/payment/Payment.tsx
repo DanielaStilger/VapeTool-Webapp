@@ -11,7 +11,6 @@ import { SessionCreateParams, createCheckoutSession } from '@/firestore-stripe-p
 import type { Price, Product } from '@/firestore-stripe-payments/product'
 import { currentCustomerPortalLink, payments } from "@/utils/stripe"
 import { useAuth } from '@/context/FirebaseAuthContext';
-import dayjs from "dayjs";
 
 export enum SubscriptionPlan {
   MONTHLY = 'MONTHLY',
