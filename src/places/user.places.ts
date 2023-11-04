@@ -2,7 +2,7 @@ import { IS_NOT_PRODUCTION } from '../utils/utils'
 
 export const getPaymentUrl = (): string => '/payment'
 export const getUserWizard = (): string => '/user/wizard'
-export const getUserProfileUrl = (userId: string): string => `/user/profile/${userId}`
+export const getUserProfileUrl = (userId: string): string => `/user/${userId}`
 export const getUserLoginUrl = (): string => '/login'
 
 export const getCancelSubscriptionUrl = (): string =>

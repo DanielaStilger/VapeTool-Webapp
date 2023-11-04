@@ -85,7 +85,7 @@ export function subscribeItems<T extends Item> (
 ): () => void {
   let q: Query
   if (userId) {
-    q = query(ref, orderByChild(ref.parent + '/author/uid'), equalTo(userId))
+    q = query(ref, orderByChild('author/uid'), equalTo(userId))
   } else {
     q = query(ref, orderByChild('status'), equalTo(OnlineStatus.ONLINE_PUBLIC), limitToLast(100))
   }

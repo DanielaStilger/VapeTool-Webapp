@@ -75,19 +75,22 @@ const NavigationDrawer = () => {
             <Dropdown.Item>
               <span onClick={gotoAccountPage}>
                 <UserOutlined/>
-                <FormattedMessage id='menu.account.center' defaultMessage='account center' />
+                My Account
+                {/* <FormattedMessage id='menu.account.center' defaultMessage='account center' /> */}
               </span>
             </Dropdown.Item>
             <Dropdown.Item>
               <span onClick={gotoPayment}>
                 <UnlockOutlined />
-                <FormattedMessage id='menu.account.unlock-pro' defaultMessage='unlock pro' />
+                Unlock Pro
+                {/* <FormattedMessage id='menu.account.unlock-pro' defaultMessage='unlock pro' /> */}
               </span>
             </Dropdown.Item>
             <Dropdown.Divider />
             <Dropdown.Item onClick={signOut}>
               <LogoutOutlined />
-              <FormattedMessage id='menu.account.logout' defaultMessage='logout' />
+              Logout
+              {/* <FormattedMessage id='menu.account.logout' defaultMessage='logout' /> */}
             </Dropdown.Item>
           </Dropdown>
           <Navbar.Toggle />

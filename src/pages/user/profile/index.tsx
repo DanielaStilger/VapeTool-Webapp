@@ -12,6 +12,7 @@ const Profile: React.FC = () => {
     return <Typography.Paragraph>You must be logged in to preview this page</Typography.Paragraph>
   }
   const userProfileUrl = getUserProfileUrl(auth.dbUser.uid)
+  console.log('Redirecting to', userProfileUrl)
   router.replace(userProfileUrl)
   return <PageLoading />
 }

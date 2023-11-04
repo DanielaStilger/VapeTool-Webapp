@@ -10,8 +10,6 @@ import Welcome from './pages/Welcome'
 import Cloud from './pages/cloud/Cloud'
 import CoilCalculator from './pages/coil/CoilCalculator'
 import './index.css'
-// import Wizard from './pages/user/wizard';
-// import Login from './pages/login';
 import Oops from './pages/Oops'
 import ReactDOM from 'react-dom/client'
 import { ConfigProvider } from 'antd'
@@ -25,6 +23,8 @@ import FirebaseAuth from './pages/login';
 import PageLoading from './components/PageLoading';
 import Profile from './pages/user/profile';
 import Payment from './pages/payment/Payment';
+import { UserProfile } from './pages/user/profile/UserProfile';
+import { getUserProfileUrl } from './places/user.places';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 // https://github.com/mongodb-university/realm-tutorial-web/blob/final/src/App.js
@@ -67,7 +67,9 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                     <Route path='mixer' element={<Mixer />} />
                     <Route path='ohm-law' element={<OhmLaw />} />
                     <Route path="cloud" element={<Cloud />} />
-                    <Route path="profile" element={<Profile />} />
+
+                    <Route path="user" element={<UserProfile />} />
+                    <Route path="user/:userId" element={<UserProfile />} />
                     <Route path="payment" element={<Payment />} />
                     <Route path='*' element={<Oops />} />
                     {/*
@@ -78,7 +80,6 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                                 <Route path="/upload" element={<Upload />} />
                                 <Route path="/upload-photo" element={<UploadPhoto />} />
                                 <Route path="/upload-post" element={<UploadPost />} />
-                                <Route path="/user/profile/:id" element={<Profile />} />
                                 */}
                   </Route>
                 </Routes>

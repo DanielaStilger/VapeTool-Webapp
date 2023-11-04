@@ -69,7 +69,7 @@ const UserCard: React.FC<UserCardProps> = ({
 
             <Divider className={styles.divider} dashed />
 
-            <UserTags userTags={userTags} />
+            {/* <UserTags userTags={userTags} /> */}
 
             <Divider className={styles.divider} dashed />
 

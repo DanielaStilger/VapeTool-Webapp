@@ -10,20 +10,21 @@ import UserLinks from './components/UserItems/UserLinks'
 import UserLiquids from './components/UserItems/UserLiquids'
 import UserCoils from './components/UserItems/UserCoils'
 import useStyles from './style'
-import useRouter from '@/utils/useRouter'
 import { useProfileModel } from '@/models/profile'
 import { useAuth } from '@/context/FirebaseAuthContext'
+import { useParams } from 'react-router-dom'
+import { Card } from 'flowbite-react'
 
-const Profile: React.FC = () => {
+export const UserProfile: React.FC = () => {
   const { loadingProfile, userProfile, fetchUserProfile } = useProfileModel()
   const { dbUser } = useAuth()
   const [tabKey, setTabKey] = useState(ItemName.PHOTO)
-  const router = useRouter()
   const { styles } = useStyles()
 
-  const queryId = router.query?.id
-  const userId = queryId || dbUser?.uid ? String(queryId || dbUser?.uid) : null
-  const isCurrentUser = !queryId || queryId == dbUser?.uid
+  const params = useParams();
+  const userId = params.userId ?? dbUser?.uid;
+
+  const isCurrentUser = userId === dbUser?.uid
 
   useEffect(() => {
     if (userId) {
@@ -55,7 +56,7 @@ const Profile: React.FC = () => {
   const activeClass = (type: ItemName): string => (tabKey === type ? styles.active : '')
 
   return (
-    <div className="grid grid-cols-4 gap-4">
+    <Card>
       <Row justify='space-around'>
         <Col xs={24} md={24} xl={20} xxl={11}>
           <UserCard
@@ -121,8 +122,7 @@ const Profile: React.FC = () => {
           </div>
         </Col>
       </Row>
-    </div>
+    </Card>
   )
 }
 
-export default Profile
