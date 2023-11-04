@@ -66,8 +66,8 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                     <Route path='battery-life' element={<BatteryLife />} />
                     <Route path='mixer' element={<Mixer />} />
                     <Route path='ohm-law' element={<OhmLaw />} />
-                    <Route path="/cloud" element={<Cloud />} />
-                    <Route path="/profile" element={<Profile />} />
+                    <Route path="cloud" element={<Cloud />} />
+                    <Route path="profile" element={<Profile />} />
                     <Route path="payment" element={<Payment />} />
                     <Route path='*' element={<Oops />} />
                     {/*
